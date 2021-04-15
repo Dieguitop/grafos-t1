@@ -8,8 +8,8 @@
   },
   "proxy": "http://localhost:3001",
   "scripts": {
-	"start": "node server/index.js",
-	"build": "cd client && npm install && npm run build"
+    "start": "node server/index.js",
+    "build": "cd client && npm install && npm run build"
   },
   "repository": {
     "type": "git",
