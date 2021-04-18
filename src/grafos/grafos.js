@@ -20,7 +20,7 @@ function adyacencia(aristas, dirigido = false) {
 // Retorna el número mayor de una matriz.
 function mayor(matriz) {
   // Crea un arreglo con los números mayores de cada fila en `matriz`.
-  var mayores = matriz.map((fila) => Math.max(...fila));
+  var mayores = matriz.map(fila => Math.max(...fila));
   return Math.max(...mayores);
 }
 
