@@ -21,7 +21,7 @@ i <- 1
 for (grafo in json$grafo) {
     aristas    <- grafo
     grafo      <- graph_from_edgelist(aristas + 1, directed = FALSE)
-    adyacentes <- as_adjacency_matrix(grafo,     sparse = FALSE)
+    adyacentes <- as_adjacency_matrix(grafo,         sparse = FALSE)
 
     mostrar(i, grafo, aristas, adyacentes)
     i <- i + 1
