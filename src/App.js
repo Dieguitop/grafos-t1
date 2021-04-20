@@ -1,10 +1,15 @@
-import Header from './components/Header';
+import React from 'react';
+import { BrowserRouter, Redirect, Route} from 'react-router-dom'
 import Main from './components/Main';
+import Header from './components/Header';
+
 const App = () => (
-  <div>
-    <Header  />
-    <Main />
-  </div>
+  <BrowserRouter>
+    <Header />
+    <Route exact path='/' component={Main} />
+    <Redirect to="/" />
+  </BrowserRouter>
+
 )
 
 export default App;

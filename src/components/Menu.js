@@ -2,9 +2,21 @@ import { Box, Button, Grid, TextField } from '@material-ui/core';
 import { ArrowDownward, Save } from '@material-ui/icons';
 import React from 'react';
 
-const Menu = () => (
-    <Grid xs={3} container justify='center' >
+const Menu = () => {
+    const handleMessage = () => {
+        alert(`La opción dirigida está activa`)
+    };
+
+    const handleMessageNot = () => {
+        alert(`La opción no dirigida está activa`)
+    };
+
+
+    return (
+        <Grid xs={3} container justify='center' >
             <div>
+            <h1>ESTA SECCIÓN AÚN NO ESTÁ FUNCIONADO</h1>
+
                 <h3>Crear grafo</h3>
                 
                 <div>
@@ -44,10 +56,10 @@ const Menu = () => (
                             />
                         </Grid>
                     </Box>
-                    <Button variant="contained" color="primary">
+                    <Button onClick={handleMessage} variant="contained" color="primary">
                         Dirigido
                     </Button>
-                    <Button variant="contained" color="secondary">
+                    <Button onClick={handleMessageNot} variant="contained" color="secondary">
                         No dirigido
                     </Button>
                     <Button
@@ -60,6 +72,7 @@ const Menu = () => (
                 </div>
             </div>
         </Grid>
-)
+    )
+}
 
 export default Menu;
