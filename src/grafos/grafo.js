@@ -1,11 +1,11 @@
 const estructura = require('./estructuras.js');
 const matriz = require('./matriz.js');
-const math = require('mathjs');
+const algoritmo = require('./algoritmos.js');
 
 class Grafo {
-  /****************
-   * Constructores *
-   *****************/
+  /*
+   * Constructores
+   ****************/
   constructor(listaDeAdyacencia, dirigido = false) {
     this.listaDeAdyacencia = listaDeAdyacencia;
     this.dirigido = dirigido;
@@ -31,9 +31,9 @@ class Grafo {
     );
   }
 
-  /**********
-   * Getters *
-   ***********/
+  /*
+   * Getters
+   **********/
   get matrizDeAdyacencia() {
     return estructura.LADhaciaMAD(this.listaDeAdyacencia, this.dirigido);
   }
@@ -43,21 +43,12 @@ class Grafo {
   }
 
   get matrizDeCaminos() {
-    const matrizDeAdyacencia = this.matrizDeAdyacencia;
-    const n = matrizDeAdyacencia.length;
-    var matrizDeCaminos = math.zeros(n, n);
-
-    for (const i of math.range(0, n).toArray()) {
-      matrizDeCaminos = math.add(matrizDeCaminos, math.pow(matrizDeAdyacencia, i));
-    }
-
-    return matrizDeCaminos.toArray();
+    return algoritmo.matrizDeCaminos(this.matrizDeAdyacencia);
   }
 
   get esConexo() {
     return matriz.noContiene(this.matrizDeCaminos, 0);
   }
-
 }
 
 module.exports = { Grafo };
