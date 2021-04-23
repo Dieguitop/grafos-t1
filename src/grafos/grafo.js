@@ -1,32 +1,32 @@
 const estructura = require('./estructuras.js');
 const matriz = require('./matriz.js');
-const { add, pow, zeros } = require('mathjs');
+const math = require('mathjs');
 
 class Grafo {
   /****************
    * Constructores *
    *****************/
-  constructor(lad, dirigido = false) {
-    this.lad = lad;
+  constructor(listaDeAdyacencia, dirigido = false) {
+    this.listaDeAdyacencia = listaDeAdyacencia;
     this.dirigido = dirigido;
   }
 
   // La implementación interna de `Grafo` es una lista de adyacencia,
   // por lo que este constructor redirige al constructor principal.
-  static desdeLAD(lad, dirigido = false) {
-    return new Grafo(lad, dirigido);
+  static desdeListaDeAdyacencia(listaDeAdyacencia, dirigido = false) {
+    return new Grafo(listaDeAdyacencia, dirigido);
   }
 
-  static desdeMAD(mad, dirigido = false) {
+  static desdeMatrizDeAdyacencia(matrizDeAdyacencia, dirigido = false) {
     return new Grafo(
-      estructura.MADhaciaLAD(mad, dirigido),
+      estructura.MADhaciaLAD(matrizDeAdyacencia, dirigido),
       dirigido
     );
   }
 
-  static desdeLAR(lar, dirigido = false) {
+  static desdeListaDeAristas(listaDeAristas, dirigido = false) {
     return new Grafo(
-      estructura.LARhaciaMAD(lar, dirigido),
+      estructura.LARhaciaMAD(listaDeAristas, dirigido),
       dirigido
     );
   }
@@ -34,42 +34,13 @@ class Grafo {
   /**********
    * Getters *
    ***********/
-  get listaDeAdyacencia() {
-    return this.lad;
-  }
-
-  get mad() {
-    return estructura.LADhaciaMAD(this.lad, this.dirigido);
-  }
-
   get matrizDeAdyacencia() {
-    return this.mad;
-  }
-
-  get lar() {
-    return estructura.LADhaciaLAR(this.lad, this.dirigido);
+    return estructura.LADhaciaMAD(this.listaDeAdyacencia, this.dirigido);
   }
 
   get listaDeAristas() {
-    return this.lar;
+    return estructura.LADhaciaLAR(this.listaDeAdyacencia, this.dirigido);
   }
-
-  get matrizDeCaminos() {
-    const mad = this.matrizDeAdyacencia;
-    const n = mad.length;
-    var matrizDeCaminos = zeros(n, n);
-
-    for (let i = 0; i < n; i++) {
-      matrizDeCaminos = add(matrizDeCaminos, pow(mad, i));
-    }
-
-    return matrizDeCaminos.toArray();
-  }
-
-  get esConexo() {
-    return matriz.noContiene(this.matrizDeCaminos, 0);
-  }
-
 }
 
 module.exports = { Grafo };

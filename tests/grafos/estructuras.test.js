@@ -8,9 +8,9 @@ const casos = require('./casos.json');
 describe('Conversión MAD a LAD', () => {
   for (const [i, caso] of casos.entries()) {
     it(`MAD de grafo ${i + 1}`, () => {
-      const lad = estructura.MADhaciaLAD(caso.mad, false);
-      const ladObj = Array.from(lad.entries());
-      expect(ladObj).toStrictEqual(caso.lad);
+      const listaDeAdyacencia = estructura.MADhaciaLAD(caso.matrizDeAdyacencia, false);
+      const listaDeAdyacenciaObj = Array.from(listaDeAdyacencia.entries());
+      expect(listaDeAdyacenciaObj).toStrictEqual(caso.listaDeAdyacencia);
     });
   }
 });
@@ -18,9 +18,9 @@ describe('Conversión MAD a LAD', () => {
 describe('Conversión LAR a LAD', () => {
   for (const [i, caso] of casos.entries()) {
     it(`LAR de grafo ${i + 1}`, () => {
-      const lad = estructura.LARhaciaLAD(caso.lar, false);
-      const ladObj = Array.from(lad.entries());
-      expect(ladObj).toStrictEqual(caso.lad);
+      const listaDeAdyacencia = estructura.LARhaciaLAD(caso.listaDeAristas, false);
+      const listaDeAdyacenciaObj = Array.from(listaDeAdyacencia.entries());
+      expect(listaDeAdyacenciaObj).toStrictEqual(caso.listaDeAdyacencia);
     });
   }
 });
@@ -31,8 +31,8 @@ describe('Conversión LAR a LAD', () => {
 describe('Conversión LAD a LAR', () => {
   for (const [i, caso] of casos.entries()) {
     it(`LAR de grafo ${i + 1}`, () => {
-      const lar = estructura.LADhaciaLAR(caso.lad, false);
-      expect(lar).toStrictEqual(caso.lar);
+      const listaDeAristas = estructura.LADhaciaLAR(caso.listaDeAdyacencia, false);
+      expect(listaDeAristas).toStrictEqual(caso.listaDeAristas);
     });
   }
 });
@@ -40,8 +40,8 @@ describe('Conversión LAD a LAR', () => {
 describe('Conversión MAD a LAR', () => {
   for (const [i, caso] of casos.entries()) {
     it(`LAR de grafo ${i + 1}`, () => {
-      const lar = estructura.MADhaciaLAR(caso.mad, false);
-      expect(lar).toStrictEqual(caso.lar);
+      const listaDeAristas = estructura.MADhaciaLAR(caso.matrizDeAdyacencia, false);
+      expect(listaDeAristas).toStrictEqual(caso.listaDeAristas);
     });
   }
 });
@@ -52,8 +52,8 @@ describe('Conversión MAD a LAR', () => {
 describe('Conversión LAD a MAD', () => {
   for (const [i, caso] of casos.entries()) {
     it(`MAD de grafo ${i + 1}`, () => {
-      const mad = estructura.LADhaciaMAD(caso.lad, false);
-      expect(mad).toStrictEqual(caso.mad);
+      const matrizDeAdyacencia = estructura.LADhaciaMAD(caso.listaDeAdyacencia, false);
+      expect(matrizDeAdyacencia).toStrictEqual(caso.matrizDeAdyacencia);
     });
   }
 });
@@ -61,8 +61,8 @@ describe('Conversión LAD a MAD', () => {
 describe('Conversión LAR a MAD', () => {
   for (const [i, caso] of casos.entries()) {
     it(`LAR de grafo ${i + 1}`, () => {
-      const mad = estructura.LARhaciaMAD(caso.lar, false);
-      expect(mad).toStrictEqual(caso.mad);
+      const matrizDeAdyacencia = estructura.LARhaciaMAD(caso.listaDeAristas, false);
+      expect(matrizDeAdyacencia).toStrictEqual(caso.matrizDeAdyacencia);
     });
   }
 });

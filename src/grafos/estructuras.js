@@ -4,17 +4,17 @@ const { zeros, range } = require('mathjs');
 
 /**
  * Convierte una matriz de adyacencia (MAD) a una lista de adyacencia (LAD).
- * @param {number[][]} mad - Matriz de adyacencia.
+ * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
  * @param {boolean} dirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
  * @returns {Map<number, number[]>} Lista de adyacencia.
  */
-function MADhaciaLAD(mad, dirigido = false) {
-  var lad = new Map();
+function MADhaciaLAD(matrizDeAdyacencia, dirigido = false) {
+  var listaDeAdyacencia = new Map();
 
   // Se utiliza un diccionario hasheado para evitar la duplicidad de aristas.
   var aristas = {};
 
-  for (const [i, fila] of mad.entries()) {
+  for (const [i, fila] of matrizDeAdyacencia.entries()) {
     let adyacentes = [];
 
     for (const [j, celda] of fila.entries()) {
@@ -39,24 +39,24 @@ function MADhaciaLAD(mad, dirigido = false) {
 
     // Excluye de la LAD las adyacencias vacías.
     if (adyacentes.length > 0) {
-      lad.set(i, adyacentes);
+      listaDeAdyacencia.set(i, adyacentes);
     }
   }
 
-  return lad;
+  return listaDeAdyacencia;
 }
 
 /**
  * Convierte una matriz de adyacencia (MAD) a una lista de aristas (LAR).
- * @param {number[][]} mad - Matriz de adyacencia.
+ * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
  * @param {boolean} dirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
  * @returns {number[][]>} Lista aristas.
  */
-function MADhaciaLAR(mad, dirigido = false) {
-  var lar = [];
+function MADhaciaLAR(matrizDeAdyacencia, dirigido = false) {
+  var listaDeAristas = [];
   var aristas = {};
 
-  for (const [i, fila] of mad.entries()) {
+  for (const [i, fila] of matrizDeAdyacencia.entries()) {
     for (const [j, celda] of fila.entries()) {
       if (celda !== 0 && hash.noContiene(aristas, [i, j])) {
         hash.agregar(aristas, [i, j]);
@@ -65,109 +65,109 @@ function MADhaciaLAR(mad, dirigido = false) {
           hash.agregar(aristas, [j, i]);
         }
 
-        lar.push([i, j]);
+        listaDeAristas.push([i, j]);
       }
     }
   }
 
-  return lar;
+  return listaDeAristas;
 }
 
 /**
  * Convierte una lista de aristas (LAR) a una lista de adyacencia (LAD).
- * @param {number[][]} lar - Lista de aristas.
+ * @param {number[][]} listaDeAristas - Lista de aristas.
  * @param {boolean} dirigido - `true` si el grafo de la lista de aristas es dirigido.
  * @returns {Map<number, number[]>} Lista de adyacencia.
  */
-function LARhaciaLAD(lar, dirigido = false) {
-  const n = matriz.mayor(lar) + 1;
+function LARhaciaLAD(listaDeAristas, dirigido = false) {
+  const n = matriz.mayor(listaDeAristas) + 1;
   const nodos = range(0, n).toArray();
 
   // Genera un diccionario donde las llaves son los nodos y sus valores las
   // adyacencias (vacías, inicialmente) asociadas a cada nodo.
-  var lad = new Map(nodos.map(nodo => [nodo, []]));
+  var listaDeAdyacencia = new Map(nodos.map(nodo => [nodo, []]));
 
-  for (const arista of lar) {
+  for (const arista of listaDeAristas) {
     const [i, j] = arista;
 
     // Agregar el nodo j a las adyacencias del nodo i.
-    lad.get(i).push(j);
+    listaDeAdyacencia.get(i).push(j);
   }
 
   // Elimina de la lista de adyacencia las adyacencias vacías.
   for (const nodo of nodos) {
-    if (lad.get(nodo).length === 0) {
-      lad.delete(nodo);
+    if (listaDeAdyacencia.get(nodo).length === 0) {
+      listaDeAdyacencia.delete(nodo);
     }
   }
 
-  return lad;
+  return listaDeAdyacencia;
 }
 
 /**
  * Convierte una lista de aristas (LAR) a una matriz de adyacencia (MAD).
- * @param {number[][]} lar - Lista de aristas.
+ * @param {number[][]} listaDeAristas - Lista de aristas.
  * @param {boolean} dirigido - `true` si el grafo de la lista de aristas es dirigido.
  * @returns {number[][]} Matriz de adyacencia.
  */
-function LARhaciaMAD(lar, dirigido = false) {
-  const n = matriz.mayor(lar) + 1;
+function LARhaciaMAD(listaDeAristas, dirigido = false) {
+  const n = matriz.mayor(listaDeAristas) + 1;
 
   // Crea una matriz de `n` x `n` ceros.
-  var mad = zeros(n, n).toArray();
+  var matrizDeAdyacencia = zeros(n, n).toArray();
 
-  for (const arista of lar) {
+  for (const arista of listaDeAristas) {
     const [i, j] = arista;
-    mad[i][j] = 1;
+    matrizDeAdyacencia[i][j] = 1;
 
     // La matriz de adyacencia de un grafo no dirigido es simétrica.
     if (dirigido === false) {
-      mad[j][i] = 1;
+      matrizDeAdyacencia[j][i] = 1;
     }
   }
 
-  return mad;
+  return matrizDeAdyacencia;
 }
 
 /**
  * Convierte una lista de adyacencia (LAD) a una matriz de adyacencia (MAD).
- * @param {Map<number, number[]>} lad - Lista de adyacencia.
+ * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
  * @param {boolean} dirigido - `true` si el grafo de la lista de adyacencia es dirigido.
  * @returns {number[][]} Matriz de adyacencia.
  */
-function LADhaciaMAD(lad, dirigido = false) {
-  const n = matriz.mayor(Array.from(lad.entries())) + 1;
-  var mad = zeros(n, n).toArray();
+function LADhaciaMAD(listaDeAdyacencia, dirigido = false) {
+  const n = matriz.mayor(Array.from(listaDeAdyacencia.entries())) + 1;
+  var matrizDeAdyacencia = zeros(n, n).toArray();
 
-  for (const [i, adyacencias] of lad) {
+  for (const [i, adyacencias] of listaDeAdyacencia) {
     for (const j of adyacencias) {
-      mad[i][j] = 1;
+      matrizDeAdyacencia[i][j] = 1;
 
       if (dirigido === false) {
-        mad[j][i] = 1;
+        matrizDeAdyacencia[j][i] = 1;
       }
     }
   }
 
-  return mad;
+  return matrizDeAdyacencia;
 }
 
 /**
  * Convierte una lista de adyacencia (LAD) a una lista de aristas (LAR).
- * @param {Map<number, number[]>} lad - Lista de adyacencia.
+ * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
  * @param {boolean} dirigido - `true` si el grafo de la lista de adyacencia es dirigido.
  * @returns {number[][]} Lista de aristas.
  */
-function LADhaciaLAR(lad, dirigido = false) {
-  var lar = [];
+function LADhaciaLAR(listaDeAdyacencia, dirigido = false) {
+  var listaDeAristas = [];
 
-  for (const [i, adyacencias] of lad) {
+  for (const [i, adyacencias] of listaDeAdyacencia) {
     for (const j of adyacencias) {
-      lar.push([i, j]);
+      listaDeAristas.push([i, j]);
     }
   }
 
-  return lar;
+  return listaDeAristas;
 }
 
 module.exports = {
