@@ -41,6 +41,23 @@ class Grafo {
   get listaDeAristas() {
     return estructura.LADhaciaLAR(this.listaDeAdyacencia, this.dirigido);
   }
+
+  get matrizDeCaminos() {
+    const matrizDeAdyacencia = this.matrizDeAdyacencia;
+    const n = matrizDeAdyacencia.length;
+    var matrizDeCaminos = math.zeros(n, n);
+
+    for (const i of math.range(0, n).toArray()) {
+      matrizDeCaminos = math.add(matrizDeCaminos, math.pow(matrizDeAdyacencia, i));
+    }
+
+    return matrizDeCaminos.toArray();
+  }
+
+  get esConexo() {
+    return matriz.noContiene(this.matrizDeCaminos, 0);
+  }
+
 }
 
 module.exports = { Grafo };
