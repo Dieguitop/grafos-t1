@@ -25,7 +25,8 @@
     "eject": "react-scripts eject",
     "jest": "jest --verbose",
     "jest-watch": "jest --verbose --watch",
-    "rscript": "(cd tests/grafos && Rscript --no-save grafos.r)"
+    "jest-watch-all": "jest --verbose --watchAll",
+    "rscript": "Rscript --no-save scripts/grafos.r"
   },
   "eslintConfig": {
     "extends": [

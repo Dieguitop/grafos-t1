@@ -3,43 +3,39 @@ const matriz = require('./matriz.js');
 const algoritmo = require('./algoritmos.js');
 
 class Grafo {
-  /*
-   * Constructores
-   ****************/
-  constructor(listaDeAdyacencia, dirigido = false) {
+  //// Constructores ////
+  constructor(listaDeAdyacencia, esDirigido = false) {
     this.listaDeAdyacencia = listaDeAdyacencia;
-    this.dirigido = dirigido;
+    this.esDirigido = esDirigido;
   }
 
   // La implementación interna de `Grafo` es una lista de adyacencia,
   // por lo que este constructor redirige al constructor principal.
-  static desdeListaDeAdyacencia(listaDeAdyacencia, dirigido = false) {
-    return new Grafo(listaDeAdyacencia, dirigido);
+  static desdeListaDeAdyacencia(listaDeAdyacencia, esDirigido = false) {
+    return new Grafo(listaDeAdyacencia, esDirigido);
   }
 
-  static desdeMatrizDeAdyacencia(matrizDeAdyacencia, dirigido = false) {
+  static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
     return new Grafo(
-      estructura.MADhaciaLAD(matrizDeAdyacencia, dirigido),
-      dirigido
+      estructura.MADhaciaLAD(matrizDeAdyacencia, esDirigido),
+      esDirigido
     );
   }
 
-  static desdeListaDeAristas(listaDeAristas, dirigido = false) {
+  static desdeListaDeAristas(listaDeAristas, esDirigido = false) {
     return new Grafo(
-      estructura.LARhaciaMAD(listaDeAristas, dirigido),
-      dirigido
+      estructura.LARhaciaMAD(listaDeAristas, esDirigido),
+      esDirigido
     );
   }
 
-  /*
-   * Getters
-   **********/
+  //// Getters ////
   get matrizDeAdyacencia() {
-    return estructura.LADhaciaMAD(this.listaDeAdyacencia, this.dirigido);
+    return estructura.LADhaciaMAD(this.listaDeAdyacencia, this.esDirigido);
   }
 
   get listaDeAristas() {
-    return estructura.LADhaciaLAR(this.listaDeAdyacencia, this.dirigido);
+    return estructura.LADhaciaLAR(this.listaDeAdyacencia, this.esDirigido);
   }
 
   get matrizDeCaminos() {
@@ -48,6 +44,26 @@ class Grafo {
 
   get esConexo() {
     return matriz.noContiene(this.matrizDeCaminos, 0);
+  }
+
+  get noEsConexo() {
+    return !this.esConexo;
+  }
+
+  get esPonderado() {
+    for (const adyacencias of this.listaDeAdyacencia.values()) {
+      for (const nodo of adyacencias) {
+        if (nodo.peso !== undefined) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  get noEsPonderado() {
+    return !this.esPonderado;
   }
 }
 

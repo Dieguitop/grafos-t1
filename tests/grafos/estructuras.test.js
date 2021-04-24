@@ -2,68 +2,60 @@ const estructura = require('../../src/grafos/estructuras.js');
 
 const casos = require('./casos.json');
 
-/**********************
- * Conversiones a LAD *
- **********************/
-describe('Conversión MAD a LAD', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`MAD de grafo ${i + 1}`, () => {
-      const listaDeAdyacencia = estructura.MADhaciaLAD(caso.matrizDeAdyacencia, false);
-      const listaDeAdyacenciaObj = Array.from(listaDeAdyacencia.entries());
-      expect(listaDeAdyacenciaObj).toStrictEqual(caso.listaDeAdyacencia);
-    });
-  }
-});
+function describirGrafo(esDirigido, esPonderado, id) {
+  const direccion = esDirigido === true ? "dirigido" : "no dirigido";
+  const ponderacion = esPonderado === true ? "ponderado" : "no ponderado";
+  return `grafo ${id} (${direccion}, ${ponderacion})`;
+}
 
-describe('Conversión LAR a LAD', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`LAR de grafo ${i + 1}`, () => {
-      const listaDeAdyacencia = estructura.LARhaciaLAD(caso.listaDeAristas, false);
-      const listaDeAdyacenciaObj = Array.from(listaDeAdyacencia.entries());
-      expect(listaDeAdyacenciaObj).toStrictEqual(caso.listaDeAdyacencia);
-    });
-  }
-});
+function conversion(args) {
+  const { conversor, entrada, esperado } = args;
+  const recibido = conversor(entrada.estructura, entrada.esDirigido);
+  expect(recibido instanceof Map ? [...recibido] : recibido).toStrictEqual(esperado);
+}
 
-/**********************
- * Conversiones a LAR *
- **********************/
-describe('Conversión LAD a LAR', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`LAR de grafo ${i + 1}`, () => {
-      const listaDeAristas = estructura.LADhaciaLAR(caso.listaDeAdyacencia, false);
-      expect(listaDeAristas).toStrictEqual(caso.listaDeAristas);
-    });
-  }
-});
+for (const [i, caso] of casos.entries()) {
+  const descripcionGrafo = util.describirGrafo(i + 1, caso.esDirigido, caso.esPonderado).toLowerCase();
 
-describe('Conversión MAD a LAR', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`LAR de grafo ${i + 1}`, () => {
-      const listaDeAristas = estructura.MADhaciaLAR(caso.matrizDeAdyacencia, false);
-      expect(listaDeAristas).toStrictEqual(caso.listaDeAristas);
-    });
-  }
-});
+  describe('Conversión a LAD', () => {
+    it(`MAD del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.MADhaciaLAD,
+      entrada: { estructura: caso.matrizDeAdyacencia, esDirigido: caso.esDirigido },
+      esperado: caso.listaDeAdyacencia
+    }));
 
-/**********************
- * Conversiones a MAD *
- **********************/
-describe('Conversión LAD a MAD', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`MAD de grafo ${i + 1}`, () => {
-      const matrizDeAdyacencia = estructura.LADhaciaMAD(caso.listaDeAdyacencia, false);
-      expect(matrizDeAdyacencia).toStrictEqual(caso.matrizDeAdyacencia);
-    });
-  }
-});
+    it(`LAR del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.LARhaciaLAD,
+      entrada: { estructura: caso.listaDeAristas, esDirigido: caso.esDirigido },
+      esperado: caso.listaDeAdyacencia
+    }));
+  });
 
-describe('Conversión LAR a MAD', () => {
-  for (const [i, caso] of casos.entries()) {
-    it(`LAR de grafo ${i + 1}`, () => {
-      const matrizDeAdyacencia = estructura.LARhaciaMAD(caso.listaDeAristas, false);
-      expect(matrizDeAdyacencia).toStrictEqual(caso.matrizDeAdyacencia);
-    });
-  }
-});
+  describe('Conversión a LAR', () => {
+    it(`LAD del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.LADhaciaLAR,
+      entrada: { estructura: caso.listaDeAdyacencia, esDirigido: caso.esDirigido },
+      esperado: caso.listaDeAristas
+    }));
 
+    it(`MAD del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.MADhaciaLAR,
+      entrada: { estructura: caso.matrizDeAdyacencia, esDirigido: caso.esDirigido },
+      esperado: caso.listaDeAristas
+    }));
+  });
+
+  describe('Conversión a MAD', () => {
+    it(`LAD del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.LADhaciaMAD,
+      entrada: { estructura: caso.listaDeAdyacencia, esDirigido: caso.esDirigido },
+      esperado: caso.matrizDeAdyacencia
+    }));
+
+    it(`LAR del ${descripcionGrafo}`, () => conversion({
+      conversor: estructura.LARhaciaMAD,
+      entrada: { estructura: caso.listaDeAristas, esDirigido: caso.esDirigido },
+      esperado: caso.matrizDeAdyacencia
+    }));
+  });
+}

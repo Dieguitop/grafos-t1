@@ -5,10 +5,10 @@ const { zeros, range } = require('mathjs');
 /**
  * Convierte una matriz de adyacencia (MAD) a una lista de adyacencia (LAD).
  * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
- * @param {boolean} dirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
  * @returns {Map<number, number[]>} Lista de adyacencia.
  */
-function MADhaciaLAD(matrizDeAdyacencia, dirigido = false) {
+function MADhaciaLAD(matrizDeAdyacencia, esDirigido = false) {
   var listaDeAdyacencia = new Map();
 
   // Se utiliza un diccionario hasheado para evitar la duplicidad de aristas.
@@ -29,7 +29,7 @@ function MADhaciaLAD(matrizDeAdyacencia, dirigido = false) {
 
         // La MAD de un grafo no dirigido es simétrica, por lo tanto, la arista
         // entre el nodo i y el nodo j existe en la MAD en [i, j] y en [j, i].
-        if (dirigido === false) {
+        if (esDirigido === false) {
           hash.agregar(aristas, [j, i]);
         }
 
@@ -49,10 +49,10 @@ function MADhaciaLAD(matrizDeAdyacencia, dirigido = false) {
 /**
  * Convierte una matriz de adyacencia (MAD) a una lista de aristas (LAR).
  * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
- * @param {boolean} dirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la matriz de adyacencia es dirigido.
  * @returns {number[][]>} Lista aristas.
  */
-function MADhaciaLAR(matrizDeAdyacencia, dirigido = false) {
+function MADhaciaLAR(matrizDeAdyacencia, esDirigido = false) {
   var listaDeAristas = [];
   var aristas = {};
 
@@ -61,7 +61,7 @@ function MADhaciaLAR(matrizDeAdyacencia, dirigido = false) {
       if (celda !== 0 && hash.noContiene(aristas, [i, j])) {
         hash.agregar(aristas, [i, j]);
 
-        if (dirigido === false) {
+        if (esDirigido === false) {
           hash.agregar(aristas, [j, i]);
         }
 
@@ -76,10 +76,10 @@ function MADhaciaLAR(matrizDeAdyacencia, dirigido = false) {
 /**
  * Convierte una lista de aristas (LAR) a una lista de adyacencia (LAD).
  * @param {number[][]} listaDeAristas - Lista de aristas.
- * @param {boolean} dirigido - `true` si el grafo de la lista de aristas es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la lista de aristas es dirigido.
  * @returns {Map<number, number[]>} Lista de adyacencia.
  */
-function LARhaciaLAD(listaDeAristas, dirigido = false) {
+function LARhaciaLAD(listaDeAristas, esDirigido = false) {
   const n = matriz.mayor(listaDeAristas) + 1;
   const nodos = range(0, n).toArray();
 
@@ -107,10 +107,10 @@ function LARhaciaLAD(listaDeAristas, dirigido = false) {
 /**
  * Convierte una lista de aristas (LAR) a una matriz de adyacencia (MAD).
  * @param {number[][]} listaDeAristas - Lista de aristas.
- * @param {boolean} dirigido - `true` si el grafo de la lista de aristas es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la lista de aristas es dirigido.
  * @returns {number[][]} Matriz de adyacencia.
  */
-function LARhaciaMAD(listaDeAristas, dirigido = false) {
+function LARhaciaMAD(listaDeAristas, esDirigido = false) {
   const n = matriz.mayor(listaDeAristas) + 1;
 
   // Crea una matriz de `n` x `n` ceros.
@@ -121,7 +121,7 @@ function LARhaciaMAD(listaDeAristas, dirigido = false) {
     matrizDeAdyacencia[i][j] = 1;
 
     // La matriz de adyacencia de un grafo no dirigido es simétrica.
-    if (dirigido === false) {
+    if (esDirigido === false) {
       matrizDeAdyacencia[j][i] = 1;
     }
   }
@@ -132,10 +132,10 @@ function LARhaciaMAD(listaDeAristas, dirigido = false) {
 /**
  * Convierte una lista de adyacencia (LAD) a una matriz de adyacencia (MAD).
  * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
- * @param {boolean} dirigido - `true` si el grafo de la lista de adyacencia es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la lista de adyacencia es dirigido.
  * @returns {number[][]} Matriz de adyacencia.
  */
-function LADhaciaMAD(listaDeAdyacencia, dirigido = false) {
+function LADhaciaMAD(listaDeAdyacencia, esDirigido = false) {
   const n = matriz.mayor(Array.from(listaDeAdyacencia.entries())) + 1;
   var matrizDeAdyacencia = zeros(n, n).toArray();
 
@@ -143,7 +143,7 @@ function LADhaciaMAD(listaDeAdyacencia, dirigido = false) {
     for (const j of adyacencias) {
       matrizDeAdyacencia[i][j] = 1;
 
-      if (dirigido === false) {
+      if (esDirigido === false) {
         matrizDeAdyacencia[j][i] = 1;
       }
     }
@@ -155,10 +155,10 @@ function LADhaciaMAD(listaDeAdyacencia, dirigido = false) {
 /**
  * Convierte una lista de adyacencia (LAD) a una lista de aristas (LAR).
  * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
- * @param {boolean} dirigido - `true` si el grafo de la lista de adyacencia es dirigido.
+ * @param {boolean} esDirigido - `true` si el grafo de la lista de adyacencia es dirigido.
  * @returns {number[][]} Lista de aristas.
  */
-function LADhaciaLAR(listaDeAdyacencia, dirigido = false) {
+function LADhaciaLAR(listaDeAdyacencia, esDirigido = false) {
   var listaDeAristas = [];
 
   for (const [i, adyacencias] of listaDeAdyacencia) {

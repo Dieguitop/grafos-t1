@@ -7,7 +7,7 @@ function matrizDeCaminos(matrizDeAdyacencia) {
 
   for (let i = 0; i < n - 1; i++) {
     matrizDeCaminos = math.add(matrizDeCaminos, ultimaMatriz);
-    ultimaMatriz = math.multiply(matrizDeAdyacencia, ultimaMatriz);
+    ultimaMatriz = math.multiply(ultimaMatriz, matrizDeAdyacencia);
   }
 
   return matrizDeCaminos.toArray();
