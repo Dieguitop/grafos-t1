@@ -2,17 +2,24 @@
     width: 100%;
     padding: 10px;
 
+
     .main_options{
         display: flex;
-        width: 20%;
+        width: 500px;
         padding: 30px;
         flex-direction: column;
         overflow-y: scroll;
         height: 80vh;
-
     }
 }
 
-.MuiButton-containedSecondary{
-    margin: 10px 0 !important;
+
+.main_links{
+    margin-top: 100px;
+}
+
+hr{
+    height: 80px;
+    width: 100%;
+    border: none;
 }

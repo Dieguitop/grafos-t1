@@ -6,9 +6,7 @@ import Header from './components/Header';
 const App = () => (
   <BrowserRouter>
     <Header />
-    <Route path='/' component={Main} >
-        <Main />
-    </Route>
+    <Route exact path='/' component={Main} />
   </BrowserRouter>
 
 )

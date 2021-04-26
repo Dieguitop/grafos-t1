@@ -39,13 +39,18 @@ function initDiagram() {
 }
 
 
-const Content = ({data}) => (
+const Content = ({data, linksData}) => {
+  console.log(data);
+  console.log(linksData);
+  return(
     <div className="content">
       <ReactDiagram
         initDiagram={initDiagram}
         divClassName='diagram-component'
         nodeDataArray={data}
+        linkDataArray={linksData}
       />
     </div>
 )
+}
 export default Content;
