@@ -4,6 +4,7 @@
     "esDirigido": false,
     "esPonderado": false,
     "esConexo": true,
+    "nodos": [0, 1, 2, 3],
     "listaDeAdyacencia": [
       [0, [1, 2, 3]],
       [1, [2]]
@@ -32,6 +33,7 @@
     "esDirigido": false,
     "esPonderado": false,
     "esConexo": true,
+    "nodos": [0, 1, 2, 3, 4, 5],
     "listaDeAdyacencia": [
       [0, [0, 1, 4]],
       [1, [2, 4]],

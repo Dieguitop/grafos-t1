@@ -27,6 +27,7 @@
     "jest": "jest --verbose",
     "jest-watch": "jest --verbose --watch",
     "jest-watch-all": "jest --verbose --watchAll",
+    "playground": "node tests/grafos/playground.js",
     "rscript": "Rscript --no-save scripts/grafos.r"
   },
   "eslintConfig": {

@@ -1,5 +1,5 @@
 const { Grafo } = require('../../src/grafos/grafo.js');
-const util = require('../../src/grafos/utils.js');
+const util = require('./utils.js');
 
 const casos = require('./casos.json');
 
@@ -17,5 +17,13 @@ for (const [i, caso] of casos.entries()) {
 
   describe('Grafo ponderado o no ponderado', () => {
     it(descripcionGrafo, () => expect(grafo.esPonderado).toStrictEqual(caso.esPonderado));
+  });
+
+  describe('Cantidad de nodos', () => {
+    it(descripcionGrafo, () => expect(grafo.cantidadDeNodos).toStrictEqual(caso.cantidadDeNodos));
+  });
+
+  describe('Lista de nodos', () => {
+    it(descripcionGrafo, () => expect(grafo.nodos).toStrictEqual(caso.nodos));
   });
 }

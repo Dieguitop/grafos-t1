@@ -1,12 +1,7 @@
 const estructura = require('../../src/grafos/estructuras.js');
+const util = require('./utils.js');
 
 const casos = require('./casos.json');
-
-function describirGrafo(esDirigido, esPonderado, id) {
-  const direccion = esDirigido === true ? "dirigido" : "no dirigido";
-  const ponderacion = esPonderado === true ? "ponderado" : "no ponderado";
-  return `grafo ${id} (${direccion}, ${ponderacion})`;
-}
 
 function conversion(args) {
   const { conversor, entrada, esperado } = args;
