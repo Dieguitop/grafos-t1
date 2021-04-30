@@ -1,11 +1,12 @@
 const { Grafo } = require('../../src/grafos/grafo.js');
 
-const casos = require('./casos.json');
+const { casos } = require('./casos.js');
 
-const caso = casos[0];
+const caso = casos[2];
 const grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
 
 console.log(grafo.adyacencias(0));
 console.log([...grafo.listaDeAdyacencia.values()]);
 console.log(grafo.esPonderado);
 console.log(grafo.nodos);
+console.log(grafo.matrizDeCaminos);
