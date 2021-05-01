@@ -48,4 +48,17 @@ for (const [i, caso] of casos.entries()) {
   describe('Lista de nodos', () => {
     it(descripcionGrafo, () => expect(grafo.nodos).toStrictEqual(caso.nodos));
   });
+
+  describe('Camino más corto entre 2 nodos', () => {
+    if (caso.matrizDeCaminosMasCortos) {
+      const nodos = grafo.nodos;
+      for (const i of nodos) {
+        for (const j of nodos) {
+          it(descripcionGrafo + `: nodo ${i} al nodo ${j}`, () => {
+            return expect(grafo.caminoMasCorto(i, j)).toStrictEqual(caso.matrizDeCaminosMasCortos[i][j]);
+          });
+        }
+      }
+    }
+  });
 }

@@ -296,6 +296,106 @@ class Grafo {
 
     return matrizDeCaminos.toArray();
   }
+
+  /**
+   * Obtiene el camino más corto entre dos nodos.
+   *
+   * @typedef {Object} CaminoMasCorto
+   *   @property {number[]} camino - Camino más corto entre el nodo origen y el nodo destino.
+   *   @property {number} distancia - Distancia total del camino más corto.
+   *
+   * @param {number} origen - Nodo origen.
+   * @param {number} destino - Nodo destino.
+   * @returns {CaminoMasCorto} Camino más corto y distancia total.
+   *
+   * @namespace caminoMasCorto
+   */
+  caminoMasCorto(origen, destino) {
+    /**
+     * Obtiene el nodo no visitado más cercano al nodo original.
+     *
+     * @param {Map<number, number>} distancias - Distancias del nodo original a cada nodo del grafo.
+     * @param {Map<number, number>} noVisitados - Nodos no visitados por el algoritmo.
+     * @returns {number} Nodo no visitado más cercano al nodo original.
+     *
+     * @memberof caminoMasCorto
+     */
+    function noVisitadoConMenorDistancia(distancias, noVisitados) {
+      // Se obtiene el primer valor de la lista de nodos no visitados.
+      var menor = noVisitados.values().next().value;
+
+      for (const nodo of noVisitados) {
+        if (distancias.get(nodo) < distancias.get(menor)) {
+          menor = nodo;
+        }
+      }
+
+      return menor;
+    }
+
+    const nodos = this.nodos;
+    var noVisitados = new Set(nodos);
+
+    // Distancias del nodo origen a todos los nodos del grafo.
+    var distancias = new Map();
+
+    // Nodos padres de cada nodo, siguiendo la ruta óptima (desde el nodo origen).
+    var padres = new Map();
+
+    // Se asignan distancias infinitas (muy grandes) a los nodos no visitados.
+    for (const nodo of nodos) {
+      distancias.set(nodo, Infinity);
+      padres.set(nodo, undefined);
+    }
+
+    // La distancia del nodo origen a sí mismo es 0.
+    distancias.set(origen, 0);
+
+    while (noVisitados.size > 0) {
+      // Se obtiene el nodo no visitado más cercano al nodo origen.
+      const nodo = noVisitadoConMenorDistancia(distancias, noVisitados);
+
+      // Si el nodo actual es el nodo destino, no es necesario seguir explorando sus adyacentes.
+      if (nodo === destino) {
+        break;
+      }
+
+      // Se itera sobre todos los nodos adyacentes al nodo actual.
+      for (const adyacente of this.adyacentes(nodo)) {
+        // Calcula la distancia total desde el nodo origen hasta el nodo adyacente,
+        // pasando por el nodo actual.
+        const distanciaDesdeOrigen = distancias.get(nodo) + adyacente.peso;
+
+        // Si ésta distancia es menor a la registrada actualmente, se actualizan las distancias
+        // y los padres.
+        if (distanciaDesdeOrigen < distancias.get(adyacente.nodo)) {
+          distancias.set(adyacente.nodo, distanciaDesdeOrigen);
+          padres.set(adyacente.nodo, nodo);
+        }
+      }
+
+      noVisitados.delete(nodo);
+    }
+
+    // Se calcula el camino más corto a partir de los nodos padres.
+    var camino = new Set().add(destino);
+
+    // Se itera inversamente los nodos padres, desde el nodo destino.
+    var padre = padres.get(destino);
+
+    while (padre !== undefined) {
+      camino.add(padre);
+
+      // Siguiendo la ruta óptima (inversamente), se pasa al siguiente nodo padre.
+      padre = padres.get(padre);
+    }
+
+    // Retorna el camino más corto (incluyendo el nodo origen) y la distancia total de la ruta.
+    return {
+      camino: [...camino.add(origen)].reverse(),
+      distancia: distancias.get(destino)
+    };
+  }
 }
 
 module.exports = { Grafo, Arista, Adyacente };
