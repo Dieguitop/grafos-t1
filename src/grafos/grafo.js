@@ -48,8 +48,12 @@ class Grafo {
   static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
     var listaDeAdyacencia = new Map();
 
-    // Se utiliza un diccionario hasheado para evitar la duplicidad de aristas.
+    // Se utiliza una tabla hasheada para evitar la duplicidad de aristas.
     var aristas = {};
+
+    // Comprueba si la matriz solo contiene ceros o unos. En tal caso, el grafo representado
+    // por la matriz de adyacencia se asume que no es ponderado.
+    const esPonderado = !matriz.solo(matrizDeAdyacencia, 0, 1);
 
     for (const [i, fila] of matrizDeAdyacencia.entries()) {
       let adyacentes = [];
@@ -71,7 +75,7 @@ class Grafo {
           }
 
           // TODO: valor por defecto, grafos no ponderados.
-          adyacentes.push(celda === 1 ? j : new Adyacente(j, celda));
+          adyacentes.push(esPonderado ? new Adyacente(j, celda) : j);
         }
       }
 
@@ -188,19 +192,29 @@ class Grafo {
    * Obtiene los nodos adyacentes a un nodo.
    *
    * @param {number} nodo - Nodo.
-   * @returns {number[]} Adyacentes al nodo
+   * @returns {number[]} Adyacentes al nodo.
    */
   adyacentes(nodo) {
-    return this.listaDeAdyacencia.get(nodo);
-  }
+	var adyacentes = [];
 
-  /**
-   * Obtiene una lista con las nodos adyacentes por cada nodo.
-   *
-   * @returns {number[][]} Lista con los adyacentes por cada nodo.
-   */
-  get totalAdyacentes() {
-    return [...this.listaDeAdyacencia.values()];
+    for (const [i, vecinos] of this.listaDeAdyacencia) {
+      if (nodo === i) {
+        adyacentes.push(...vecinos);
+      }
+
+      // Si el grafo no es dirigido, se deben considerar las adyacencias implícitas.
+      // Internamente, para un grafo no dirigido, las aristas (i, j) son equivalentes a
+      // las aristas (j, i), por lo que éstas últimas no se almacenan (están implícitas).
+      else if (this.noEsDirigido) {
+        for (const adyacente of vecinos) {
+          if (adyacente.nodo === nodo) {
+            adyacentes.push(new Adyacente(i, adyacente.peso));
+          }
+        }
+      }
+    }
+
+    return adyacentes;
   }
 
   /**
@@ -240,7 +254,7 @@ class Grafo {
    * @returns {boolean} `true` si el grafo es ponderado, `false` en caso contrario.
    */
   get esPonderado() {
-    return this.totalAdyacentes.flat(2).some(esPonderado);
+    return [...this.listaDeAdyacencia.values()].flat(2).some(esPonderado);
   }
 
   /**
