@@ -142,7 +142,10 @@ const casos = [
         { "camino": [4, 3], "distancia": 1 },
         { "camino": [4], "distancia": 0 }
       ]
-    ]
+    ],
+    arbolGeneradorMinimo: {
+      distancia: 9
+    }
   },
   {
     link: "http://graphonline.ru/en/?graph=xAxihjBdivZsfnfi",
@@ -252,7 +255,10 @@ const casos = [
         { "camino": [6, 5], "distancia": 6 },
         { "camino": [6], "distancia": 0 }
       ]
-    ]
+    ],
+    arbolGeneradorMinimo: {
+      distancia: 31
+    }
   }
 ]
 

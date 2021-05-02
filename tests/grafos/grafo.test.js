@@ -61,4 +61,13 @@ for (const [i, caso] of casos.entries()) {
       }
     }
   });
+
+  // Un grafo puede tener más de un árbol generador mínimo, pero la distancia de los posibles árboles es única.
+  describe('Árbol generador mínimo', () => {
+    if (caso.arbolGeneradorMinimo) {
+      it(descripcionGrafo, () => {
+        return expect(grafo.arbolGeneradorMinimo().distancia).toStrictEqual(caso.arbolGeneradorMinimo.distancia);
+      });
+    }
+  });
 }

@@ -1,5 +1,6 @@
 const { Arista } = require('./arista.js');
 const { Adyacente, esPonderado } = require('./nodo.js');
+const { ConjuntoDisjunto } = require('./conjunto-disjunto.js');
 const matriz = require('./matriz.js');
 const hash = require('./hash.js');
 const math = require('mathjs');
@@ -394,6 +395,54 @@ class Grafo {
     return {
       camino: [...camino.add(origen)].reverse(),
       distancia: distancias.get(destino)
+    };
+  }
+
+  /**
+   * @typedef {Object} ArbolGeneradorMinimo
+   *   @property {Arista[]} arbol - Lista de aristas del árbol generador mínimo.
+   *   @property {number} distancia - Distancia total del árbol generador mínimo.
+   */
+  /**
+   * Construye un árbol generador mínimo del grafo.
+   *
+   * @returns {ArbolGeneradorMinimo} Árbol generador mínimo del grafo.
+   *
+   * Implementación del algoritmo de Kruskal, utilizando la estructura de conjuntos disjuntos.
+   */
+  arbolGeneradorMinimo() {
+    var arbol = [];
+    var conjunto = new ConjuntoDisjunto();
+
+    // Crea un conjunto disjunto por cada nodo del grafo.
+    for (const nodo of this.nodos) {
+      conjunto.crear(nodo);
+    }
+
+    // Ordena la lista de aristas según sus pesos, ascendentemente.
+    var aristas = this.listaDeAristas.sort((a, b) => a.peso - b.peso);
+
+    for (const arista of aristas) {
+      // Se sigue la cadena de nodos padres de un nodo hasta llegar a la raíz que representa al
+      // conjunto que contiene dicho nodo.
+      const raizOrigen = conjunto.buscar(arista.origen);
+      const raizDestino = conjunto.buscar(arista.destino);
+
+      // Si la raíz del nodo origen no pertenece al mismo conjunto de la raíz del nodo destino,
+      // entonces la arista que une los nodos origen y destino no forma un ciclo con el resto
+      // de las aristas del árbol, por lo que puede ser agregada al árbol.
+      if (raizOrigen !== raizDestino) {
+        arbol.push(arista);
+
+        // Une el conjunto de la raíz del nodo origen con el conjunto de la raíz del nodo destino.
+        conjunto.unir(raizOrigen, raizDestino);
+      }
+    }
+
+    // Retorna el árbol y la distancia total del árbol (suma total de los pesos de las aristas del árbol).
+    return {
+      arbol: arbol,
+      distancia: arbol.map(nodo => nodo.peso).reduce((a, b) => a + b)
     };
   }
 }
