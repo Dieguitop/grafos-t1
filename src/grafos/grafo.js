@@ -506,6 +506,37 @@ class Grafo {
       distancia: arbol.map(nodo => nodo.peso).reduce((a, b) => a + b)
     };
   }
+
+  eliminarArista(origen, destino) {
+    this.listaDeAdyacencia.set(origen, this.adyacentes(origen).filter(adyacente => {
+      return adyacente.nodo !== destino;
+    }));
+  }
+
+  get caminoEuleriano() {
+    function euler(nodo) {
+      const camino = [];
+      const nodosCaminoEuleriano = [];
+
+      camino.push(nodo);
+
+      while (!camino.empty()) {
+        var nodoActual = camino.top();
+        const adyacentes = this.listaDeAdyacencia.get(nodoActual);
+
+        if (adyacentes.length === 0) {
+          nodosCaminoEuleriano.push(nodoActual);
+          camino.pop();
+        } else {
+          camino.push(adyacentes[nodoActual].nodo);
+          this.eliminarArista(nodoActual, adyacentes[nodoActual].nodo);
+        }
+      }
+    }
+
+    var nodosCaminoEuleriano = [];
+    return nodosCaminoEuleriano;
+  }
 }
 
 module.exports = { Grafo, Arista, Adyacente };
