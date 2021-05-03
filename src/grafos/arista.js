@@ -11,7 +11,7 @@ class Arista {
    * @param {number|Adyacente} destino - Nodo destino.
    * @param {number} peso - Peso de la arista.
    *
-   * Notar que si el nodo destino es de tipo Adyacente, el parámetro peso es ignorado.
+   * Notar que si el nodo destino es de tipo `Adyacente`, el parámetro peso es ignorado.
    */
   constructor(origen, destino, peso) {
     this.origen = origen;

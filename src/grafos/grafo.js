@@ -15,6 +15,18 @@ class Grafo {
    * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
    * @param {boolean} esDirigido - `true` si el grafo de la matriz de
    * adyacencia es dirigido, `false` en caso contrario.
+   *
+   * @example
+   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
+   * const listaDeAdyacencia = [
+   *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
+   *   [1, [new Adyacente(2, 3)]],
+   *   [2, [new Adyacente(0, 4)]]
+   * ];
+   *
+   * // La lista de adyacencia contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = new Grafo(listaDeAdyacencia, esDirigido);
    */
   constructor(listaDeAdyacencia, esDirigido = false) {
     this.listaDeAdyacencia = listaDeAdyacencia;
@@ -27,11 +39,22 @@ class Grafo {
    * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
    * @param {boolean} esDirigido - `true` si el grafo de la matriz de
    * adyacencia es dirigido, `false` en caso contrario.
-   *
    * @returns {Grafo} Grafo.
    *
    * La implementación interna de `Grafo` es una lista de adyacencia,
    * por lo que éste constructor redirige al constructor principal.
+   *
+   * @example
+   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
+   * const listaDeAdyacencia = [
+   *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
+   *   [1, [new Adyacente(2, 3)]],
+   *   [2, [new Adyacente(0, 4)]]
+   * ];
+   *
+   * // La lista de adyacencia contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = Grafo.desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido);
    */
   static desdeListaDeAdyacencia(listaDeAdyacencia, esDirigido = false) {
     return new Grafo(listaDeAdyacencia, esDirigido);
@@ -43,8 +66,19 @@ class Grafo {
    * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
    * @param {boolean} esDirigido - `true` si el grafo de la matriz de
    * adyacencia es dirigido, `false` en caso contrario.
-   *
    * @returns {Grafo} Grafo.
+   *
+   * @example
+   * // Grafo: 0 -> 1, 0 <-> 2, 1 -> 2.
+   * const matrizDeAdyacencia = [
+   *   [false, true, true],
+   *   [false, false, true],
+   *   [true, false, false]
+   * ];
+   *
+   * // La matriz contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = Grafo.desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido);
    */
   static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
     var listaDeAdyacencia = new Map();
@@ -90,8 +124,20 @@ class Grafo {
    * @param {number[][]} listaDeAristas - Lista de aristas.
    * @param {boolean} esDirigido - `true` si el grafo de la matriz de
    * adyacencia es dirigido, `false` en caso contrario.
-   *
    * @returns {Grafo} Grafo.
+   *
+   * @example
+   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
+   * const listaDeAristas = [
+   *   new Arista(0, 1, 2),
+   *   new Arista(0, 2, 6),
+   *   new Arista(1, 2, 3),
+   *   new Arista(2, 0, 4)
+   * ];
+   *
+   * // La lista contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = Grafo.desdelistaDeAristas(listaDeAristas, esDirigido);
    */
   static desdeListaDeAristas(listaDeAristas, esDirigido = false) {
     // Obtiene una lista ordenada de los nodos del grafo a partr de la lista de aristas.
@@ -169,6 +215,8 @@ class Grafo {
    * @returns {number[]} Lista de nodos.
    */
   get nodos() {
+    // Comprime el arreglo 3D interno de la lista de adyacencia en un arreglo de una dimensión.
+    // Se eliminan el peso de los adyacentes ponderados.
     const nodos = [...this.listaDeAdyacencia].flat(3).map(
       nodo => esPonderado(nodo) ? nodo.nodo : nodo
     );
@@ -190,6 +238,21 @@ class Grafo {
    *
    * @param {number} nodo - Nodo.
    * @returns {number[]} Adyacentes al nodo.
+   *
+   * @example
+   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
+   * const listaDeAdyacencia = [
+   *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
+   *   [1, [new Adyacente(2, 3)]],
+   *   [2, [new Adyacente(0, 4)]]
+   * ];
+   *
+   * // La lista de adyacencia contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = new Grafo(listaDeAdyacencia, esDirigido);
+   *
+   * grafo.adyacentes(0);
+   * // Valor esperado: [new Adyacente(1, 2), new Adyacente(2, 6), new Adyacente(2, 4)]
    */
   adyacentes(nodo) {
 	var adyacentes = [];
@@ -268,11 +331,11 @@ class Grafo {
    *
    * @returns {number[][]} Matriz de caminos.
    *
-   * El cálculo de la matriz de caminos está definido como la sumatoria de A^i,
-   * desde i = 0, hasta i = n - 1, donde A es la matriz de adyacencia del grafo,
+   * El cálculo de la matriz de caminos está definido como la sumatoria de `A^i`,
+   * desde `i = 0`, hasta `i = n - 1`, donde `A` es la matriz de adyacencia del grafo,
    * y n es la cantidad de nodos del mismo grafo.
-   * Desde i = 2, el resultado de A^(i - 1) se recuerda, para calcular el
-   * próximo término A^i como A^(i - 1) * A.
+   * Desde `i = 2`, el resultado de `A^(i - 1)` se recuerda, para calcular el
+   * próximo término `A^i` como `A^(i - 1) * A`.
    */
   get matrizDeCaminos() {
     const matrizDeAdyacencia = this.matrizDeAdyacencia;
@@ -295,15 +358,17 @@ class Grafo {
   }
 
   /**
-   * Obtiene el camino más corto entre dos nodos.
-   *
    * @typedef {Object} CaminoMasCorto
    *   @property {number[]} camino - Camino más corto entre el nodo origen y el nodo destino.
    *   @property {number} distancia - Distancia total del camino más corto.
+   */
+  /** Obtiene el camino más corto entre dos nodos.
    *
    * @param {number} origen - Nodo origen.
    * @param {number} destino - Nodo destino.
    * @returns {CaminoMasCorto} Camino más corto y distancia total.
+   *
+   * Implementación del algoritmo de caminos mínimos de Dijkstra.
    *
    * @namespace caminoMasCorto
    */
