@@ -42,7 +42,7 @@ for (const [i, caso] of casos.entries()) {
   });
 
   describe('Cantidad de nodos', () => {
-    it(descripcionGrafo, () => expect(grafo.cantidadDeNodos).toStrictEqual(caso.cantidadDeNodos));
+    it(descripcionGrafo, () => expect(grafo.cantidad).toStrictEqual(caso.cantidad));
   });
 
   describe('Lista de nodos', () => {
@@ -66,7 +66,7 @@ for (const [i, caso] of casos.entries()) {
   describe('Árbol generador mínimo', () => {
     if (caso.arbolGeneradorMinimo) {
       it(descripcionGrafo, () => {
-        return expect(grafo.arbolGeneradorMinimo().distancia).toStrictEqual(caso.arbolGeneradorMinimo.distancia);
+        return expect(grafo.arbolGeneradorMinimo.distancia).toStrictEqual(caso.arbolGeneradorMinimo.distancia);
       });
     }
   });

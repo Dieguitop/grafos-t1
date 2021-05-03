@@ -3,7 +3,7 @@ const { Adyacente } = require('../../src/grafos/nodo.js');
 
 const casos = [
   {
-    cantidadDeNodos: 4,
+    cantidad: 4,
     esDirigido: false,
     esPonderado: false,
     esConexo: true,
@@ -19,10 +19,10 @@ const casos = [
       new Arista(1, 2)
     ],
     matrizDeAdyacencia: [
-      [0, 1, 1, 1],
-      [1, 0, 1, 0],
-      [1, 1, 0, 0],
-      [1, 0, 0, 0]
+      [false, true, true, true],
+      [true, false, true, false],
+      [true, true, false, false],
+      [true, false, false, false]
     ],
     matrizDeCaminos: [
       [6, 6, 6, 4],
@@ -32,7 +32,7 @@ const casos = [
     ]
   },
   {
-    cantidadDeNodos: 6,
+    cantidad: 6,
     esDirigido: false,
     esPonderado: false,
     esConexo: true,
@@ -54,12 +54,12 @@ const casos = [
       new Arista(3, 5)
     ],
     matrizDeAdyacencia: [
-      [1, 1, 0, 0, 1, 0],
-      [1, 0, 1, 0, 1, 0],
-      [0, 1, 0, 1, 0, 0],
-      [0, 0, 1, 0, 1, 1],
-      [1, 1, 0, 1, 0, 0],
-      [0, 0, 0, 1, 0, 0]
+      [true, true, false, false, true, false],
+      [true, false, true, false, true, false],
+      [false, true, false, true, false, false],
+      [false, false, true, false, true, true],
+      [true, true, false, true, false, false],
+      [false, false, false, true, false, false]
     ],
     matrizDeCaminos: [
       [82, 69, 39, 42, 70, 14],
@@ -72,7 +72,7 @@ const casos = [
   },
   {
     link: "http://graphonline.ru/en/?graph=TkSgacteiSDWyPLs",
-    cantidadDeNodos: 5,
+    cantidad: 5,
     esDirigido: false,
     esPonderado: true,
     esConexo: true,
@@ -93,11 +93,11 @@ const casos = [
       new Arista(3, 4, 1)
     ],
     matrizDeAdyacencia: [
-      [0, 6, 0, 1, 0],
-      [6, 0, 5, 2, 2],
-      [0, 5, 0, 0, 5],
-      [1, 2, 0, 0, 1],
-      [0, 2, 5, 1, 0]
+      [false, 6, false, 1, false],
+      [6, false, 5, 2, 2],
+      [false, 5, false, false, 5],
+      [1, 2, false, false, 1],
+      [false, 2, 5, 1, false]
     ],
     matrizDeCaminos: [
       [2648, 1389, 3045, 1101, 1452],
@@ -149,7 +149,7 @@ const casos = [
   },
   {
     link: "http://graphonline.ru/en/?graph=xAxihjBdivZsfnfi",
-    cantidadDeNodos: 7,
+    cantidad: 7,
     esDirigido: false,
     esPonderado: true,
     esConexo: true,
@@ -174,13 +174,13 @@ const casos = [
       new Arista(5, 6, 6)
     ],
     matrizDeAdyacencia: [
-      [0, 2, 6, 0, 0, 0, 0],
-      [2, 0, 0, 5, 0, 0, 0],
-      [6, 0, 0, 8, 0, 0, 0],
-      [0, 5, 8, 0, 10, 15, 0],
-      [0, 0, 0, 10, 0, 6, 2],
-      [0, 0, 0, 15, 6, 0, 6],
-      [0, 0, 0, 0, 2, 6, 0]
+      [false, 2, 6, false, false, false, false],
+      [2, false, false, 5, false, false, false],
+      [6, false, false, 8, false, false, false],
+      [false, 5, 8, false, 10, 15, false],
+      [false, false, false, 10, false, 6, 2],
+      [false, false, false, 15, 6, false, 6],
+      [false, false, false, false, 2, 6, false]
     ],
     matrizDeCaminos: [
 	  [1730821, 663960, 1076350, 12700550, 4196880, 4004610, 3419100],

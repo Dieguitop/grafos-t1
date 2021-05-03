@@ -44,9 +44,23 @@ function solo(matriz, ...valores) {
   return matriz.every(fila => fila.every(celda => valores.includes(celda)));
 }
 
+/**
+ * Crea una matriz rellenada con un valor específico.
+ *
+ * @param {number} m - Cantidad de filas de la matriz.
+ * @param {number} n - Cantidad de columnas de la matriz.
+ * @param {any} valor - Valor utilizado como relleno.
+ */
+function rellenar(m, n, valor) {
+  return new Array(m).fill(valor).map(() => {
+    return new Array(n).fill(valor);
+  });
+}
+
 module.exports = {
   contiene,
   noContiene,
   algun,
   solo,
+  rellenar
 };

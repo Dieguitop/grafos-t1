@@ -52,21 +52,17 @@ class Grafo {
     // Se utiliza una tabla hasheada para evitar la duplicidad de aristas.
     var aristas = {};
 
-    // Comprueba si la matriz solo contiene ceros o unos. En tal caso, el grafo representado
+    // Comprueba si la matriz solo contiene `true` o `false`. En tal caso, el grafo representado
     // por la matriz de adyacencia se asume que no es ponderado.
-    const esPonderado = !matriz.solo(matrizDeAdyacencia, 0, 1);
+    const esPonderado = matriz.algun(matrizDeAdyacencia, celda => ![true, false].includes(celda));
 
     for (const [i, fila] of matrizDeAdyacencia.entries()) {
       let adyacentes = [];
 
       for (const [j, celda] of fila.entries()) {
-
-        // Una arista existe entre i y j si el valor de `celda` es distinto de 0.
-        // Además, sólo se considera dicha arista si ésta no ha sido encontrada
-        // anteriormente.
-        if (celda !== 0 && hash.noContiene(aristas, [i, j])) {
-
-          // TODO: resolver caso de grafos dirigidos.
+        // Una arista existe entre i y j si el valor de `celda` es distinto de `false`.
+        // Además, sólo se considera dicha arista si ésta no ha sido encontrada anteriormente.
+        if (celda !== false && hash.noContiene(aristas, [i, j])) {
           hash.agregar(aristas, [i, j]);
 
           // La matriz de adyacencia de un grafo no dirigido es simétrica, por lo que la arista
@@ -75,7 +71,6 @@ class Grafo {
             hash.agregar(aristas, [j, i]);
           }
 
-          // TODO: valor por defecto, grafos no ponderados.
           adyacentes.push(esPonderado ? new Adyacente(j, celda) : j);
         }
       }
@@ -131,13 +126,14 @@ class Grafo {
    * @returns {number[][]} Matriz de adyacencia.
    */
   get matrizDeAdyacencia() {
-    var matrizDeAdyacencia = math.zeros(this.cantidadDeNodos, this.cantidadDeNodos).toArray();
+    const n = this.cantidad;
+    var matrizDeAdyacencia = matriz.rellenar(n, n, false);
 
     for (const [i, adyacentes] of this.listaDeAdyacencia) {
       for (const adyacente of adyacentes) {
         // Si el adyacente es ponderado, el valor de la celda (i, j) corresponde al peso de la arista
-        // que une al nodo i con el nodo j. En caso contrario, a la celda (i, j) se la asigna un 1.
-        const [j, peso] = esPonderado(adyacente) ? [adyacente.nodo, adyacente.peso] : [adyacente, 1];
+        // que une al nodo i con el nodo j. En caso contrario, a la celda (i, j) se la asigna `true`.
+        const [j, peso] = esPonderado(adyacente) ? [adyacente.nodo, adyacente.peso] : [adyacente, true];
 
         matrizDeAdyacencia[i][j] = peso;
 
@@ -185,7 +181,7 @@ class Grafo {
    *
    * @returns {number} Cantidad de nodos.
    */
-  get cantidadDeNodos() {
+  get cantidad() {
     return this.nodos.length;
   }
 
@@ -282,13 +278,13 @@ class Grafo {
     const matrizDeAdyacencia = this.matrizDeAdyacencia;
 
     // A^0 es la matriz de identidad de orden n.
-    var matrizDeCaminos = math.identity(this.cantidadDeNodos);
+    var matrizDeCaminos = math.identity(this.cantidad);
 
     // Como la iteración comienza en i = 2, se recuerda el valor de A^(i - 1),
     // es decir, la matriz de adyacencia.
     var ultimaPotencia = matrizDeAdyacencia;
 
-    for (let i = 2; i <= this.cantidadDeNodos; i++) {
+    for (let i = 2; i <= this.cantidad; i++) {
       matrizDeCaminos = math.add(matrizDeCaminos, ultimaPotencia);
 
       // Calcular A^i como A^(i - 1) * A.
@@ -410,7 +406,7 @@ class Grafo {
    *
    * Implementación del algoritmo de Kruskal, utilizando la estructura de conjuntos disjuntos.
    */
-  arbolGeneradorMinimo() {
+  get arbolGeneradorMinimo() {
     var arbol = [];
     var conjunto = new ConjuntoDisjunto();
 
