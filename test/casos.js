@@ -1,5 +1,5 @@
-const { Arista } = require("../../src/grafo/arista.js");
-const { Adyacente } = require("../../src/grafo/nodo.js");
+const { Arista } = require("../lib/grafo/arista.js");
+const { Adyacente } = require("../lib/grafo/nodo.js");
 
 // Tipos de grafos para testear:
 // A: no dirigido, no ponderado, no conexo (ND-NP-NC)

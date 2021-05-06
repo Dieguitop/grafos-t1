@@ -1,8 +1,8 @@
 /* eslint-disable jest/valid-title */
-const { Grafo } = require("../../src/grafo/grafo.js");
-const { Direccion } = require("../../src/grafo/arista.js");
+const { Grafo } = require("../lib/grafo/grafo.js");
+const { Direccion } = require("../lib/grafo/arista.js");
 const { casos } = require("./casos.js");
-const cloneDeep = require("lodash.clonedeep");
+const { cloneDeep } = require("lodash");
 
 for (const caso of casos) {
   const grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);

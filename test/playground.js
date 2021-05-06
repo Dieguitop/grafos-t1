@@ -1,5 +1,5 @@
 const _ = require("lodash");
-const { Grafo } = require("../../src/grafo/grafo.js");
+const { Grafo } = require("../lib/grafo/grafo.js");
 const { casos } = require("./casos.js");
 
 let caso = casos[0];

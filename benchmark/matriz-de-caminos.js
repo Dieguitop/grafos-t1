@@ -1,5 +1,5 @@
 const math = require("mathjs");
-const casos = require("../tests/grafo/casos.js");
+const casos = require("../test/casos.js");
 
 const matrizDeAdyacencia = casos[0].matrizDeAdyacencia;
 const iteraciones = 1;

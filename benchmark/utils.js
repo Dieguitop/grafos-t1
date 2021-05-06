@@ -1,4 +1,4 @@
-const { casos } = require("../tests/grafo/casos.js");
+const { casos } = require("../test/casos.js");
 const _ = require("lodash");
 
 const { listaDeAdyacencia, listaDeAristas } = casos[0];
