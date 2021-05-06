@@ -1,17 +1,30 @@
-const { Adyacente } = require('./nodo.js');
+const { Adyacente } = require("./nodo.js");
+
+/**
+ * @enum {number}
+ *
+ * Representa la dirección de una arista.
+ */
+const Direccion = Object.freeze({
+  ninguna: 0,
+  salida: 1,
+  entrada: 2,
+  ambas: 3,
+});
 
 /**
  * Representación de una arista.
  * @class
  */
 class Arista {
-  /*
+  /**
    * @constructor
    * @param {number} origen - Nodo origen.
    * @param {number|Adyacente} destino - Nodo destino.
    * @param {number} peso - Peso de la arista.
    *
-   * Notar que si el nodo destino es de tipo `Adyacente`, el parámetro peso es ignorado.
+   * Notar que si el nodo destino es de tipo `Adyacente`, el parámetro peso es
+   * ignorado.
    */
   constructor(origen, destino, peso) {
     this.origen = origen;
@@ -28,11 +41,12 @@ class Arista {
   /**
    * Comprueba si la arista es ponderada.
    *
-   * @returns {boolean} `true` si la arista es ponderada, `false` en caso contrario.
+   * @returns {boolean} `true` si la arista es ponderada, `false` en caso
+   * contrario.
    */
   get esPonderada() {
     return Boolean(this.peso);
   }
 }
 
-module.exports = { Arista };
+module.exports = { Arista, Direccion };

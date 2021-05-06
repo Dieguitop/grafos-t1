@@ -1,8 +1,8 @@
-const math = require('mathjs');
-const casos = require('../tests/grafos/casos.json');
+const math = require("mathjs");
+const casos = require("../tests/grafo/casos.js");
 
 const matrizDeAdyacencia = casos[0].matrizDeAdyacencia;
-const iteraciones = 10000;
+const iteraciones = 1;
 
 function matrizDeCaminosV1(matrizDeAdyacencia) {
   const n = matrizDeAdyacencia.length;
@@ -28,17 +28,32 @@ function matrizDeCaminosV2(matrizDeAdyacencia) {
   return matrizDeCaminos.toArray();
 }
 
-console.time('Matriz de caminos v1 (sin caché)');
+function matrizDeCaminosV3(matrizDeAdyacencia) {
+  const n = matrizDeAdyacencia.length;
+  const identidad = math.identity(n);
+  return math.divide(
+    math.pow(matrizDeAdyacencia, n) - identidad,
+    math.subtract(matrizDeAdyacencia, identidad)
+  );
+}
+
+console.time("Matriz de caminos v1 (sin caché)");
 for (let i = 0; i < iteraciones; i++) {
   matrizDeCaminosV1(matrizDeAdyacencia);
 }
-console.timeEnd('Matriz de caminos v1 (sin caché)');
+console.timeEnd("Matriz de caminos v1 (sin caché)");
 console.log(matrizDeCaminosV1(matrizDeAdyacencia));
 
-console.time('Matriz de caminos v2 (con caché)');
+console.time("Matriz de caminos v2 (con caché)");
 for (let i = 0; i < iteraciones; i++) {
   matrizDeCaminosV2(matrizDeAdyacencia);
 }
-console.timeEnd('Matriz de caminos v2 (con caché)');
+console.timeEnd("Matriz de caminos v2 (con caché)");
 console.log(matrizDeCaminosV2(matrizDeAdyacencia));
 
+console.time("Matriz de caminos v3 (con propiedad)");
+for (let i = 0; i < iteraciones; i++) {
+  matrizDeCaminosV3(matrizDeAdyacencia);
+}
+console.timeEnd("Matriz de caminos v3 (con propiedad)");
+console.log(matrizDeCaminosV2(matrizDeAdyacencia));

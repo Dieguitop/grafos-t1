@@ -18,13 +18,4 @@ class Adyacente {
   }
 }
 
-/**
- * Comprueba si el nodo adyacente es ponderado, y si su peso es válido.
- *
- * @param {number|Adyacente} adyacente - Nodo adyacente.
- */
-function esPonderado(adyacente) {
-  return adyacente instanceof Adyacente && adyacente.esPonderado;
-}
-
-module.exports = { Adyacente, esPonderado };
+module.exports = { Adyacente };
