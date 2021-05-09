@@ -1,0 +1,12 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './assets/styles/settings.scss'
+import App from './App';
+
+ReactDOM.render(
+  <>
+    <App />
+  </>,
+  document.getElementById('root')
+);
+
