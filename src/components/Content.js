@@ -18,16 +18,27 @@ function initDiagram() {
 
   diagram.nodeTemplate =
     $(go.Node, 'Auto',  // the Shape will go around the TextBlock
-      new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
+      new go.Binding(),
       $(go.Shape, 'Circle',
-        { name: 'SHAPE', fill: 'white', strokeWidth: 0, portId: "", fromLinkable: true, toLinkable: true },
+        { name: 'SHAPE', fill: 'white', strokeWidth: 1, portId: "", fromLinkable: true, toLinkable: true },
         // Shape.fill is bound to Node.data.color
         new go.Binding('fill', 'color')),
       $(go.TextBlock,
-        { margin: 8, editable: true },  // some room around the text
+        { margin: 20, editable: false, font: "30px Verdana" },  // some room around the text
         new go.Binding('text').makeTwoWay()
       )
     );
+
+  diagram.linkTemplate =
+    $(go.Link,
+      {curve: go.Link.Bezier},
+      $(go.Shape),                           // this is the link shape (the line)
+      $(go.Shape, { toArrow: "Standard" }),  // this is an arrowhead
+      $(go.TextBlock,   
+        {font: "30px Verdana" },                     // this is a Link label
+        new go.Binding("text", "text"))
+    );
+
 
   //* PARA MOSTRAR LÍNEAS DEBEN HABILITAR ESTE CÓDIGO COMENTADO
   /*diagram.linkTemplate =
@@ -39,10 +50,8 @@ function initDiagram() {
 }
 
 
-const Content = ({data, linksData}) => {
-  console.log(data);
-  console.log(linksData);
-  return(
+const Content = ({ data, linksData }) => {
+  return (
     <div className="content">
       <ReactDiagram
         initDiagram={initDiagram}
@@ -51,6 +60,6 @@ const Content = ({data, linksData}) => {
         linkDataArray={linksData}
       />
     </div>
-)
+  )
 }
 export default Content;
