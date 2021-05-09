@@ -13,10 +13,33 @@
     }
 }
 
+.MuiButton-containedPrimary{
+    margin: 10px !important;
+}
+
+.main_noMatriz{
+    display: none;
+}
 
 .main_links{
     margin-top: 100px;
 }
+
+.distanceFromTo{
+    background: rgb(204, 204, 204);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin: 10px;
+    border-radius: 5px;
+
+    p{
+        margin: 10px;
+        font-weight: bold;
+    }
+}
+
+
 
 hr{
     height: 80px;
