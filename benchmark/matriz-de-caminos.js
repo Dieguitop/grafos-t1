@@ -6,7 +6,7 @@ const iteraciones = 1;
 
 function matrizDeCaminosV1(matrizDeAdyacencia) {
   const n = matrizDeAdyacencia.length;
-  var matrizDeCaminos = math.zeros(n, n);
+  let matrizDeCaminos = math.zeros(n, n);
 
   for (let i = 0; i < n; i++) {
     matrizDeCaminos = math.add(matrizDeCaminos, math.pow(matrizDeAdyacencia, i));
@@ -17,8 +17,8 @@ function matrizDeCaminosV1(matrizDeAdyacencia) {
 
 function matrizDeCaminosV2(matrizDeAdyacencia) {
   const n = matrizDeAdyacencia.length;
-  var matrizDeCaminos = math.identity(n);
-  var ultimaMatriz = matrizDeAdyacencia;
+  let matrizDeCaminos = math.identity(n);
+  let ultimaMatriz = matrizDeAdyacencia;
 
   for (let i = 0; i < n - 1; i++) {
     matrizDeCaminos = math.add(matrizDeCaminos, ultimaMatriz);
