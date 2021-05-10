@@ -153,7 +153,7 @@ for (const caso of casos) {
   describe("Grado total", () => {
     if (caso.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
-        it(caso.descripcion + `: nodo ${nodo}`, () => {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
           return expect(grafo.grado(nodo)).toStrictEqual(caso.adyacentes.total[nodo].length);
         });
       }
@@ -163,7 +163,7 @@ for (const caso of casos) {
   describe("Grado de salida", () => {
     if (caso.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
-        it(caso.descripcion + `: nodo ${nodo}`, () => {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
           return expect(grafo.grado(nodo, Direccion.salida)).toStrictEqual(
             caso.adyacentes.salida[nodo].length
           );
@@ -175,7 +175,7 @@ for (const caso of casos) {
   describe("Grado de entrada", () => {
     if (caso.adyacentes?.entrada) {
       for (const nodo of grafo.nodos) {
-        it(caso.descripcion + `: nodo ${nodo}`, () => {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
           return expect(grafo.grado(nodo, Direccion.entrada)).toStrictEqual(
             caso.adyacentes.entrada[nodo].length
           );
@@ -217,10 +217,10 @@ for (const caso of casos) {
     }
   });
 
-  describe("Camino euleriano", () => {
+  describe("Camino/ciclo euleriano", () => {
     if (caso.euleriano) {
       it(caso.descripcion, () => {
-        return expect(grafo.caminoEuleriano).toStrictEqual(caso.euleriano);
+        return expect(grafo.euleriano()).toStrictEqual(caso.euleriano);
       });
     }
   });
