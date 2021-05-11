@@ -207,6 +207,7 @@ const casos = [
         [1, 2, 3],
       ],
     },
+    hamiltoniano: [2, 1, 0, 3, 4],
   },
   {
     numero: 4,
@@ -435,6 +436,7 @@ const casos = [
       [false, false, true, false, false, false],
     ],
     euleriano: [0, 5, 2, 1, 4, 3, 1, 0],
+    hamiltoniano: [4, 3, 1, 0, 5, 2],
     adyacentes: {
       salida: [[5], [0, 4], [1], [1], [3], [2]],
       entrada: [[1], [2, 3], [5], [4], [1], [0]],

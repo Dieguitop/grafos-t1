@@ -233,4 +233,12 @@ for (const caso of casos) {
       });
     }
   });
+
+  describe("Camino/ciclo hamiltoniano", () => {
+    if (caso.hamiltoniano) {
+      it(caso.descripcion, () => {
+        return expect(grafo.hamiltoniano()).toStrictEqual(caso.hamiltoniano);
+      });
+    }
+  });
 }
