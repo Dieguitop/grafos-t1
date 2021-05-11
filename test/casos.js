@@ -38,6 +38,12 @@ const casos = [
       [6, 5, 5, 2],
       [4, 2, 2, 2],
     ],
+    listaDeLinks: [
+      { from: "0", to: "1" },
+      { from: "0", to: "2" },
+      { from: "0", to: "3" },
+      { from: "1", to: "2" },
+    ],
     adyacentes: {
       salida: [[1, 2, 3], [0, 2], [0, 1], [0]],
       entrada: [[1, 2, 3], [0, 2], [0, 1], [0]],
@@ -121,6 +127,15 @@ const casos = [
       [false, 5, false, false, 5],
       [1, 2, false, false, 1],
       [false, 2, 5, 1, false],
+    ],
+    listaDeLinks: [
+      { from: "0", to: "1", text: "6" },
+      { from: "0", to: "3", text: "1" },
+      { from: "1", to: "2", text: "5" },
+      { from: "1", to: "3", text: "2" },
+      { from: "1", to: "4", text: "2" },
+      { from: "2", to: "4", text: "5" },
+      { from: "3", to: "4", text: "1" },
     ],
     matrizDeCaminos: [
       [2648, 1389, 3045, 1101, 1452],

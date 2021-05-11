@@ -17,7 +17,7 @@
 ## Typedefs
 
 <dl>
-<dt><a href="#ExisteArista">ExisteArista</a> : <code>Object</code></dt>
+<dt><a href="#Link">Link</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#CaminoMasCorto">CaminoMasCorto</a> : <code>Object</code></dt>
 <dd></dd>
@@ -46,18 +46,14 @@ Representación de un grafo.
         * [.matrizDeCaminos](#Grafo+matrizDeCaminos) ⇒ <code>Array.&lt;Array.&lt;number&gt;&gt;</code>
         * [.arbolGeneradorMinimo](#Grafo+arbolGeneradorMinimo) ⇒ [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo)
         * [.esEuleriano](#Grafo+esEuleriano) ⇒ [<code>TrayectoEuleriano</code>](#TrayectoEuleriano)
-        * [.caminoEuleriano](#Grafo+caminoEuleriano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
-        * [.existeArista(origen, destino)](#Grafo+existeArista) ⇒ [<code>ExisteArista</code>](#ExisteArista)
-        * [.arista(origen, destino)](#Grafo+arista) ⇒ <code>Arista</code> \| <code>boolean</code>
-        * [.eliminarArista(origen, destino)](#Grafo+eliminarArista) ⇒ <code>boolean</code>
-        * [.adyacentesExplicitos(nodo)](#Grafo+adyacentesExplicitos) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-        * [.adyacentesDeSalida(nodo)](#Grafo+adyacentesDeSalida) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-        * [.adyacentesDeEntrada(nodo)](#Grafo+adyacentesDeEntrada) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-        * [.adyacentes(nodo)](#Grafo+adyacentes) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-        * [.gradoDeSalida(nodo)](#Grafo+gradoDeSalida) ⇒ <code>number</code>
-        * [.gradoDeEntrada(nodo)](#Grafo+gradoDeEntrada) ⇒ <code>number</code>
-        * [.grado(nodo)](#Grafo+grado) ⇒ <code>number</code>
+        * [.existeArista(origen, destino, [direccion])](#Grafo+existeArista) ⇒ <code>boolean</code>
+        * [.arista(origen, destino, [direccion])](#Grafo+arista) ⇒ <code>Arista</code> \| <code>boolean</code>
+        * [.eliminarArista(origen, destino, [direccion])](#Grafo+eliminarArista) ⇒ <code>Array.&lt;Adyacente&gt;</code> \| <code>boolean</code>
+        * [.adyacentes(nodo, [direccion])](#Grafo+adyacentes) ⇒ <code>Array.&lt;Adyacente&gt;</code>
+        * [.grado(nodo, direccion)](#Grafo+grado) ⇒ <code>number</code>
+        * [.euleriano(trayecto)](#Grafo+euleriano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
     * _static_
+        * [.desdeListaDeLinks(listaDeLinks, [esDirigido])](#Grafo.desdeListaDeLinks)
         * [.desdeListaDeAdyacencia(listaDeAdyacencia, [esDirigido])](#Grafo.desdeListaDeAdyacencia) ⇒ [<code>Grafo</code>](#Grafo)
         * [.desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido)](#Grafo.desdeMatrizDeAdyacencia) ⇒ [<code>Grafo</code>](#Grafo)
         * [.desdeListaDeAristas(listaDeAristas, [esDirigido])](#Grafo.desdeListaDeAristas) ⇒ [<code>Grafo</code>](#Grafo)
@@ -156,7 +152,7 @@ conjuntos disjuntos.
 Determina si el grafo contiene un camino o un ciclo euleriano.
 
 **Kind**: instance property of [<code>Grafo</code>](#Grafo)  
-**Returns**: [<code>TrayectoEuleriano</code>](#TrayectoEuleriano) - Tipo de trayecto (camino, ciclo, o ninguno) y
+**Returns**: [<code>TrayectoEuleriano</code>](#TrayectoEuleriano) - Tipo de trayecto (camino o ciclo) y
 nodo que origina el trayecto.
 
 Condiciones que el grafo debe cumplir para que contenga un camino o un
@@ -171,44 +167,35 @@ ciclo euleriano:
 │ Dirigido │ Todos los nodos cumplen │ A lo más 1 nodo cumple que:       │
 │          │ que GE = GS.            │ GS - GE = 1,                      │
 │          │                         │ Y, a lo más 1 nodo cumple que:    │
-│          │                         │ GE - GS = 1,                      │
+│          │                         │ GE - GS = 1 (o GS - GE = -1)      │
 │          │                         │ Y, el resto de nodos cumplen que: │
 │          │                         │ GE = GS.                          │
 └──────────┴─────────────────────────┴───────────────────────────────────┘
 (1): si existen dichos 2 nodos, éstos serían el inicio y el final del
 camino euleriano.  
-<a name="Grafo+caminoEuleriano"></a>
-
-### grafo.caminoEuleriano ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
-Obtiene el camino o el ciclo euleriano, si el grafo contiene uno.
-
-**Kind**: instance property of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Camino o ciclo euleriano, si el grafo contiene
-alguno, `false` en caso contrario.
-
-Implementación del algoritmo de Hierholzer.  
 <a name="Grafo+existeArista"></a>
 
-### grafo.existeArista(origen, destino) ⇒ [<code>ExisteArista</code>](#ExisteArista)
+### grafo.existeArista(origen, destino, [direccion]) ⇒ <code>boolean</code>
 Comprueba si existe una arista entre el nodo origen y el nodo destino.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: [<code>ExisteArista</code>](#ExisteArista) - Condición de existencia de la arista y su
-dirección.  
+**Returns**: <code>boolean</code> - `true` si la arista entre el nodo origen y el nodo
+destino existe, `false` en caso contrario.  
 **Todo**
 
 - [ ] Aristas no dirigidas vs doble aristas de salida y de entrada
 (multigrafo). Ver también método `arista`.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| origen | <code>number</code> | Nodo origen. |
-| destino | <code>number</code> | Nodo destino. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| origen | <code>number</code> |  | Nodo origen. |
+| destino | <code>number</code> |  | Nodo destino. |
+| [direccion] | <code>Direccion</code> | <code>Direccion.salida</code> | Dirección de la arista buscada. |
 
 <a name="Grafo+arista"></a>
 
-### grafo.arista(origen, destino) ⇒ <code>Arista</code> \| <code>boolean</code>
+### grafo.arista(origen, destino, [direccion]) ⇒ <code>Arista</code> \| <code>boolean</code>
 Comprueba si existe una arista entre el nodo origen y el nodo destino.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
@@ -219,84 +206,39 @@ Comprueba si existe una arista entre el nodo origen y el nodo destino.
 (multigrafo). Ver también método `existeArista`.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| origen | <code>number</code> | Nodo origen. |
-| destino | <code>number</code> | Nodo destino. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| origen | <code>number</code> |  | Nodo origen. |
+| destino | <code>number</code> |  | Nodo destino. |
+| [direccion] | <code>Direccion</code> | <code>Direccion.salida</code> | Dirección de la arista buscada. |
 
 <a name="Grafo+eliminarArista"></a>
 
-### grafo.eliminarArista(origen, destino) ⇒ <code>boolean</code>
+### grafo.eliminarArista(origen, destino, [direccion]) ⇒ <code>Array.&lt;Adyacente&gt;</code> \| <code>boolean</code>
 Elimina la arista, si existe, entre el nodo origen y el nodo destino.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>boolean</code> - `true` si la arista existía, y fue eliminada; `false`,
-en caso contrario.  
+**Returns**: <code>Array.&lt;Adyacente&gt;</code> \| <code>boolean</code> - Si la arista existía, adyacentes explícitos
+del nodo origen; `false`, en caso contrario.  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| origen | <code>number</code> | Nodo origen. |
-| destino | <code>number</code> | Nodo destino. |
-
-<a name="Grafo+adyacentesExplicitos"></a>
-
-### grafo.adyacentesExplicitos(nodo) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-Obtiene los nodos adyacentes que interna y explícitamente están asociados
-al nodo origen.
-
-**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;Adyacente&gt;</code> - Lista de adyacentes de salida.
-
-Debido al funcionamiento de las listas de adyacencia, un nodo de un grafo
-no dirigido tiene nodos adyacentes que no están explícitamente asociados en
-dicha lista de adyacencia.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo origen. |
-
-<a name="Grafo+adyacentesDeSalida"></a>
-
-### grafo.adyacentesDeSalida(nodo) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-Obtiene los nodos adyacentes de salida del nodo.
-
-**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;Adyacente&gt;</code> - Lista de adyacentes de salida.
-
-Los nodos adyacentes de salida son aquellos que reciben alguna conexión del
-nodo origen. En el caso de los grafos no dirigidos, los nodos adyacentes de
-salida son los mismos de entrada.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo origen. |
-
-<a name="Grafo+adyacentesDeEntrada"></a>
-
-### grafo.adyacentesDeEntrada(nodo) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-Obtiene los nodos adyacentes de salida del nodo.
-
-**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;Adyacente&gt;</code> - Lista de adyacentes de salida.
-
-Los nodos adyacentes de entrada son aquellos que entregan alguna conexión
-al nodo origen.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo origen. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| origen | <code>number</code> |  | Nodo origen. |
+| destino | <code>number</code> |  | Nodo destino. |
+| [direccion] | <code>Direccion</code> | <code>Direccion.salida</code> | Dirección de la arista buscada. |
 
 <a name="Grafo+adyacentes"></a>
 
-### grafo.adyacentes(nodo) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-Obtiene los nodos adyacentes a un nodo.
+### grafo.adyacentes(nodo, [direccion]) ⇒ <code>Array.&lt;Adyacente&gt;</code>
+Obtiene los nodos adyacentes (de salida o entrada) a un nodo.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
 **Returns**: <code>Array.&lt;Adyacente&gt;</code> - Adyacentes al nodo.  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| nodo | <code>number</code> |  | Nodo. |
+| [direccion] | <code>Direccion</code> | <code>Direccion.salida</code> | Dirección de los nodos adyacentes al nodo. |
 
 **Example**  
 ```js
@@ -311,46 +253,13 @@ const listaDeAdyacencia = [
 const esDirigido = true;
 const grafo = new Grafo(listaDeAdyacencia, esDirigido);
 
-console.log(grafo.adyacentes(0));
-// Valor esperado: [
-//   new Adyacente(1, 2), new Adyacente(2, 6), new Adyacente(2, 4)
-// ]
+console.log(grafo.adyacentes(0, Direccion.entrada));
+// Valor esperado:
+// [new Adyacente(2, 4)]
 ```
-<a name="Grafo+gradoDeSalida"></a>
-
-### grafo.gradoDeSalida(nodo) ⇒ <code>number</code>
-Calcula el grado de salida de un nodo.
-
-**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>number</code> - Grado de salida del nodo.  
-**Todo**
-
-- [ ] Considerar caso de aristas bucle.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo. |
-
-<a name="Grafo+gradoDeEntrada"></a>
-
-### grafo.gradoDeEntrada(nodo) ⇒ <code>number</code>
-Calcula el grado de entrada de un nodo.
-
-**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>number</code> - Grado de entrada del nodo.  
-**Todo**
-
-- [ ] Considerar caso de aristas bucle.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| nodo | <code>number</code> | Nodo. |
-
 <a name="Grafo+grado"></a>
 
-### grafo.grado(nodo) ⇒ <code>number</code>
+### grafo.grado(nodo, direccion) ⇒ <code>number</code>
 Calcula el grado de un nodo.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
@@ -363,7 +272,49 @@ Calcula el grado de un nodo.
 | Param | Type | Description |
 | --- | --- | --- |
 | nodo | <code>number</code> | Nodo. |
+| direccion | <code>Direccion</code> | Dirección de los nodos adyacentes considerados en el grado. |
 
+<a name="Grafo+euleriano"></a>
+
+### grafo.euleriano(trayecto) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
+Obtiene el camino o el ciclo euleriano, si el grafo contiene uno.
+
+**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
+**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Camino o ciclo euleriano, si el grafo contiene
+alguno, `false` en caso contrario.
+
+Implementación del algoritmo de Hierholzer.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| trayecto | [<code>Trayecto</code>](#Trayecto) | Tipo de trayecto euleriano. |
+
+<a name="Grafo.desdeListaDeLinks"></a>
+
+### Grafo.desdeListaDeLinks(listaDeLinks, [esDirigido])
+Construye un grafo a partir de una lista de links.
+
+**Kind**: static method of [<code>Grafo</code>](#Grafo)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| listaDeLinks | [<code>Array.&lt;Link&gt;</code>](#Link) |  | Lista de links. |
+| [esDirigido] | <code>boolean</code> | <code>false</code> | `true` si el grafo de la lista de links es dirigido, `false` en caso contrario. |
+
+**Example**  
+```js
+// Grafo: 0 --(1)--> 1, 0 --(4)--> 2, 0 --(7)--> 3, 1 --(9)--> 2.
+const listaDeLinks = [
+  { from: "0", to: "1", text: "1" },
+  { from: "0", to: "2", text: "4" },
+  { from: "0", to: "3", text: "7" },
+  { from: "1", to: "2", text: "9" },
+];
+
+// La lista de links no contiene aristas dirigidas.
+const esDirigido = false;
+const grafo = Grafo.desdeListaDeLinks(listaDeLinks, esDirigido);
+```
 <a name="Grafo.desdeListaDeAdyacencia"></a>
 
 ### Grafo.desdeListaDeAdyacencia(listaDeAdyacencia, [esDirigido]) ⇒ [<code>Grafo</code>](#Grafo)
@@ -391,7 +342,7 @@ const listaDeAdyacencia = [
 
 // La lista de adyacencia contiene aristas dirigidas.
 const esDirigido = true;
-const grafo = Grafo.desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido);
+const grafo = Grafo.desdeListaDeAdyacencia(matrizDeAdyacencia, esDirigido);
 ```
 <a name="Grafo.desdeMatrizDeAdyacencia"></a>
 
@@ -446,7 +397,7 @@ const listaDeAristas = [
 
 // La lista contiene aristas dirigidas.
 const esDirigido = true;
-const grafo = Grafo.desdelistaDeAristas(listaDeAristas, esDirigido);
+const grafo = Grafo.desdeListaDeAristas(listaDeAristas, esDirigido);
 ```
 <a name="caminoMasCorto"></a>
 
@@ -489,16 +440,17 @@ de adyacencia.
 Representa los tipos de trayecto en un grafo.
 
 **Kind**: global enum  
-<a name="ExisteArista"></a>
+<a name="Link"></a>
 
-## ExisteArista : <code>Object</code>
+## Link : <code>Object</code>
 **Kind**: global typedef  
 **Properties**
 
 | Name | Type | Description |
 | --- | --- | --- |
-| existe | <code>boolean</code> | `true` si la arista existe entre un nodo   origen y un nodo destino. |
-| direccion | <code>number</code> | Dirección de la arista, desde el nodo   origen. |
+| from | <code>string</code> | Origen de la arista. |
+| to | <code>string</code> | Destino de la arista. |
+| text | <code>string</code> | Peso de la arista. |
 
 <a name="CaminoMasCorto"></a>
 

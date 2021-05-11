@@ -28,6 +28,7 @@
     "jest": "jest --verbose",
     "jest-watch": "jest --verbose --watch",
     "jest-watch-all": "jest --verbose --watchAll",
+    "generar-doc": "script/generar-doc.sh",
     "playground": "node test/playground.js"
   },
   "eslintConfig": {

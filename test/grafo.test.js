@@ -6,6 +6,15 @@ const { cloneDeep } = require("lodash");
 for (const caso of casos) {
   const grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
 
+  describe("Grafo desde links", () => {
+    if (caso.listaDeLinks) {
+      it(caso.descripcion, () => {
+        const grafo = Grafo.desdeListaDeLinks(caso.listaDeLinks, caso.esDirigido);
+        return expect(grafo.listaDeAdyacencia).toStrictEqual(caso.listaDeAdyacencia);
+      });
+    }
+  });
+
   describe("Grafo desde matriz de adyacencia", () => {
     if (caso.matrizDeAdyacencia) {
       it(caso.descripcion, () => {
