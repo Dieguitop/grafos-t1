@@ -22,6 +22,7 @@
         "react"
     ],
     "rules": {
+        "prettier/prettier": 0,
         "no-constant-condition": ["error", { "checkLoops": false }]
     }
 }

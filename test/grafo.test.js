@@ -1,7 +1,7 @@
 /* eslint-disable jest/valid-title */
 const { Grafo, Arista, Direccion } = require("../lib/grafo/grafo.js");
 const { casos } = require("./casos.js");
-const { cloneDeep } = require("lodash");
+const { cloneDeep, map } = require("lodash");
 
 for (const caso of casos) {
   const grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
@@ -159,11 +159,49 @@ for (const caso of casos) {
     }
   });
 
+  describe("Adyacentes totales", () => {
+    if (caso.adyacentes?.total) {
+      for (const nodo of grafo.nodos) {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
+          return expect(map(grafo.adyacentes(nodo, Direccion.ambas), "nodo").sort()).toStrictEqual(
+            caso.adyacentes.total[nodo]
+          );
+        });
+      }
+    }
+  });
+
+  describe("Adyacentes de salida", () => {
+    if (caso.adyacentes?.salida) {
+      for (const nodo of grafo.nodos) {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
+          return expect(map(grafo.adyacentes(nodo, Direccion.salida), "nodo").sort()).toStrictEqual(
+            caso.adyacentes.salida[nodo]
+          );
+        });
+      }
+    }
+  });
+
+  describe("Adyacentes de entrada", () => {
+    if (caso.adyacentes?.entrada) {
+      for (const nodo of grafo.nodos) {
+        it(`${caso.descripcion}: nodo ${nodo}`, () => {
+          return expect(
+            map(grafo.adyacentes(nodo, Direccion.entrada), "nodo").sort()
+          ).toStrictEqual(caso.adyacentes.entrada[nodo]);
+        });
+      }
+    }
+  });
+
   describe("Grado total", () => {
     if (caso.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
         it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(grafo.grado(nodo)).toStrictEqual(caso.adyacentes.total[nodo].length);
+          return expect(grafo.grado(nodo, Direccion.ambas)).toStrictEqual(
+            caso.adyacentes.total[nodo].length
+          );
         });
       }
     }
@@ -242,7 +280,7 @@ for (const caso of casos) {
     }
   });
 
-  describe.only("Flujo máximo", () => {
+  describe("Flujo máximo", () => {
     if (caso.matrizDeFlujosMaximos) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
