@@ -2,14 +2,7 @@ const _ = require("lodash");
 const { Grafo, Trayecto } = require("../lib/grafo/grafo.js");
 const { casos } = require("./casos.js");
 
-let caso = casos[2];
+let caso = casos[8];
 let grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
 
-console.log(grafo.hamiltoniano(Trayecto.camino));
-console.log(grafo.hamiltoniano(Trayecto.ciclo));
-
-caso = casos[6];
-grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
-
-console.log(grafo.hamiltoniano(Trayecto.camino));
-console.log(grafo.hamiltoniano(Trayecto.ciclo));
+console.log(grafo.flujoMaximo(2, 3));
