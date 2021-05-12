@@ -181,6 +181,13 @@ const casos = [
         { camino: [4], distancia: 0 },
       ],
     ],
+    matrizDeFlujosMaximos: [
+      [7, 7, 7, 4, 7],
+      [7, 15, 8, 4, 8],
+      [7, 8, 10, 4, 8],
+      [4, 4, 4, 4, 4],
+      [7, 8, 8, 4, 8],
+    ],
     arbolGeneradorMinimo: {
       distancia: 9,
     },
@@ -494,6 +501,26 @@ const casos = [
         [0, 1, 3],
       ],
     },
+  },
+  {
+    numero: 9,
+    link: "http://graphonline.ru/en/?graph=aVQVKltbuqIfqIIq",
+    descripcion: "Grafo 9, tipo C (no dirigido, no ponderado, conexo), 5 nodos",
+    cantidad: 4,
+    esDirigido: true,
+    esPonderado: true,
+    esConexo: true,
+    listaDeAdyacencia: new Map([
+      [0, [new Adyacente(1), new Adyacente(2)]],
+      [1, [new Adyacente(2), new Adyacente(3)]],
+      [2, [new Adyacente(3)]],
+    ]),
+    matrizDeFlujosMaximos: [
+      [12, 9, 4, 11],
+      [0, 8, 1, 8],
+      [0, 0, 4, 4],
+      [0, 0, 0, 0],
+    ],
   },
 ];
 

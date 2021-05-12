@@ -241,4 +241,16 @@ for (const caso of casos) {
       });
     }
   });
+
+  describe.only("Flujo máximo", () => {
+    if (caso.matrizDeFlujosMaximos) {
+      for (const i of grafo.nodos) {
+        for (const j of grafo.nodos) {
+          it(`${caso.descripcion}: nodo ${i} al ${j}`, () => {
+            return expect(grafo.flujoMaximo(i, j)).toStrictEqual(caso.matrizDeFlujosMaximos[i][j]);
+          });
+        }
+      }
+    }
+  });
 }
