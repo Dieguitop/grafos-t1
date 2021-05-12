@@ -5,10 +5,11 @@ const { casos } = require("./casos.js");
 let caso = casos[2];
 let grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
 
-console.log(grafo.hamiltoniano());
+console.log(grafo.hamiltoniano(Trayecto.camino));
+console.log(grafo.hamiltoniano(Trayecto.ciclo));
 
 caso = casos[6];
 grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
 
-console.log(grafo.hamiltoniano());
-console.log(grafo.esHamiltoniano);
+console.log(grafo.hamiltoniano(Trayecto.camino));
+console.log(grafo.hamiltoniano(Trayecto.ciclo));
