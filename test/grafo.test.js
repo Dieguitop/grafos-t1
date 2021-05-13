@@ -1,83 +1,83 @@
 /* eslint-disable jest/valid-title */
 const { Grafo, Arista, Direccion } = require("../lib/grafo/grafo.js");
-const { casos } = require("./casos.js");
+const { grafos } = require("./grafos-prueba.js");
 const { cloneDeep, map } = require("lodash");
 
-for (const caso of casos) {
-  const grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
+for (const prueba of grafos) {
+  const grafo = new Grafo(prueba.listaDeAdyacencia, prueba.esDirigido);
 
   describe("Grafo desde links", () => {
-    if (caso.listaDeLinks) {
-      it(caso.descripcion, () => {
-        const grafo = Grafo.desdeListaDeLinks(caso.listaDeLinks, caso.esDirigido);
-        return expect(grafo.listaDeAdyacencia).toStrictEqual(caso.listaDeAdyacencia);
+    if (prueba.listaDeLinks) {
+      it(prueba.descripcion, () => {
+        const grafo = Grafo.desdeListaDeLinks(prueba.listaDeLinks, prueba.esDirigido);
+        return expect(grafo.listaDeAdyacencia).toEqual(prueba.listaDeAdyacencia);
       });
     }
   });
 
   describe("Grafo desde matriz de adyacencia", () => {
-    if (caso.matrizDeAdyacencia) {
-      it(caso.descripcion, () => {
-        const grafo = Grafo.desdeMatrizDeAdyacencia(caso.matrizDeAdyacencia, caso.esDirigido);
-        return expect(grafo.listaDeAdyacencia).toStrictEqual(caso.listaDeAdyacencia);
+    if (prueba.matrizDeAdyacencia) {
+      it(prueba.descripcion, () => {
+        const grafo = Grafo.desdeMatrizDeAdyacencia(prueba.matrizDeAdyacencia, prueba.esDirigido);
+        return expect(grafo.listaDeAdyacencia).toEqual(prueba.listaDeAdyacencia);
       });
     }
   });
 
   describe("Grafo desde lista de aristas", () => {
-    if (caso.listaDeAristas) {
-      it(caso.descripcion, () => {
-        const grafo = Grafo.desdeListaDeAristas(caso.listaDeAristas, caso.esDirigido);
-        return expect(grafo.listaDeAdyacencia).toStrictEqual(caso.listaDeAdyacencia);
+    if (prueba.listaDeAristas) {
+      it(prueba.descripcion, () => {
+        const grafo = Grafo.desdeListaDeAristas(prueba.listaDeAristas, prueba.esDirigido);
+        return expect(grafo.listaDeAdyacencia).toEqual(prueba.listaDeAdyacencia);
       });
     }
   });
 
   describe("Matriz de adyacencia", () => {
-    if (caso.matrizDeAdyacencia) {
-      it(caso.descripcion, () => {
-        return expect(grafo.matrizDeAdyacencia).toStrictEqual(caso.matrizDeAdyacencia);
+    if (prueba.matrizDeAdyacencia) {
+      it(prueba.descripcion, () => {
+        return expect(grafo.matrizDeAdyacencia).toEqual(prueba.matrizDeAdyacencia);
       });
     }
   });
 
   describe("Lista de aristas", () => {
-    if (caso.listaDeAristas) {
-      it(caso.descripcion, () => expect(grafo.listaDeAristas).toStrictEqual(caso.listaDeAristas));
-    }
-  });
-
-  describe("Grafo conexo o no conexo", () => {
-    if (caso.esConexo != null) {
-      it(caso.descripcion, () => expect(grafo.esConexo).toStrictEqual(caso.esConexo));
+    if (prueba.listaDeAristas) {
+      it(prueba.descripcion, () => expect(grafo.listaDeAristas).toEqual(prueba.listaDeAristas));
     }
   });
 
   describe("Grafo ponderado o no ponderado", () => {
-    if (caso.esPonderado != null) {
-      it(caso.descripcion, () => expect(grafo.esPonderado).toStrictEqual(caso.esPonderado));
+    if (prueba.esPonderado != null) {
+      it(prueba.descripcion, () => expect(grafo.esPonderado).toBe(prueba.esPonderado));
+    }
+  });
+
+  describe("Grafo conexo o no conexo", () => {
+    if (prueba.esConexo != null) {
+      it(prueba.descripcion, () => expect(grafo.esConexo).toBe(prueba.esConexo));
     }
   });
 
   describe("Lista de nodos", () => {
-    if (caso.nodos) {
-      it(caso.descripcion, () => expect(grafo.nodos).toStrictEqual(caso.nodos));
+    if (prueba.nodos) {
+      it(prueba.descripcion, () => expect(grafo.nodos).toEqual(prueba.nodos));
     }
   });
 
   describe("Cantidad de nodos", () => {
-    if (caso.cantidad) {
-      it(caso.descripcion, () => expect(grafo.cantidad).toStrictEqual(caso.cantidad));
+    if (prueba.cantidad) {
+      it(prueba.descripcion, () => expect(grafo.cantidad).toBe(prueba.cantidad));
     }
   });
 
   describe("Existe arista de salida", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            return expect(grafo.existeArista(i, j, Direccion.salida)).toStrictEqual(
-              Boolean(caso.matrizDeAdyacencia[i][j])
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            return expect(grafo.existeArista(i, j, Direccion.salida)).toBe(
+              Boolean(prueba.matrizDeAdyacencia[i][j])
             );
           });
         }
@@ -86,12 +86,12 @@ for (const caso of casos) {
   });
 
   describe("Existe arista de entrada", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            return expect(grafo.existeArista(i, j, Direccion.entrada)).toStrictEqual(
-              Boolean(caso.matrizDeAdyacencia[j][i])
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            return expect(grafo.existeArista(i, j, Direccion.entrada)).toEqual(
+              Boolean(prueba.matrizDeAdyacencia[j][i])
             );
           });
         }
@@ -100,13 +100,13 @@ for (const caso of casos) {
   });
 
   describe("Eliminar arista de salida", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
           let grafoClon = cloneDeep(grafo);
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            return expect(Boolean(grafoClon.eliminarArista(i, j, Direccion.salida))).toStrictEqual(
-              Boolean(caso.matrizDeAdyacencia[i][j])
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            return expect(Boolean(grafoClon.eliminarArista(i, j, Direccion.salida))).toBe(
+              Boolean(prueba.matrizDeAdyacencia[i][j])
             );
           });
         }
@@ -115,13 +115,13 @@ for (const caso of casos) {
   });
 
   describe("Eliminar arista de entrada", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
           let grafoClon = cloneDeep(grafo);
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            return expect(Boolean(grafoClon.eliminarArista(i, j, Direccion.entrada))).toStrictEqual(
-              Boolean(caso.matrizDeAdyacencia[j][i])
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            return expect(Boolean(grafoClon.eliminarArista(i, j, Direccion.entrada))).toBe(
+              Boolean(prueba.matrizDeAdyacencia[j][i])
             );
           });
         }
@@ -130,12 +130,12 @@ for (const caso of casos) {
   });
 
   describe("Obtener arista de salida", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            const peso = caso.matrizDeAdyacencia[i][j];
-            return expect(grafo.arista(i, j, Direccion.salida)).toStrictEqual(
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            const peso = prueba.matrizDeAdyacencia[i][j];
+            return expect(grafo.arista(i, j, Direccion.salida)).toEqual(
               peso === false ? peso : new Arista(i, j, peso === true ? undefined : peso)
             );
           });
@@ -145,12 +145,12 @@ for (const caso of casos) {
   });
 
   describe("Obtener arista de entrada", () => {
-    if (caso.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia) {
       for (const i of grafo.nodos) {
         for (const j of grafo.nodos) {
-          it(`${caso.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            const peso = caso.matrizDeAdyacencia[j][i];
-            return expect(grafo.arista(i, j, Direccion.entrada)).toStrictEqual(
+          it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
+            const peso = prueba.matrizDeAdyacencia[j][i];
+            return expect(grafo.arista(i, j, Direccion.entrada)).toEqual(
               peso === false ? peso : new Arista(j, i, peso === true ? undefined : peso)
             );
           });
@@ -160,11 +160,11 @@ for (const caso of casos) {
   });
 
   describe("Adyacentes totales", () => {
-    if (caso.adyacentes?.total) {
+    if (prueba.adyacentes?.total) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(map(grafo.adyacentes(nodo, Direccion.ambas), "nodo").sort()).toStrictEqual(
-            caso.adyacentes.total[nodo]
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(map(grafo.adyacentes(nodo, Direccion.ambas), "nodo").sort()).toEqual(
+            prueba.adyacentes.total[nodo]
           );
         });
       }
@@ -172,11 +172,11 @@ for (const caso of casos) {
   });
 
   describe("Adyacentes de salida", () => {
-    if (caso.adyacentes?.salida) {
+    if (prueba.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(map(grafo.adyacentes(nodo, Direccion.salida), "nodo").sort()).toStrictEqual(
-            caso.adyacentes.salida[nodo]
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(map(grafo.adyacentes(nodo, Direccion.salida), "nodo").sort()).toEqual(
+            prueba.adyacentes.salida[nodo]
           );
         });
       }
@@ -184,23 +184,23 @@ for (const caso of casos) {
   });
 
   describe("Adyacentes de entrada", () => {
-    if (caso.adyacentes?.entrada) {
+    if (prueba.adyacentes?.entrada) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(
-            map(grafo.adyacentes(nodo, Direccion.entrada), "nodo").sort()
-          ).toStrictEqual(caso.adyacentes.entrada[nodo]);
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(map(grafo.adyacentes(nodo, Direccion.entrada), "nodo").sort()).toEqual(
+            prueba.adyacentes.entrada[nodo]
+          );
         });
       }
     }
   });
 
   describe("Grado total", () => {
-    if (caso.adyacentes?.salida) {
+    if (prueba.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(grafo.grado(nodo, Direccion.ambas)).toStrictEqual(
-            caso.adyacentes.total[nodo].length
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(grafo.grado(nodo, Direccion.ambas)).toBe(
+            prueba.adyacentes.total[nodo].length
           );
         });
       }
@@ -208,11 +208,11 @@ for (const caso of casos) {
   });
 
   describe("Grado de salida", () => {
-    if (caso.adyacentes?.salida) {
+    if (prueba.adyacentes?.salida) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(grafo.grado(nodo, Direccion.salida)).toStrictEqual(
-            caso.adyacentes.salida[nodo].length
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(grafo.grado(nodo, Direccion.salida)).toBe(
+            prueba.adyacentes.salida[nodo].length
           );
         });
       }
@@ -220,11 +220,11 @@ for (const caso of casos) {
   });
 
   describe("Grado de entrada", () => {
-    if (caso.adyacentes?.entrada) {
+    if (prueba.adyacentes?.entrada) {
       for (const nodo of grafo.nodos) {
-        it(`${caso.descripcion}: nodo ${nodo}`, () => {
-          return expect(grafo.grado(nodo, Direccion.entrada)).toStrictEqual(
-            caso.adyacentes.entrada[nodo].length
+        it(`${prueba.descripcion}: nodo ${nodo}`, () => {
+          return expect(grafo.grado(nodo, Direccion.entrada)).toBe(
+            prueba.adyacentes.entrada[nodo].length
           );
         });
       }
@@ -232,20 +232,48 @@ for (const caso of casos) {
   });
 
   describe("Matriz de caminos", () => {
-    if (caso.matrizDeCaminos) {
-      it(caso.descripcion, () => expect(grafo.matrizDeCaminos).toStrictEqual(caso.matrizDeCaminos));
+    if (prueba.matrizDeCaminos) {
+      it(prueba.descripcion, () => expect(grafo.matrizDeCaminos).toEqual(prueba.matrizDeCaminos));
     }
   });
 
   describe("Camino más corto entre 2 nodos", () => {
-    if (caso.matrizDeCaminosMasCortos) {
+    if (prueba.matrizDeCaminosMasCortos) {
       const nodos = grafo.nodos;
       for (const i of nodos) {
         for (const j of nodos) {
-          it(caso.descripcion + `: nodo ${i} al nodo ${j}`, () => {
-            return expect(grafo.caminoMasCorto(i, j)).toStrictEqual(
-              caso.matrizDeCaminosMasCortos[i][j]
+          it(prueba.descripcion + `: nodo ${i} al nodo ${j}`, () => {
+            return expect(grafo.caminoMasCorto(i, j)).toEqual(
+              prueba.matrizDeCaminosMasCortos[i][j]
             );
+          });
+        }
+      }
+    }
+  });
+
+  describe("Camino/ciclo euleriano", () => {
+    if (prueba.euleriano) {
+      it(prueba.descripcion, () => {
+        return expect(grafo.euleriano()).toEqual(prueba.euleriano);
+      });
+    }
+  });
+
+  describe("Camino/ciclo hamiltoniano", () => {
+    if (prueba.hamiltoniano) {
+      it(prueba.descripcion, () => {
+        return expect(grafo.hamiltoniano()).toEqual(prueba.hamiltoniano);
+      });
+    }
+  });
+
+  describe("Flujo máximo", () => {
+    if (prueba.matrizDeFlujosMaximos) {
+      for (const i of grafo.nodos) {
+        for (const j of grafo.nodos) {
+          it(`${prueba.descripcion}: nodo ${i} al ${j}`, () => {
+            return expect(grafo.flujoMaximo(i, j)).toBe(prueba.matrizDeFlujosMaximos[i][j]);
           });
         }
       }
@@ -255,40 +283,12 @@ for (const caso of casos) {
   // Un grafo puede tener más de un árbol generador mínimo, pero la distancia de
   // los posibles árboles es única.
   describe("Árbol generador mínimo", () => {
-    if (caso.arbolGeneradorMinimo) {
-      it(caso.descripcion, () => {
-        return expect(grafo.arbolGeneradorMinimo.distancia).toStrictEqual(
-          caso.arbolGeneradorMinimo.distancia
+    if (prueba.arbolGeneradorMinimo) {
+      it(prueba.descripcion, () => {
+        return expect(grafo.arbolGeneradorMinimo.distancia).toBe(
+          prueba.arbolGeneradorMinimo.distancia
         );
       });
-    }
-  });
-
-  describe("Camino/ciclo euleriano", () => {
-    if (caso.euleriano) {
-      it(caso.descripcion, () => {
-        return expect(grafo.euleriano()).toStrictEqual(caso.euleriano);
-      });
-    }
-  });
-
-  describe("Camino/ciclo hamiltoniano", () => {
-    if (caso.hamiltoniano) {
-      it(caso.descripcion, () => {
-        return expect(grafo.hamiltoniano()).toStrictEqual(caso.hamiltoniano);
-      });
-    }
-  });
-
-  describe("Flujo máximo", () => {
-    if (caso.matrizDeFlujosMaximos) {
-      for (const i of grafo.nodos) {
-        for (const j of grafo.nodos) {
-          it(`${caso.descripcion}: nodo ${i} al ${j}`, () => {
-            return expect(grafo.flujoMaximo(i, j)).toStrictEqual(caso.matrizDeFlujosMaximos[i][j]);
-          });
-        }
-      }
     }
   });
 }

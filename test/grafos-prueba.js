@@ -11,7 +11,60 @@ const { Adyacente } = require("../lib/grafo/nodo.js");
 // G:    dirigido, no ponderado,    conexo (D-NP-C)
 // H:    dirigido,    ponderado,    conexo (D-P-C)
 
-const casos = [
+/**
+ * @typedef {Object} Adyacentes
+ *   @property {number[][]} salida - Adyacentes de salida del grafo de prueba.
+ *   @property {number[][]} entrada - Adyacentes de entrada del grafo de prueba.
+ *   @property {number[][]} totales - Adyacentes totales del grafo de prueba.
+ *
+ * @typedef {Object} Eulerianos
+ *   @property {number[][]} caminos - Caminos eulerianos del grafo de prueba.
+ *   @property {number[][]} ciclos - Ciclos eulerianos del grafo de prueba.
+ *
+ * @typedef {Object} Hamiltonianos
+ *   @property {number[][]} caminos - Caminos hamiltonianos del grafo de prueba.
+ *   @property {number[][]} ciclos - Ciclos hamiltonianos del grafo de prueba.
+ *
+ * @typedef {Object} GrafoPrueba
+ *   @property {number} numero - Número de la prueba.
+ *   @property {string} descripcion - Descripción del grafo de prueba.
+ *   @property {string} link - Link del grafo de prueba en la página
+ *   graphonline.ru.
+ *   @property {number} cantidad - Cantidad de nodos del grafo de prueba.
+ *   @property {boolean} esDirigido - `true` si el grafo de prueba es dirigido,
+ *   `false` en caso contrario.
+ *   @property {boolean} esPonderado- `true` si el grafo de prueba es ponderado,
+ *   `false` en caso contrario.
+ *   @property {boolean} esConexo - `true` si el grafo de prueba es conexo,
+ *   `false` en caso contrario.
+ *   @property {boolean} esMultigrafo - `true` si el grafo de prueba es
+ *   multigrafo, `false` en caso contrario.
+ *   @property {number[]} nodos - Lista de los nodos del grafo de prueba.
+ *   @property {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia
+ *   del grafo de prueba.
+ *   @property {Arista[]} listaDeAristas - Lista de aristas del grafo de prueba.
+ *   @property {boolean[][]|number[][]} matrizDeAdyacencia - Matriz de
+ *   adyacencia del grafo de prueba.
+ *   @property {Link[]} listaDeLinks - Lista de links del grafo de prueba.
+ *   @property {Adyacentes} adyacentes - Adyacentes de salida, entrada y totales
+ *   del grafo de prueba.
+ *   @property {number[][]} matrizDeCaminos - Matriz de caminos del grafo de
+ *   prueba.
+ *   @property {CaminoMasCorto[][]} matrizDeCaminosMasCortos - Matriz cuyo
+ *   elemento {i, j} contiene el camino más corto entre el nodo i y j del grafo
+ *   de prueba.
+ *   @property {Eulerianos} eulerianos - Todos los caminos y ciclos eulerianos
+ *   del grafo de prueba.
+ *   @property {Hamiltonianos} hamiltonianos - Todos los caminos y ciclos
+ *   hamiltonianos del grafo de prueba.
+ *   @property {number[][]} matrizDeFlujosMaximos - Matriz cuyo elemento {i, j}
+ *   contiene el flujo máximo entre el nodo i (entrada) y j (salida).
+ *   @property {ArbolGeneradorMinimo} arbolGeneradorMinimo - Árbol generador
+ *   mínimo. Generalmente, solo se provee la distancia total.
+ */
+
+/** @type {GrafoPrueba[]} */
+const grafos = [
   {
     numero: 1,
     descripcion: "Grafo 1, tipo C (no dirigido, no ponderado, conexo), 4 nodos",
@@ -32,12 +85,6 @@ const casos = [
       [true, true, false, false],
       [true, false, false, false],
     ],
-    matrizDeCaminos: [
-      [6, 6, 6, 4],
-      [6, 5, 5, 2],
-      [6, 5, 5, 2],
-      [4, 2, 2, 2],
-    ],
     listaDeLinks: [
       { from: "0", to: "1" },
       { from: "0", to: "2" },
@@ -49,6 +96,38 @@ const casos = [
       entrada: [[1, 2, 3], [0, 2], [0, 1], [0]],
       total: [[1, 2, 3], [0, 2], [0, 1], [0]],
     },
+    matrizDeCaminos: [
+      [6, 6, 6, 4],
+      [6, 5, 5, 2],
+      [6, 5, 5, 2],
+      [4, 2, 2, 2],
+    ],
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 1 },
+        { camino: [0, 2], distancia: 1 },
+        { camino: [0, 3], distancia: 1 },
+      ],
+      [
+        { camino: [1, 0], distancia: 1 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+        { camino: [1, 0, 3], distancia: 2 },
+      ],
+      [
+        { camino: [2, 0], distancia: 1 },
+        { camino: [2, 1], distancia: 1 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 0, 3], distancia: 2 },
+      ],
+      [
+        { camino: [3, 0], distancia: 1 },
+        { camino: [3, 0, 1], distancia: 2 },
+        { camino: [3, 0, 2], distancia: 2 },
+        { camino: [3], distancia: 0 },
+      ],
+    ],
   },
   {
     numero: 2,
@@ -58,6 +137,7 @@ const casos = [
     esDirigido: false,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: true,
     nodos: [0, 1, 2, 3, 4, 5],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(0), new Adyacente(1), new Adyacente(4)]],
@@ -83,6 +163,11 @@ const casos = [
       [true, true, false, true, false, false],
       [false, false, false, true, false, false],
     ],
+    adyacentes: {
+      salida: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+      entrada: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+      total: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+    },
     matrizDeCaminos: [
       [82, 69, 39, 42, 70, 14],
       [69, 55, 42, 32, 67, 17],
@@ -91,11 +176,56 @@ const casos = [
       [70, 67, 30, 49, 56, 11],
       [14, 17, 7, 18, 11, 5],
     ],
-    adyacentes: {
-      salida: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
-      entrada: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
-      total: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
-    },
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 1 },
+        { camino: [0, 1, 2], distancia: 2 },
+        { camino: [0, 4, 3], distancia: 2 },
+        { camino: [0, 4], distancia: 1 },
+        { camino: [0, 4, 3, 5], distancia: 3 },
+      ],
+      [
+        { camino: [1, 0], distancia: 1 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+        { camino: [1, 2, 3], distancia: 2 },
+        { camino: [1, 4], distancia: 1 },
+        { camino: [1, 2, 3, 5], distancia: 3 },
+      ],
+      [
+        { camino: [2, 1, 0], distancia: 2 },
+        { camino: [2, 1], distancia: 1 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 3], distancia: 1 },
+        { camino: [2, 1, 4], distancia: 2 },
+        { camino: [2, 3, 5], distancia: 2 },
+      ],
+      [
+        { camino: [3, 4, 0], distancia: 2 },
+        { camino: [3, 2, 1], distancia: 2 },
+        { camino: [3, 2], distancia: 1 },
+        { camino: [3], distancia: 0 },
+        { camino: [3, 4], distancia: 1 },
+        { camino: [3, 5], distancia: 1 },
+      ],
+      [
+        { camino: [4, 0], distancia: 1 },
+        { camino: [4, 1], distancia: 1 },
+        { camino: [4, 1, 2], distancia: 2 },
+        { camino: [4, 3], distancia: 1 },
+        { camino: [4], distancia: 0 },
+        { camino: [4, 3, 5], distancia: 2 },
+      ],
+      [
+        { camino: [5, 3, 4, 0], distancia: 3 },
+        { camino: [5, 3, 2, 1], distancia: 3 },
+        { camino: [5, 3, 2], distancia: 2 },
+        { camino: [5, 3], distancia: 1 },
+        { camino: [5, 3, 4], distancia: 2 },
+        { camino: [5], distancia: 0 },
+      ],
+    ],
   },
   {
     numero: 3,
@@ -137,6 +267,29 @@ const casos = [
       { from: "2", to: "4", text: "5" },
       { from: "3", to: "4", text: "1" },
     ],
+    adyacentes: {
+      salida: [
+        [1, 3],
+        [0, 2, 3, 4],
+        [1, 4],
+        [0, 1, 4],
+        [1, 2, 3],
+      ],
+      entrada: [
+        [1, 3],
+        [0, 2, 3, 4],
+        [1, 4],
+        [0, 1, 4],
+        [1, 2, 3],
+      ],
+      total: [
+        [1, 3],
+        [0, 2, 3, 4],
+        [1, 4],
+        [0, 1, 4],
+        [1, 2, 3],
+      ],
+    },
     matrizDeCaminos: [
       [2648, 1389, 3045, 1101, 1452],
       [1389, 5860, 2135, 1059, 3056],
@@ -181,6 +334,7 @@ const casos = [
         { camino: [4], distancia: 0 },
       ],
     ],
+    hamiltoniano: [2, 1, 0, 3, 4],
     matrizDeFlujosMaximos: [
       [0, 7, 7, 4, 7],
       [7, 0, 8, 4, 8],
@@ -191,30 +345,6 @@ const casos = [
     arbolGeneradorMinimo: {
       distancia: 9,
     },
-    adyacentes: {
-      salida: [
-        [1, 3],
-        [0, 2, 3, 4],
-        [1, 4],
-        [0, 1, 4],
-        [1, 2, 3],
-      ],
-      entrada: [
-        [1, 3],
-        [0, 2, 3, 4],
-        [1, 4],
-        [0, 1, 4],
-        [1, 2, 3],
-      ],
-      total: [
-        [1, 3],
-        [0, 2, 3, 4],
-        [1, 4],
-        [0, 1, 4],
-        [1, 2, 3],
-      ],
-    },
-    hamiltoniano: [2, 1, 0, 3, 4],
   },
   {
     numero: 4,
@@ -253,6 +383,35 @@ const casos = [
       [false, false, false, 15, 6, false, 6],
       [false, false, false, false, 2, 6, false],
     ],
+    adyacentes: {
+      salida: [
+        [1, 2],
+        [0, 3],
+        [0, 3],
+        [1, 2, 4, 5],
+        [3, 5, 6],
+        [3, 4, 6],
+        [4, 5],
+      ],
+      entrada: [
+        [1, 2],
+        [0, 3],
+        [0, 3],
+        [1, 2, 4, 5],
+        [3, 5, 6],
+        [3, 4, 6],
+        [4, 5],
+      ],
+      total: [
+        [1, 2],
+        [0, 3],
+        [0, 3],
+        [1, 2, 4, 5],
+        [3, 5, 6],
+        [3, 4, 6],
+        [4, 5],
+      ],
+    },
     matrizDeCaminos: [
       [1730821, 663960, 1076350, 12700550, 4196880, 4004610, 3419100],
       [663960, 5567196, 9305000, 9635455, 13171120, 19683285, 2740350],
@@ -330,35 +489,6 @@ const casos = [
     arbolGeneradorMinimo: {
       distancia: 31,
     },
-    adyacentes: {
-      salida: [
-        [1, 2],
-        [0, 3],
-        [0, 3],
-        [1, 2, 4, 5],
-        [3, 5, 6],
-        [3, 4, 6],
-        [4, 5],
-      ],
-      entrada: [
-        [1, 2],
-        [0, 3],
-        [0, 3],
-        [1, 2, 4, 5],
-        [3, 5, 6],
-        [3, 4, 6],
-        [4, 5],
-      ],
-      total: [
-        [1, 2],
-        [0, 3],
-        [0, 3],
-        [1, 2, 4, 5],
-        [3, 5, 6],
-        [3, 4, 6],
-        [4, 5],
-      ],
-    },
   },
   {
     numero: 5,
@@ -379,7 +509,6 @@ const casos = [
       [false, false, true],
       [true, false, false],
     ],
-    euleriano: [0, 1, 2, 0],
     adyacentes: {
       salida: [[1], [2], [0]],
       entrada: [[2], [0], [1]],
@@ -389,6 +518,24 @@ const casos = [
         [0, 1],
       ],
     },
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 1 },
+        { camino: [0, 1, 2], distancia: 2 },
+      ],
+      [
+        { camino: [1, 2, 0], distancia: 2 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+      ],
+      [
+        { camino: [2, 0], distancia: 1 },
+        { camino: [2, 0, 1], distancia: 2 },
+        { camino: [2], distancia: 0 },
+      ],
+    ],
+    euleriano: [0, 1, 2, 0],
   },
   {
     numero: 6,
@@ -416,6 +563,71 @@ const casos = [
       [true, false, false, false, false, false, false],
       [false, false, false, false, true, false, false],
     ],
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 1 },
+        { camino: [0, 1, 2], distancia: 2 },
+        { camino: [0, 1, 2, 3], distancia: 3 },
+        { camino: [0, 6, 4], distancia: 2 },
+        { camino: [0, 6, 4, 5], distancia: 3 },
+        { camino: [0, 6], distancia: 1 },
+      ],
+      [
+        { camino: [1, 2, 0], distancia: 2 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+        { camino: [1, 2, 3], distancia: 2 },
+        { camino: [1, 2, 3, 4], distancia: 3 },
+        { camino: [1, 2, 3, 4, 5], distancia: 4 },
+        { camino: [1, 2, 0, 6], distancia: 3 },
+      ],
+      [
+        { camino: [2, 0], distancia: 1 },
+        { camino: [2, 0, 1], distancia: 2 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 3], distancia: 1 },
+        { camino: [2, 3, 4], distancia: 2 },
+        { camino: [2, 3, 4, 5], distancia: 3 },
+        { camino: [2, 0, 6], distancia: 2 },
+      ],
+      [
+        { camino: [3, 4, 2, 0], distancia: 3 },
+        { camino: [3, 4, 2, 0, 1], distancia: 4 },
+        { camino: [3, 4, 2], distancia: 2 },
+        { camino: [3], distancia: 0 },
+        { camino: [3, 4], distancia: 1 },
+        { camino: [3, 4, 5], distancia: 2 },
+        { camino: [3, 4, 2, 0, 6], distancia: 4 },
+      ],
+      [
+        { camino: [4, 2, 0], distancia: 2 },
+        { camino: [4, 2, 0, 1], distancia: 3 },
+        { camino: [4, 2], distancia: 1 },
+        { camino: [4, 2, 3], distancia: 2 },
+        { camino: [4], distancia: 0 },
+        { camino: [4, 5], distancia: 1 },
+        { camino: [4, 2, 0, 6], distancia: 3 },
+      ],
+      [
+        { camino: [5, 0], distancia: 1 },
+        { camino: [5, 0, 1], distancia: 2 },
+        { camino: [5, 0, 1, 2], distancia: 3 },
+        { camino: [5, 0, 1, 2, 3], distancia: 4 },
+        { camino: [5, 0, 6, 4], distancia: 3 },
+        { camino: [5], distancia: 0 },
+        { camino: [5, 0, 6], distancia: 2 },
+      ],
+      [
+        { camino: [6, 4, 2, 0], distancia: 3 },
+        { camino: [6, 4, 2, 0, 1], distancia: 4 },
+        { camino: [6, 4, 2], distancia: 2 },
+        { camino: [6, 4, 2, 3], distancia: 3 },
+        { camino: [6, 4], distancia: 1 },
+        { camino: [6, 4, 5], distancia: 2 },
+        { camino: [6], distancia: 0 },
+      ],
+    ],
     euleriano: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
   },
   {
@@ -442,8 +654,6 @@ const casos = [
       [false, false, false, true, false, false],
       [false, false, true, false, false, false],
     ],
-    euleriano: [0, 5, 2, 1, 4, 3, 1, 0],
-    hamiltoniano: [4, 3, 1, 0, 5, 2],
     adyacentes: {
       salida: [[5], [0, 4], [1], [1], [3], [2]],
       entrada: [[1], [2, 3], [5], [4], [1], [0]],
@@ -456,6 +666,58 @@ const casos = [
         [0, 2],
       ],
     },
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 5, 2, 1], distancia: 3 },
+        { camino: [0, 5, 2], distancia: 2 },
+        { camino: [0, 5, 2, 1, 4, 3], distancia: 5 },
+        { camino: [0, 5, 2, 1, 4], distancia: 4 },
+        { camino: [0, 5], distancia: 1 },
+      ],
+      [
+        { camino: [1, 0], distancia: 1 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 0, 5, 2], distancia: 3 },
+        { camino: [1, 4, 3], distancia: 2 },
+        { camino: [1, 4], distancia: 1 },
+        { camino: [1, 0, 5], distancia: 2 },
+      ],
+      [
+        { camino: [2, 1, 0], distancia: 2 },
+        { camino: [2, 1], distancia: 1 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 1, 4, 3], distancia: 3 },
+        { camino: [2, 1, 4], distancia: 2 },
+        { camino: [2, 1, 0, 5], distancia: 3 },
+      ],
+      [
+        { camino: [3, 1, 0], distancia: 2 },
+        { camino: [3, 1], distancia: 1 },
+        { camino: [3, 1, 0, 5, 2], distancia: 4 },
+        { camino: [3], distancia: 0 },
+        { camino: [3, 1, 4], distancia: 2 },
+        { camino: [3, 1, 0, 5], distancia: 3 },
+      ],
+      [
+        { camino: [4, 3, 1, 0], distancia: 3 },
+        { camino: [4, 3, 1], distancia: 2 },
+        { camino: [4, 3, 1, 0, 5, 2], distancia: 5 },
+        { camino: [4, 3], distancia: 1 },
+        { camino: [4], distancia: 0 },
+        { camino: [4, 3, 1, 0, 5], distancia: 4 },
+      ],
+      [
+        { camino: [5, 2, 1, 0], distancia: 3 },
+        { camino: [5, 2, 1], distancia: 2 },
+        { camino: [5, 2], distancia: 1 },
+        { camino: [5, 2, 1, 4, 3], distancia: 4 },
+        { camino: [5, 2, 1, 4], distancia: 3 },
+        { camino: [5], distancia: 0 },
+      ],
+    ],
+    euleriano: [0, 5, 2, 1, 4, 3, 1, 0],
+    hamiltoniano: [4, 3, 1, 0, 5, 2],
   },
   {
     numero: 8,
@@ -501,11 +763,48 @@ const casos = [
         [0, 1, 3],
       ],
     },
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 1 },
+        { camino: [0, 1, 2], distancia: 2 },
+        { camino: [0, 3], distancia: 1 },
+        { camino: [0, 4], distancia: 1 },
+      ],
+      [
+        { camino: [1, 0], distancia: 1 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+        { camino: [1, 3], distancia: 1 },
+        { camino: [1, 4], distancia: 1 },
+      ],
+      [
+        { camino: [2, 1, 0], distancia: 2 },
+        { camino: [2, 1], distancia: 1 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 3], distancia: 1 },
+        { camino: [2, 1, 4], distancia: 2 },
+      ],
+      [
+        { camino: [3, 0], distancia: 1 },
+        { camino: [3, 1], distancia: 1 },
+        { camino: [3, 2], distancia: 1 },
+        { camino: [3], distancia: 0 },
+        { camino: [3, 4], distancia: 1 },
+      ],
+      [
+        { camino: [4, 0], distancia: 1 },
+        { camino: [4, 1], distancia: 1 },
+        { camino: [4, 1, 2], distancia: 2 },
+        { camino: [4, 3], distancia: 1 },
+        { camino: [4], distancia: 0 },
+      ],
+    ],
   },
   {
     numero: 9,
-    link: "http://graphonline.ru/en/?graph=aVQVKltbuqIfqIIq",
     descripcion: "Grafo 9, tipo C (no dirigido, no ponderado, conexo), 5 nodos",
+    link: "http://graphonline.ru/en/?graph=aVQVKltbuqIfqIIq",
     cantidad: 4,
     esDirigido: true,
     esPonderado: true,
@@ -515,6 +814,32 @@ const casos = [
       [1, [new Adyacente(2, 1), new Adyacente(3, 7)]],
       [2, [new Adyacente(3, 4)]],
     ]),
+    matrizDeCaminosMasCortos: [
+      [
+        { camino: [0], distancia: 0 },
+        { camino: [0, 1], distancia: 9 },
+        { camino: [0, 2], distancia: 3 },
+        { camino: [0, 2, 3], distancia: 7 },
+      ],
+      [
+        { camino: false, distancia: 0 },
+        { camino: [1], distancia: 0 },
+        { camino: [1, 2], distancia: 1 },
+        { camino: [1, 2, 3], distancia: 5 },
+      ],
+      [
+        { camino: false, distancia: 0 },
+        { camino: false, distancia: 0 },
+        { camino: [2], distancia: 0 },
+        { camino: [2, 3], distancia: 4 },
+      ],
+      [
+        { camino: false, distancia: 0 },
+        { camino: false, distancia: 0 },
+        { camino: false, distancia: 0 },
+        { camino: [3], distancia: 0 },
+      ],
+    ],
     matrizDeFlujosMaximos: [
       [0, 9, 4, 11],
       [0, 0, 1, 8],
@@ -524,4 +849,4 @@ const casos = [
   },
 ];
 
-module.exports = { casos };
+module.exports = { grafos };

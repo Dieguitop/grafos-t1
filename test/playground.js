@@ -1,8 +1,8 @@
 const _ = require("lodash");
 const { Grafo, Trayecto, Direccion } = require("../lib/grafo/grafo.js");
-const { casos } = require("./casos.js");
+const { grafos } = require("./grafos-prueba.js");
 
-let caso = casos[6];
-let grafo = new Grafo(caso.listaDeAdyacencia, caso.esDirigido);
+let { listaDeAdyacencia, esDirigido } = grafos[8];
+let grafo = new Grafo(listaDeAdyacencia, esDirigido);
 
-console.log(grafo.adyacentes(5, Direccion.salida));
+console.log(grafo.caminoMasCorto(0, 1));
