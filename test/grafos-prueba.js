@@ -15,15 +15,15 @@ const { Adyacente } = require("../lib/grafo/nodo.js");
  * @typedef {Object} Adyacentes
  *   @property {number[][]} salida - Adyacentes de salida del grafo de prueba.
  *   @property {number[][]} entrada - Adyacentes de entrada del grafo de prueba.
- *   @property {number[][]} totales - Adyacentes totales del grafo de prueba.
+ *   @property {number[][]} ambases - Adyacentes ambases del grafo de prueba.
  *
- * @typedef {Object} Eulerianos
- *   @property {number[][]} caminos - Caminos eulerianos del grafo de prueba.
- *   @property {number[][]} ciclos - Ciclos eulerianos del grafo de prueba.
+ * @typedef {Object} Euleriano
+ *   @property {number[]} camino - Caminos eulerianos del grafo de prueba.
+ *   @property {number[]} ciclo - Ciclos eulerianos del grafo de prueba.
  *
- * @typedef {Object} Hamiltonianos
- *   @property {number[][]} caminos - Caminos hamiltonianos del grafo de prueba.
- *   @property {number[][]} ciclos - Ciclos hamiltonianos del grafo de prueba.
+ * @typedef {Object} Hamiltoniano
+ *   @property {number[]} camino - Caminos hamiltonianos del grafo de prueba.
+ *   @property {number[]} ciclo - Ciclos hamiltonianos del grafo de prueba.
  *
  * @typedef {Object} GrafoPrueba
  *   @property {number} numero - Número de la prueba.
@@ -46,21 +46,21 @@ const { Adyacente } = require("../lib/grafo/nodo.js");
  *   @property {boolean[][]|number[][]} matrizDeAdyacencia - Matriz de
  *   adyacencia del grafo de prueba.
  *   @property {Link[]} listaDeLinks - Lista de links del grafo de prueba.
- *   @property {Adyacentes} adyacentes - Adyacentes de salida, entrada y totales
+ *   @property {Adyacentes} adyacentes - Adyacentes de salida, entrada y ambases
  *   del grafo de prueba.
  *   @property {number[][]} matrizDeCaminos - Matriz de caminos del grafo de
  *   prueba.
  *   @property {CaminoMasCorto[][]} matrizDeCaminosMasCortos - Matriz cuyo
  *   elemento {i, j} contiene el camino más corto entre el nodo i y j del grafo
  *   de prueba.
- *   @property {Eulerianos} eulerianos - Todos los caminos y ciclos eulerianos
- *   del grafo de prueba.
- *   @property {Hamiltonianos} hamiltonianos - Todos los caminos y ciclos
- *   hamiltonianos del grafo de prueba.
+ *   @property {Euleriano} euleriano - Camino y ciclo euleriano del grafo de
+ *   prueba.
+ *   @property {Hamiltoniano} hamiltoniano - Camino y ciclo hamiltoniano del
+ *   grafo de prueba.
  *   @property {number[][]} matrizDeFlujosMaximos - Matriz cuyo elemento {i, j}
  *   contiene el flujo máximo entre el nodo i (entrada) y j (salida).
  *   @property {ArbolGeneradorMinimo} arbolGeneradorMinimo - Árbol generador
- *   mínimo. Generalmente, solo se provee la distancia total.
+ *   mínimo. Generalmente, solo se provee la distancia ambas.
  */
 
 /** @type {GrafoPrueba[]} */
@@ -73,6 +73,7 @@ const grafos = [
     esDirigido: false,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: false,
     nodos: [0, 1, 2, 3],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1), new Adyacente(2), new Adyacente(3)]],
@@ -94,7 +95,7 @@ const grafos = [
     adyacentes: {
       salida: [[1, 2, 3], [0, 2], [0, 1], [0]],
       entrada: [[1, 2, 3], [0, 2], [0, 1], [0]],
-      total: [[1, 2, 3], [0, 2], [0, 1], [0]],
+      ambas: [[1, 2, 3], [0, 2], [0, 1], [0]],
     },
     matrizDeCaminos: [
       [6, 6, 6, 4],
@@ -140,13 +141,12 @@ const grafos = [
     esMultigrafo: true,
     nodos: [0, 1, 2, 3, 4, 5],
     listaDeAdyacencia: new Map([
-      [0, [new Adyacente(0), new Adyacente(1), new Adyacente(4)]],
+      [0, [new Adyacente(1), new Adyacente(4)]],
       [1, [new Adyacente(2), new Adyacente(4)]],
       [2, [new Adyacente(3)]],
       [3, [new Adyacente(4), new Adyacente(5)]],
     ]),
     listaDeAristas: [
-      new Arista(0, 0),
       new Arista(0, 1),
       new Arista(0, 4),
       new Arista(1, 2),
@@ -156,25 +156,34 @@ const grafos = [
       new Arista(3, 5),
     ],
     matrizDeAdyacencia: [
-      [true, true, false, false, true, false],
+      [false, true, false, false, true, false],
       [true, false, true, false, true, false],
       [false, true, false, true, false, false],
       [false, false, true, false, true, true],
       [true, true, false, true, false, false],
       [false, false, false, true, false, false],
     ],
+    listaDeLinks: [
+      { from: 0, to: 1 },
+      { from: 0, to: 4 },
+      { from: 1, to: 2 },
+      { from: 1, to: 4 },
+      { from: 2, to: 3 },
+      { from: 3, to: 4 },
+      { from: 3, to: 5 },
+    ],
     adyacentes: {
-      salida: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
-      entrada: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
-      total: [[0, 1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+      salida: [[1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+      entrada: [[1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
+      ambas: [[1, 4], [0, 2, 4], [1, 3], [2, 4, 5], [0, 1, 3], [3]],
     },
     matrizDeCaminos: [
-      [82, 69, 39, 42, 70, 14],
-      [69, 55, 42, 32, 67, 17],
-      [39, 42, 18, 35, 30, 7],
-      [42, 32, 35, 23, 49, 18],
-      [70, 67, 30, 49, 56, 11],
-      [14, 17, 7, 18, 11, 5],
+      [29, 36, 24, 26, 37, 10],
+      [36, 39, 37, 27, 51, 16],
+      [24, 37, 17, 34, 25, 7],
+      [26, 27, 34, 22, 44, 18],
+      [37, 51, 25, 44, 40, 10],
+      [10, 16, 7, 18, 10, 5],
     ],
     matrizDeCaminosMasCortos: [
       [
@@ -235,6 +244,7 @@ const grafos = [
     esDirigido: false,
     esPonderado: true,
     esConexo: true,
+    esMultigrafo: false,
     nodos: [0, 1, 2, 3, 4],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1, 6), new Adyacente(3, 1)]],
@@ -282,7 +292,7 @@ const grafos = [
         [0, 1, 4],
         [1, 2, 3],
       ],
-      total: [
+      ambas: [
         [1, 3],
         [0, 2, 3, 4],
         [1, 4],
@@ -334,7 +344,6 @@ const grafos = [
         { camino: [4], distancia: 0 },
       ],
     ],
-    hamiltoniano: [2, 1, 0, 3, 4],
     matrizDeFlujosMaximos: [
       [0, 7, 7, 4, 7],
       [7, 0, 8, 4, 8],
@@ -354,6 +363,7 @@ const grafos = [
     esDirigido: false,
     esPonderado: true,
     esConexo: true,
+    esMultigrafo: false,
     nodos: [0, 1, 2, 3, 4, 5, 6],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
@@ -383,6 +393,17 @@ const grafos = [
       [false, false, false, 15, 6, false, 6],
       [false, false, false, false, 2, 6, false],
     ],
+    listaDeLinks: [
+      { from: 0, to: 1, text: 2 },
+      { from: 0, to: 2, text: 6 },
+      { from: 1, to: 3, text: 5 },
+      { from: 2, to: 3, text: 8 },
+      { from: 3, to: 4, text: 10 },
+      { from: 3, to: 5, text: 15 },
+      { from: 4, to: 5, text: 6 },
+      { from: 4, to: 6, text: 2 },
+      { from: 5, to: 6, text: 6 },
+    ],
     adyacentes: {
       salida: [
         [1, 2],
@@ -402,7 +423,7 @@ const grafos = [
         [3, 4, 6],
         [4, 5],
       ],
-      total: [
+      ambas: [
         [1, 2],
         [0, 3],
         [0, 3],
@@ -498,21 +519,28 @@ const grafos = [
     esDirigido: true,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: false,
     nodos: [0, 1, 2],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1)]],
       [1, [new Adyacente(2)]],
       [2, [new Adyacente(0)]],
     ]),
+    listaDeAristas: [new Arista(0, 1), new Arista(1, 2), new Arista(2, 0)],
     matrizDeAdyacencia: [
       [false, true, false],
       [false, false, true],
       [true, false, false],
     ],
+    listaDeLinks: [
+      { from: 0, to: 1 },
+      { from: 1, to: 2 },
+      { from: 2, to: 0 },
+    ],
     adyacentes: {
       salida: [[1], [2], [0]],
       entrada: [[2], [0], [1]],
-      total: [
+      ambas: [
         [1, 2],
         [0, 2],
         [0, 1],
@@ -535,7 +563,6 @@ const grafos = [
         { camino: [2], distancia: 0 },
       ],
     ],
-    euleriano: [0, 1, 2, 0],
   },
   {
     numero: 6,
@@ -545,6 +572,8 @@ const grafos = [
     esDirigido: true,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: false,
+    nodos: [0, 1, 2, 3, 4, 5, 6],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1), new Adyacente(6)]],
       [1, [new Adyacente(2)]],
@@ -554,6 +583,18 @@ const grafos = [
       [5, [new Adyacente(0)]],
       [6, [new Adyacente(4)]],
     ]),
+    listaDeAristas: [
+      new Arista(0, 1),
+      new Arista(0, 6),
+      new Arista(1, 2),
+      new Arista(2, 0),
+      new Arista(2, 3),
+      new Arista(3, 4),
+      new Arista(4, 2),
+      new Arista(4, 5),
+      new Arista(5, 0),
+      new Arista(6, 4),
+    ],
     matrizDeAdyacencia: [
       [false, true, false, false, false, false, true],
       [false, false, true, false, false, false, false],
@@ -563,6 +604,31 @@ const grafos = [
       [true, false, false, false, false, false, false],
       [false, false, false, false, true, false, false],
     ],
+    listaDeLinks: [
+      { from: 0, to: 1 },
+      { from: 0, to: 6 },
+      { from: 1, to: 2 },
+      { from: 2, to: 0 },
+      { from: 2, to: 3 },
+      { from: 3, to: 4 },
+      { from: 4, to: 2 },
+      { from: 4, to: 5 },
+      { from: 5, to: 0 },
+      { from: 6, to: 4 },
+    ],
+    adyacentes: {
+      salida: [[1, 6], [2], [0, 3], [4], [2, 5], [0], [4]],
+      entrada: [[2, 5], [0], [1, 4], [2], [3, 6], [4], [0]],
+      ambas: [
+        [1, 2, 5, 6],
+        [0, 2],
+        [0, 1, 3, 4],
+        [2, 4],
+        [2, 3, 5, 6],
+        [0, 4],
+        [0, 4],
+      ],
+    },
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -628,7 +694,6 @@ const grafos = [
         { camino: [6], distancia: 0 },
       ],
     ],
-    euleriano: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
   },
   {
     numero: 7,
@@ -638,6 +703,8 @@ const grafos = [
     esDirigido: true,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: false,
+    nodos: [0, 1, 2, 3, 4, 5],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(5)]],
       [1, [new Adyacente(0), new Adyacente(4)]],
@@ -646,6 +713,15 @@ const grafos = [
       [4, [new Adyacente(3)]],
       [5, [new Adyacente(2)]],
     ]),
+    listaDeAristas: [
+      new Arista(0, 5),
+      new Arista(1, 0),
+      new Arista(1, 4),
+      new Arista(2, 1),
+      new Arista(3, 1),
+      new Arista(4, 3),
+      new Arista(5, 2),
+    ],
     matrizDeAdyacencia: [
       [false, false, false, false, false, true],
       [true, false, false, false, true, false],
@@ -654,10 +730,19 @@ const grafos = [
       [false, false, false, true, false, false],
       [false, false, true, false, false, false],
     ],
+    listaDeLinks: [
+      { from: 0, to: 5 },
+      { from: 1, to: 0 },
+      { from: 1, to: 4 },
+      { from: 2, to: 1 },
+      { from: 3, to: 1 },
+      { from: 4, to: 3 },
+      { from: 5, to: 2 },
+    ],
     adyacentes: {
       salida: [[5], [0, 4], [1], [1], [3], [2]],
       entrada: [[1], [2, 3], [5], [4], [1], [0]],
-      total: [
+      ambas: [
         [1, 5],
         [0, 2, 3, 4],
         [1, 5],
@@ -716,8 +801,6 @@ const grafos = [
         { camino: [5], distancia: 0 },
       ],
     ],
-    euleriano: [0, 5, 2, 1, 4, 3, 1, 0],
-    hamiltoniano: [4, 3, 1, 0, 5, 2],
   },
   {
     numero: 8,
@@ -727,18 +810,40 @@ const grafos = [
     esDirigido: false,
     esPonderado: false,
     esConexo: true,
+    esMultigrafo: false,
+    nodos: [0, 1, 2, 3, 4],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1), new Adyacente(3), new Adyacente(4)]],
       [1, [new Adyacente(2), new Adyacente(3), new Adyacente(4)]],
       [2, [new Adyacente(3)]],
       [3, [new Adyacente(4)]],
     ]),
+    listaDeAristas: [
+      new Arista(0, 1),
+      new Arista(0, 3),
+      new Arista(0, 4),
+      new Arista(1, 2),
+      new Arista(1, 3),
+      new Arista(1, 4),
+      new Arista(2, 3),
+      new Arista(3, 4),
+    ],
     matrizDeAdyacencia: [
       [false, true, false, true, true],
       [true, false, true, true, true],
       [false, true, false, true, false],
       [true, true, true, false, true],
       [true, true, false, true, false],
+    ],
+    listaDeLinks: [
+      { from: 0, to: 1 },
+      { from: 0, to: 3 },
+      { from: 0, to: 4 },
+      { from: 1, to: 2 },
+      { from: 1, to: 3 },
+      { from: 1, to: 4 },
+      { from: 2, to: 3 },
+      { from: 3, to: 4 },
     ],
     adyacentes: {
       salida: [
@@ -755,7 +860,7 @@ const grafos = [
         [0, 1, 2, 4],
         [0, 1, 3],
       ],
-      total: [
+      ambas: [
         [1, 3, 4],
         [0, 2, 3, 4],
         [1, 3],
@@ -809,11 +914,43 @@ const grafos = [
     esDirigido: true,
     esPonderado: true,
     esConexo: true,
+    esMultigrafo: false,
+    nodos: [0, 1, 2, 3],
     listaDeAdyacencia: new Map([
       [0, [new Adyacente(1, 9), new Adyacente(2, 3)]],
       [1, [new Adyacente(2, 1), new Adyacente(3, 7)]],
       [2, [new Adyacente(3, 4)]],
     ]),
+    listaDeAristas: [
+      new Arista(0, 1, 9),
+      new Arista(0, 2, 3),
+      new Arista(1, 2, 1),
+      new Arista(1, 3, 7),
+      new Arista(2, 3, 4),
+    ],
+    matrizDeAdyacencia: [
+      [false, 9, 3, false],
+      [false, false, 1, 7],
+      [false, false, false, 4],
+      [false, false, false, false],
+    ],
+    listaDeLinks: [
+      { from: 0, to: 1, text: 9 },
+      { from: 0, to: 2, text: 3 },
+      { from: 1, to: 2, text: 1 },
+      { from: 1, to: 3, text: 7 },
+      { from: 2, to: 3, text: 4 },
+    ],
+    adyacentes: {
+      salida: [[1, 2], [2, 3], [3], []],
+      entrada: [[], [0], [0, 1], [1, 2]],
+      ambas: [
+        [1, 2],
+        [0, 2, 3],
+        [0, 1, 3],
+        [1, 2],
+      ],
+    },
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
