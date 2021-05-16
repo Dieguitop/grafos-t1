@@ -1056,6 +1056,22 @@ const grafos = [
       [0, 0, 0, 0],
     ],
   },
+  {
+    numero: 10,
+    descripcion: "Grafo 10, tipo F (dirigido, ponderado, no conexo), 6 nodos",
+    link: "http://graphonline.ru/en/?graph=KUCBXmSnjzbIrzMn",
+    cantidad: 6,
+    esDirigido: true,
+    esPonderado: true,
+    esConexo: false,
+    nodos: [0, 1, 2, 3, 4, 5],
+    listaDeAdyacencia: new Map([
+      [0, [new Adyacente(1, 3)]],
+      [1, [new Adyacente(2, 5)]],
+      [2, [new Adyacente(3, 4)]],
+      [4, [new Adyacente(5, 6)]],
+    ]),
+  },
 ];
 
 module.exports = { grafos };
