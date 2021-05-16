@@ -129,11 +129,19 @@ const grafos = [
         { camino: [3], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [3, 0, 1, 2, 0],
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [1, 2, 0, 3],
+      ciclo: false,
+    },
   },
   {
     numero: 2,
     descripcion: "Grafo 2, tipo C (no dirigido, no ponderado, conexo), 6 nodos",
-    link: "http://graphonline.ru/en/?graph=yKUiTSAGBBbGnfXV",
+    link: "http://graphonline.ru/en/?graph=HUfARyolwAcxSnBN",
     cantidad: 6,
     esDirigido: false,
     esPonderado: false,
@@ -235,6 +243,14 @@ const grafos = [
         { camino: [5], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: false,
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [2, 1, 0, 4, 3, 5],
+      ciclo: false,
+    },
   },
   {
     numero: 3,
@@ -351,6 +367,14 @@ const grafos = [
       [4, 4, 4, 0, 4],
       [7, 8, 8, 4, 0],
     ],
+    euleriano: {
+      camino: [4, 1, 2, 4, 3, 0, 1, 3],
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [2, 1, 0, 3, 4],
+      ciclo: [2, 1, 0, 3, 4, 2],
+    },
     arbolGeneradorMinimo: {
       distancia: 9,
     },
@@ -507,6 +531,14 @@ const grafos = [
         { camino: [6], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [5, 6, 4, 5, 3, 1, 0, 2, 3, 4],
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [1, 0, 2, 3, 4, 5, 6],
+      ciclo: false,
+    },
     arbolGeneradorMinimo: {
       distancia: 31,
     },
@@ -545,6 +577,14 @@ const grafos = [
         [0, 2],
         [0, 1],
       ],
+    },
+    euleriano: {
+      camino: [0, 1, 2, 0],
+      ciclo: [0, 1, 2, 0],
+    },
+    hamiltoniano: {
+      camino: [0, 1, 2],
+      ciclo: [0, 1, 2, 0],
     },
     matrizDeCaminosMasCortos: [
       [
@@ -628,6 +668,14 @@ const grafos = [
         [0, 4],
         [0, 4],
       ],
+    },
+    euleriano: {
+      camino: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
+      ciclo: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
+    },
+    hamiltoniano: {
+      camino: [1, 2, 3, 4, 5, 0, 6],
+      ciclo: false,
     },
     matrizDeCaminosMasCortos: [
       [
@@ -751,6 +799,14 @@ const grafos = [
         [0, 2],
       ],
     },
+    euleriano: {
+      camino: [0, 5, 2, 1, 4, 3, 1, 0],
+      ciclo: [0, 5, 2, 1, 4, 3, 1, 0],
+    },
+    hamiltoniano: {
+      camino: [4, 3, 1, 0, 5, 2],
+      ciclo: false,
+    },
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -868,6 +924,14 @@ const grafos = [
         [0, 1, 3],
       ],
     },
+    euleriano: {
+      camino: [4, 0, 1, 2, 3, 4, 1, 3, 0],
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [0, 1, 2, 3, 4],
+      ciclo: [0, 1, 2, 3, 4, 0],
+    },
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -977,6 +1041,14 @@ const grafos = [
         { camino: [3], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: false,
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [0, 1, 2, 3],
+      ciclo: false,
+    },
     matrizDeFlujosMaximos: [
       [0, 9, 4, 11],
       [0, 0, 1, 8],

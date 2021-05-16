@@ -1,11 +1,12 @@
 /* eslint-disable jest/valid-title */
-const { Grafo, Arista, Direccion } = require("../lib/grafo/grafo.js");
+const { Grafo, Arista, Direccion, Trayecto } = require("../lib/grafo/grafo.js");
 const { grafos } = require("./grafos-prueba.js");
 const { cloneDeep, map, isEqual, camelCase, upperFirst } = require("lodash");
 
 const direcciones = ["salida", "entrada"];
 const estructuras = ["lista de aristas", "matriz de adyacencia", "lista de links"];
 const propiedades = ["conexo", "ponderado"];
+const trayectos = ["camino", "ciclo"];
 
 function aristasEliminadas(origen, destino, original, modificado) {
   function diferenciasMatricesDeAdyacencia(a, b) {
@@ -45,7 +46,7 @@ for (const prueba of grafos) {
 
   describe.each(estructuras)("Grafo desde %s", (estructura) => {
     estructura = camelCase(estructura);
-    if (prueba[estructura]) {
+    if (prueba[estructura] != null) {
       it(prueba.descripcion, () => {
         const grafo = Grafo["desde" + upperFirst(estructura)](
           prueba[estructura],
@@ -58,7 +59,7 @@ for (const prueba of grafos) {
   });
 
   describe("Matriz de adyacencia", () => {
-    if (prueba.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia != null) {
       it(prueba.descripcion, () => {
         return expect(grafo.matrizDeAdyacencia).toEqual(prueba.matrizDeAdyacencia);
       });
@@ -66,7 +67,7 @@ for (const prueba of grafos) {
   });
 
   describe("Lista de aristas", () => {
-    if (prueba.listaDeAristas) {
+    if (prueba.listaDeAristas != null) {
       it(prueba.descripcion, () => expect(grafo.listaDeAristas).toEqual(prueba.listaDeAristas));
     }
   });
@@ -79,19 +80,19 @@ for (const prueba of grafos) {
   });
 
   describe("Cantidad de nodos", () => {
-    if (prueba.cantidad) {
+    if (prueba.cantidad != null) {
       it(prueba.descripcion, () => expect(grafo.cantidad).toBe(prueba.cantidad));
     }
   });
 
   describe("Lista de nodos", () => {
-    if (prueba.nodos) {
+    if (prueba.nodos != null) {
       it(prueba.descripcion, () => expect(grafo.nodos).toEqual(prueba.nodos));
     }
   });
 
   describe.each(direcciones)("Existe arista (dirección: %s)", (direccion) => {
-    if (prueba.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia != null) {
       for (const i of nodos) {
         for (const j of nodos) {
           it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
@@ -106,7 +107,7 @@ for (const prueba of grafos) {
   });
 
   describe.each(direcciones)("Eliminar arista (dirección: %s)", (direccion) => {
-    if (prueba.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia != null) {
       for (const i of nodos) {
         for (const j of nodos) {
           let clon = cloneDeep(grafo);
@@ -123,7 +124,7 @@ for (const prueba of grafos) {
   });
 
   describe.each(direcciones)("Obtener arista (dirección: %s)", (direccion) => {
-    if (prueba.matrizDeAdyacencia) {
+    if (prueba.matrizDeAdyacencia != null) {
       for (const i of nodos) {
         for (const j of nodos) {
           it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
@@ -139,7 +140,7 @@ for (const prueba of grafos) {
   });
 
   describe.each(direcciones.concat("ambas"))("Adyacentes (dirección: %s)", (direccion) => {
-    if (prueba.adyacentes?.[direccion]) {
+    if (prueba.adyacentes?.[direccion] != null) {
       for (const nodo of nodos) {
         it(`${prueba.descripcion}: nodo ${nodo}`, () => {
           return expect(map(grafo.adyacentes(nodo, Direccion[direccion]), "nodo").sort()).toEqual(
@@ -151,7 +152,7 @@ for (const prueba of grafos) {
   });
 
   describe.each(direcciones.concat("ambas"))("Grado (dirección: %s)", (direccion) => {
-    if (prueba.adyacentes?.[direccion]) {
+    if (prueba.adyacentes?.[direccion] != null) {
       for (const nodo of nodos) {
         it(`${prueba.descripcion}: nodo ${nodo}`, () => {
           return expect(grafo.grado(nodo, Direccion[direccion])).toBe(
@@ -163,7 +164,7 @@ for (const prueba of grafos) {
   });
 
   describe("Matriz de caminos", () => {
-    if (prueba.matrizDeCaminos) {
+    if (prueba.matrizDeCaminos != null) {
       it(prueba.descripcion, () => expect(grafo.matrizDeCaminos).toEqual(prueba.matrizDeCaminos));
     }
   });
@@ -182,40 +183,26 @@ for (const prueba of grafos) {
     }
   });
 
-  describe.skip("Camino euleriano", () => {
-    if (prueba.euleriano) {
+  describe.each(trayectos)("Euleriano: %s", (trayecto) => {
+    if (prueba.euleriano?.[trayecto] != null) {
       it(prueba.descripcion, () => {
-        return expect(grafo.euleriano(Trayecto.camino)).toEqual(prueba.euleriano.camino);
+        return expect(grafo.euleriano(Trayecto[trayecto])).toEqual(prueba.euleriano[trayecto]);
       });
     }
   });
 
-  describe.skip("Ciclo euleriano", () => {
-    if (prueba.euleriano) {
+  describe.each(trayectos)("Hamiltoniano: %s", (trayecto) => {
+    if (prueba.hamiltoniano?.[trayecto] != null) {
       it(prueba.descripcion, () => {
-        return expect(grafo.euleriano(Trayecto.ciclo)).toEqual(prueba.euleriano.ciclo);
-      });
-    }
-  });
-
-  describe.skip("Camino hamiltoniano", () => {
-    if (prueba.hamiltoniano) {
-      it(prueba.descripcion, () => {
-        return expect(grafo.hamiltoniano(Trayecto.camino)).toEqual(prueba.hamiltoniano.camino);
-      });
-    }
-  });
-
-  describe.skip("Ciclo hamiltoniano", () => {
-    if (prueba.hamiltoniano) {
-      it(prueba.descripcion, () => {
-        return expect(grafo.hamiltoniano(Trayecto.ciclo)).toEqual(prueba.hamiltoniano.ciclo);
+        return expect(grafo.hamiltoniano(Trayecto[trayecto])).toEqual(
+          prueba.hamiltoniano[trayecto]
+        );
       });
     }
   });
 
   describe("Flujo máximo", () => {
-    if (prueba.matrizDeFlujosMaximos) {
+    if (prueba.matrizDeFlujosMaximos != null) {
       for (const i of nodos) {
         for (const j of nodos) {
           it(`${prueba.descripcion}: nodo ${i} al ${j}`, () => {
@@ -229,7 +216,7 @@ for (const prueba of grafos) {
   // Un grafo puede tener más de un árbol generador mínimo, pero la distancia de
   // los posibles árboles es única.
   describe("Árbol generador mínimo", () => {
-    if (prueba.arbolGeneradorMinimo) {
+    if (prueba.arbolGeneradorMinimo != null) {
       it(prueba.descripcion, () => {
         return expect(grafo.arbolGeneradorMinimo.distancia).toBe(
           prueba.arbolGeneradorMinimo.distancia
