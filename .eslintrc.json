@@ -23,6 +23,8 @@
     ],
     "rules": {
         "prettier/prettier": 0,
-        "no-constant-condition": ["error", { "checkLoops": false }]
+        "no-constant-condition": ["error", { "checkLoops": false }],
+        "react/prop-types": "off",
+        "react/jsx-key": "off"
     }
 }
