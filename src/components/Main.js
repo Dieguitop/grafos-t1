@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Box, Button, FormControl, TextField } from '@material-ui/core';
 import Content from './Content';
 import DeleteIcon from '@material-ui/icons/Delete';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import { Arista } from '../lib/grafo/arista';
+import { Grafo } from '../lib/grafo/grafo';
+import { Adyacente } from '../lib/grafo/nodo';
+import { SaveAlt } from '@material-ui/icons';
+
 
 function Row({ onChange, onRemove, text }) {
 
@@ -28,7 +32,7 @@ function Row({ onChange, onRemove, text }) {
     );
 }
 
-function RowLink({ onChange, onRemove, from, to, text, onClick }) {
+function RowLink({ onChange, onRemove, from, to, text }) {
     ;
     return (
         <FormControl m={10}>
@@ -66,12 +70,6 @@ function RowLink({ onChange, onRemove, from, to, text, onClick }) {
                 />
                 <Button
                     size='small'
-                    startIcon={<SaveAltIcon style={{ fontSize: 25 }} />}
-                    onClick={onClick}
-                >
-                </Button>
-                <Button
-                    size='small'
                     startIcon={<DeleteIcon style={{ fontSize: 25 }} />}
                     onClick={onRemove}
                 >
@@ -82,8 +80,6 @@ function RowLink({ onChange, onRemove, from, to, text, onClick }) {
 }
 
 const Main = () => {
-
-
 
     const defaultState = {
         text: '',
@@ -100,7 +96,6 @@ const Main = () => {
     const [links, setLinks] = useState([defaultStateLinks]);
     const [doneFetch, setDoneFetch] = useState(false);
     const [doneFetchDistance, setDoneFetchDistance] = useState(false);
-    const [array, setArray] = useState([]);
     const [doneFetchHamEul, setDoneFetchHamEul] = useState(false);
     const [doneFetchFlujoMaximo, setDoneFetchFlujoMaximo] = useState(false);
     const [doneFetchArbol, setDoneFetchArbol] = useState(false);
@@ -109,8 +104,55 @@ const Main = () => {
         desde: '',
         hasta: '',
     })
+    // Creando aristas usando la clase Arista
+    const [edgesClass, setEdgesClass] = useState([]);
+    const [grafo, setGrafo] = useState([]);
+    const [arbolGenerador, setArbolGenerador] = useState([])
+    const [matrizDeCamino, setMatrizDeCamino] = useState();
+    const [saveAllData, setSaveAllData] = useState(false)
 
-    //
+
+    const saveArista = (from, to, peso) => {
+
+        const edge = new Arista(from, to, peso);
+        setEdgesClass(edgesClass.concat(edge));
+        grafoClass(from, to, peso)
+
+    };
+
+    const grafoClass = (from, to, peso) => {
+        const numberFrom = Number(from);
+        const numberTo = Number(to);
+        const numberPeso = Number(peso);
+
+
+        const listaDeAdyacencia = [
+            [numberFrom, [new Adyacente(numberTo, numberPeso)]],
+        ];
+        setGrafo(grafo.concat(listaDeAdyacencia));
+    };
+
+    const getMatriz = () => {
+        // inicializamos variables para crear la tabla dinámica
+        console.log('get matriz ok');
+        console.log(rows)
+
+    };
+
+
+
+    const saveData = () => {
+
+        setSaveAllData(true);
+
+        const gra = new Grafo(grafo, true);
+        const { arbol } = gra.arbolGeneradorMinimo;
+
+        //console.log(arbol, gra.matrizDeCaminos);
+        console.log(gra)
+        setArbolGenerador(arbol);
+        setMatrizDeCamino(gra.matrizDeCaminos);
+    }
 
     const handleArbol = () => {
         !doneFetchArbol ? (setDoneFetchArbol(true)) : setDoneFetchArbol(false);
@@ -147,20 +189,10 @@ const Main = () => {
 
 
     const handleMatriz = () => {
-        const copySecondArray = [];
-        console.log(copySecondArray);
-        !doneFetch ? (setDoneFetch(true)) : setDoneFetch(false);
-        for (let i = 0; i < rows.length; i++) {
-            for (let j = 0; j < rows.length; j++) {
-                copySecondArray.push(0);
-                if (i === links[i].from && j === links[i].to) {
-                    copySecondArray.push(69)
-                }
-            }
-        }
-        setArray(copySecondArray);
-    }
 
+        !doneFetch ? (setDoneFetch(true)) : setDoneFetch(false);
+
+    }
     const handleOnChange = (index, text, value) => {
         const copyRows = [...rows];
         const key = index;
@@ -197,6 +229,9 @@ const Main = () => {
             [text]: value,
         };
         setLinks(copyLinks);
+        //Guardar en clase 
+        if (copyLinks[index].from && copyLinks[index].to && copyLinks[index].text)
+            saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text)
     };
 
     const handleOnRemoveLink = index => {
@@ -283,34 +318,120 @@ const Main = () => {
                     />
                 ))}
 
+                <div>
 
-                <Button m={10}
-                    className='main_row'
-                    variant='contained'
-                    color='primary'
-                    onClick={handleMatriz}
-                >
-                    MATRIZ DE CAMINO
-                    </Button>
+                    {
+                        (links.length === 1 || rows.length === 1) ? (
+                            <Button m={10}
+                                className='main_row'
+                                variant='contained'
+                                color='primary'
+                                onClick={saveData}
+                                disabled
+                            >
+                                GUARDAR DATOS
+                                <SaveAlt />
+                            </Button>
+                        ) : (
+                            <Button m={10}
+                                className='main_row'
+                                variant='contained'
+                                color='primary'
+                                onClick={saveData}
+                            >
+                                GUARDAR DATOS
+                                <SaveAlt />
+                            </Button>
+                        )
+                    }
+                </div>
+
+{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+
+                {
+                    !saveAllData ? (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleMatriz}
+                            disabled
+                        >
+                            MATRIZ DE CAMINO
+                        </Button>
+                    ) : (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleMatriz}
+                        >
+                            MATRIZ DE CAMINO
+                        </Button>
+                    )
+                }
+
                 <div className={
                     doneFetch === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    {
-                        array.map(matrix => (
-                            <p>{matrix}</p>
-                        ))
-                    }
-                </div >
-
-                {/* DISTANCIA ENTRE DOS NODOS */}
-                <Button m={10}
-                    className='main_row'
-                    variant='contained'
-                    color='primary'
-                    onClick={handleDistance}
-                >
-                    DISTANCIA ENTRE DOS NODOS
+                    <Button
+                        variant='contained'
+                        color='gray'
+                        type='submit'
+                        onClick={getMatriz}
+                        className="main_buttonMargin"
+                    ><RefreshIcon />
                     </Button>
+                    <div className="item">
+
+                    {
+                        matrizDeCamino &&
+                            matrizDeCamino.map((item, index) => (
+                                <div className="main_boxItem">
+                                    <p>{index}</p>
+                                    {
+
+                                        item.map(miniItem => (
+                                            <div className="main_boxMiniItem">
+                                                <p className='main_p'>{miniItem} &nbsp; </p>
+                                            </div>
+                                        ))
+
+                                    }
+                                </div>
+                            ))
+                    }
+                    </div>
+                </div >
+{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+
+
+{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
+
+                {
+                    !saveAllData ? (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleDistance}
+                            disabled
+                        >
+                            DISTANCIA ENTRE DOS NODOS
+                        </Button>
+                    ) : (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleDistance}
+
+                        >
+                            DISTANCIA ENTRE DOS NODOS
+                        </Button>
+                    )
+                }
+
                 <div
                     className={
                         doneFetchDistance === true ? ('main_isMatriz') : 'main_noMatriz'
@@ -351,57 +472,124 @@ const Main = () => {
                                     <p>Nodo: {item}</p>
                                 ))}
                             </div>
-                        ) : console.log('faltan')
+                        ) : console.log()
                     }
                 </div >
-                {/* DISTANCIA ENTRE DOS NODOS */}
+{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
-                <Button m={10}
-                    className='main_row'
-                    variant='contained'
-                    color='primary'
-                    onClick={handleHamEul}
-                >
-                    HAMILTONIANO Y/O EULERIANO
-                    </Button>
+{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
+
+                {
+                    !saveAllData ? (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleHamEul}
+                            disabled
+                        >
+                            HAMILTONIANO Y/O EULERIANO
+                        </Button>
+                    ) : (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleHamEul}
+                        >
+                            HAMILTONIANO Y/O EULERIANO
+                        </Button>
+                    )
+                }
+
                 <div className={
                     doneFetchHamEul === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     HAMILTONIANO Y/O EULERIANO
                 </div >
+{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
-                <Button m={10}
-                    className='main_row'
-                    variant='contained'
-                    color='primary'
-                    onClick={handleFlujoMaximo}
-                >
-                    FLUJO MÁXIMO
-                    </Button>
+
+{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+
+                {
+                    !saveAllData ? (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleFlujoMaximo}
+                            disabled
+                        >
+                            FLUJO MÁXIMO
+                        </Button>
+                    ) : (
+                        <Button m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleFlujoMaximo}
+                        >
+                            FLUJO MÁXIMO
+                        </Button>
+                    )
+                }
+
                 <div className={
                     doneFetchFlujoMaximo === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     FLUJO MÁXIMO
                 </div >
 
-                <Button m={10}
-                    className='main_row'
-                    variant='contained'
-                    color='primary'
-                    onClick={handleArbol}
-                >
-                    ÁRBOL GENERADOR
-                    </Button>
+{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+
+{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+                {
+                    !saveAllData ? (
+                        <Button
+                            m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleArbol}
+                            disabled
+                        >
+                            ÁRBOL GENERADOR
+                        </Button>
+                    ) : (
+                        <Button
+                            m={10}
+                            className='main_row'
+                            variant='contained'
+                            color='primary'
+                            onClick={handleArbol}
+                        >
+                            ÁRBOL GENERADOR
+                        </Button>
+                    )
+                }
+
                 <div className={
                     doneFetchArbol === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    ÁRBOL GENERADOR
+                    <Button
+                        variant='contained'
+                        color='gray'
+                        type='submit'
+                    ><RefreshIcon />
+                    </Button>
+                    <div className='main_contentInside'>
+                        {
+                            arbolGenerador &&
+                            <Content className="hola" data={rows} linksData={arbolGenerador} />
+                        }
+                    </div>
                 </div >
 
+{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+
+
             </div >
-
-
-
 
             <Content data={rows} linksData={links} />
         </Box >
