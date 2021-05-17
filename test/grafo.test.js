@@ -1,5 +1,5 @@
 /* eslint-disable jest/valid-title */
-const { Grafo, Arista, Direccion, Trayecto } = require("../lib/grafo/grafo.js");
+const { Grafo, Arista, Direccion, Trayecto } = require("../src/lib/grafo/grafo.js");
 const { grafos } = require("./grafos-prueba.js");
 const { cloneDeep, map, isEqual, camelCase, upperFirst } = require("lodash");
 

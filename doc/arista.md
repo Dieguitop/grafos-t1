@@ -24,6 +24,7 @@ Representación de una arista.
     * [new Arista(origen, destino, peso)](#new_Arista_new)
     * _instance_
         * [.esPonderada](#Arista+esPonderada) ⇒ <code>boolean</code>
+        * [.link](#Arista+link) ⇒ [<code>Link</code>](#Link)
     * _static_
         * [.desdeLink(link)](#Arista.desdeLink)
 
@@ -45,6 +46,13 @@ Comprueba si la arista es ponderada.
 **Kind**: instance property of [<code>Arista</code>](#Arista)  
 **Returns**: <code>boolean</code> - `true` si la arista es ponderada, `false` en caso
 contrario.  
+<a name="Arista+link"></a>
+
+### arista.link ⇒ [<code>Link</code>](#Link)
+Convierte la arista a un link.
+
+**Kind**: instance property of [<code>Arista</code>](#Arista)  
+**Returns**: [<code>Link</code>](#Link) - Link.  
 <a name="Arista.desdeLink"></a>
 
 ### Arista.desdeLink(link)

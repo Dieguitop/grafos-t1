@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for path in $(find lib -type f -name "*.js")
+for path in $(find src/lib -type f -name "*.js")
 do
   file=$(basename "$path")
   filename="${file%.*}"

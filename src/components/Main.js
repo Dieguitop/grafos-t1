@@ -3,9 +3,9 @@ import { Box, Button, FormControl, TextField } from '@material-ui/core';
 import Content from './Content';
 import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
-import { Arista } from '../lib/grafo/arista';
-import { Grafo } from '../lib/grafo/grafo';
-import { Adyacente } from '../lib/grafo/nodo';
+import { Arista } from '../lib/grafo/arista.js';
+import { Grafo } from '../lib/grafo/grafo.js';
+import { Adyacente } from '../lib/grafo/nodo.js';
 import { SaveAlt } from '@material-ui/icons';
 
 
@@ -145,10 +145,10 @@ const Main = () => {
 
         setSaveAllData(true);
 
-        const gra = new Grafo(grafo, true);
+        const gra = new Grafo(new Map(grafo), true);
         const { arbol } = gra.arbolGeneradorMinimo;
 
-        //console.log(arbol, gra.matrizDeCaminos);
+        console.log(gra.flujoMaximo(0, 1));
         console.log(gra)
         setArbolGenerador(arbol);
         setMatrizDeCamino(gra.matrizDeCaminos);
@@ -229,7 +229,7 @@ const Main = () => {
             [text]: value,
         };
         setLinks(copyLinks);
-        //Guardar en clase 
+        //Guardar en clase
         if (copyLinks[index].from && copyLinks[index].to && copyLinks[index].text)
             saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text)
     };

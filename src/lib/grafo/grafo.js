@@ -52,11 +52,11 @@ class Grafo {
    *
    * @example
    * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
-   * const listaDeAdyacencia = [
+   * const listaDeAdyacencia = new Map([
    *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
    *   [1, [new Adyacente(2, 3)]],
    *   [2, [new Adyacente(0, 4)]]
-   * ];
+   * ]);
    *
    * // La lista de adyacencia contiene aristas dirigidas.
    * const esDirigido = true;

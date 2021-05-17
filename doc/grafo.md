@@ -21,11 +21,11 @@
 <dd></dd>
 <dt><a href="#CaminoMasCorto">CaminoMasCorto</a> : <code>Object</code></dt>
 <dd></dd>
-<dt><a href="#ArbolGeneradorMinimo">ArbolGeneradorMinimo</a> : <code>Object</code></dt>
-<dd></dd>
 <dt><a href="#InfoTrayecto">InfoTrayecto</a> : <code>Object</code></dt>
 <dd></dd>
 <dt><a href="#CaminoDeAumento">CaminoDeAumento</a> : <code>Object</code></dt>
+<dd></dd>
+<dt><a href="#ArbolGeneradorMinimo">ArbolGeneradorMinimo</a> : <code>Object</code></dt>
 <dd></dd>
 </dl>
 
@@ -46,16 +46,17 @@ Representación de un grafo.
         * [.esConexo](#Grafo+esConexo) ⇒ <code>boolean</code>
         * [.esPonderado](#Grafo+esPonderado) ⇒ <code>boolean</code>
         * [.matrizDeCaminos](#Grafo+matrizDeCaminos) ⇒ <code>Array.&lt;Array.&lt;number&gt;&gt;</code>
-        * [.arbolGeneradorMinimo](#Grafo+arbolGeneradorMinimo) ⇒ [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo)
         * [.esEuleriano](#Grafo+esEuleriano) ⇒ [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code>
         * [.esHamiltoniano](#Grafo+esHamiltoniano) ⇒ [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code>
+        * [.arbolGeneradorMinimo](#Grafo+arbolGeneradorMinimo) ⇒ [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo)
         * [.existeArista(origen, destino, [direccion])](#Grafo+existeArista) ⇒ <code>boolean</code>
         * [.arista(origen, destino, [direccion])](#Grafo+arista) ⇒ <code>Arista</code> \| <code>boolean</code>
         * [.eliminarArista(origen, destino, [direccion])](#Grafo+eliminarArista) ⇒ <code>Array.&lt;Adyacente&gt;</code> \| <code>boolean</code>
         * [.adyacentes(nodo, [direccion])](#Grafo+adyacentes) ⇒ <code>Array.&lt;Adyacente&gt;</code>
-        * [.grado(nodo, direccion)](#Grafo+grado) ⇒ <code>number</code>
-        * [.euleriano(tipo)](#Grafo+euleriano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
-        * [.hamiltoniano(tipo)](#Grafo+hamiltoniano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
+        * [.grado(nodo, [direccion])](#Grafo+grado) ⇒ <code>number</code>
+        * [.esTrayecto(trayecto)](#Grafo+esTrayecto) ⇒ <code>boolean</code>
+        * [.euleriano([tipo])](#Grafo+euleriano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
+        * [.hamiltoniano([tipo])](#Grafo+hamiltoniano) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
         * [.flujoMaximo(entrada, salida)](#Grafo+flujoMaximo) ⇒ <code>number</code>
     * _static_
         * [.desdeListaDeLinks(listaDeLinks, [esDirigido])](#Grafo.desdeListaDeLinks)
@@ -75,11 +76,11 @@ Representación de un grafo.
 **Example**  
 ```js
 // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
-const listaDeAdyacencia = [
+const listaDeAdyacencia = new Map([
   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
   [1, [new Adyacente(2, 3)]],
   [2, [new Adyacente(0, 4)]]
-];
+]);
 
 // La lista de adyacencia contiene aristas dirigidas.
 const esDirigido = true;
@@ -141,28 +142,18 @@ El cálculo de la matriz de caminos está definido como la sumatoria de
 adyacencia del grafo, y n es la cantidad de nodos del mismo grafo. Desde `i
 = 2`, el resultado de `A^(i - 1)` se recuerda, para calcular el próximo
 término `A^i` como `A^(i - 1) * A`.  
-<a name="Grafo+arbolGeneradorMinimo"></a>
-
-### grafo.arbolGeneradorMinimo ⇒ [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo)
-Construye un árbol generador mínimo del grafo.
-
-**Kind**: instance property of [<code>Grafo</code>](#Grafo)  
-**Returns**: [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo) - Árbol generador mínimo del grafo.
-
-Implementación del algoritmo de Kruskal, utilizando la estructura de
-conjuntos disjuntos.  
 <a name="Grafo+esEuleriano"></a>
 
 ### grafo.esEuleriano ⇒ [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code>
-Determina si el grafo contiene un camino o un ciclo euleriano.
+Determina si el grafo contiene un trayecto euleriano.
 
 **Kind**: instance property of [<code>Grafo</code>](#Grafo)  
 **Returns**: [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code> - Tipo de trayecto (camino o ciclo) y nodo
 que origina el trayecto, si existe; `false`, en caso contrario.
 
-Condiciones que el grafo debe cumplir para que contenga un camino o un
-ciclo euleriano, donde GE es el grado de entrada de un nodo, y GS el grado
-de salida:
+Condiciones que el grafo debe cumplir para que contenga un trayecto
+euleriano, donde GE es el grado de entrada de un nodo, y GS el grado de
+salida:
            ┌─────────────────────────┬───────────────────────────────────┐
            │     Ciclo euleriano     │          Camino euleriano         │
 ┌──────────┼─────────────────────────┼───────────────────────────────────┤
@@ -177,23 +168,33 @@ de salida:
 │          │                         │ Y, el resto de nodos cumplen que: │
 │          │                         │ GE = GS.                          │
 └──────────┴─────────────────────────┴───────────────────────────────────┘
-(1): si existen dichos 2 nodos, éstos serían el inicio y el final del
-camino euleriano.  
+(1): si existen dichos nodos, éstos serían el inicio y el final del camino
+euleriano.  
 <a name="Grafo+esHamiltoniano"></a>
 
 ### grafo.esHamiltoniano ⇒ [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code>
-Determina si el grafo contiene un camino o un ciclo hamiltoniano.
+Determina si el grafo contiene un trayecto hamiltoniano.
 
 **Kind**: instance property of [<code>Grafo</code>](#Grafo)  
-**Returns**: [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code> - Tipo de trayecto (camino o ciclo) y
-nodo que origina el trayecto, si existe; `false`, en caso contrario.
+**Returns**: [<code>InfoTrayecto</code>](#InfoTrayecto) \| <code>boolean</code> - Tipo de trayecto hamiltoniano y nodo que
+origina el trayecto, si existe; `false`, en caso contrario.
 
 A diferencia de los trayectos eulerianos, no existen condiciones
-suficientes que cumplan los grafos para determinar que exista un trayecto
+suficientes que cumplan los grafos para determinar si existe un trayecto
 hamiltoniano. Esto se debe a que, tanto el problema de comprobar la
 existencia de un trayecto hamiltoniano, como el de encontrar dichos
 trayectos, son problemas NP-completos, y sus soluciones son polinómicas (y
 no muy eficientes).  
+<a name="Grafo+arbolGeneradorMinimo"></a>
+
+### grafo.arbolGeneradorMinimo ⇒ [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo)
+Construye un árbol generador mínimo del grafo.
+
+**Kind**: instance property of [<code>Grafo</code>](#Grafo)  
+**Returns**: [<code>ArbolGeneradorMinimo</code>](#ArbolGeneradorMinimo) - Árbol generador mínimo del grafo.
+
+Implementación del algoritmo de Kruskal, utilizando la estructura de
+conjuntos disjuntos.  
 <a name="Grafo+existeArista"></a>
 
 ### grafo.existeArista(origen, destino, [direccion]) ⇒ <code>boolean</code>
@@ -280,7 +281,7 @@ console.log(grafo.adyacentes(0, Direccion.entrada));
 ```
 <a name="Grafo+grado"></a>
 
-### grafo.grado(nodo, direccion) ⇒ <code>number</code>
+### grafo.grado(nodo, [direccion]) ⇒ <code>number</code>
 Calcula el grado de un nodo.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
@@ -290,45 +291,56 @@ Calcula el grado de un nodo.
 - [ ] Considerar caso de aristas bucle.
 
 
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| nodo | <code>number</code> |  | Nodo. |
+| [direccion] | <code>Direccion</code> | <code>Direccion.salida</code> | Dirección de los nodos adyacentes considerados en el grado. |
+
+<a name="Grafo+esTrayecto"></a>
+
+### grafo.esTrayecto(trayecto) ⇒ <code>boolean</code>
+Comprueba si un trayecto es válido en el grafo.
+
+**Kind**: instance method of [<code>Grafo</code>](#Grafo)  
+**Returns**: <code>boolean</code> - `true` si el  trayecto es válido en el grafo, `false` en
+caso contrario.  
+
 | Param | Type | Description |
 | --- | --- | --- |
-| nodo | <code>number</code> | Nodo. |
-| direccion | <code>Direccion</code> | Dirección de los nodos adyacentes considerados en el grado. |
+| trayecto | <code>Array.&lt;number&gt;</code> | Trayecto. |
 
 <a name="Grafo+euleriano"></a>
 
-### grafo.euleriano(tipo) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
-Obtiene el camino o el ciclo euleriano, si el grafo contiene alguno.
+### grafo.euleriano([tipo]) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
+Obtiene un trayecto euleriano, si el grafo contiene alguno.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Camino o ciclo euleriano, si el grafo contiene
-alguno, `false` en caso contrario.
+**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Trayecto euleriano, si el grafo contiene
+alguno, `false` en caso contrario.  
 
-Implementación del algoritmo de Hierholzer.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| tipo | [<code>Trayecto</code>](#Trayecto) | Tipo de trayecto euleriano. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [tipo] | [<code>Trayecto</code>](#Trayecto) | <code>Trayecto.camino</code> | Tipo de trayecto euleriano. |
 
 <a name="Grafo+hamiltoniano"></a>
 
-### grafo.hamiltoniano(tipo) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
-Obtiene el camino o el ciclo hamiltoniano, si el grafo contiene alguno.
+### grafo.hamiltoniano([tipo]) ⇒ <code>Array.&lt;number&gt;</code> \| <code>boolean</code>
+Obtiene el trayecto hamiltoniano, si el grafo contiene alguno.
 
 **Kind**: instance method of [<code>Grafo</code>](#Grafo)  
-**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Camino o ciclo hamiltoniano, si el grafo
-contiene alguno, `false` en caso contrario.
+**Returns**: <code>Array.&lt;number&gt;</code> \| <code>boolean</code> - Trayecto hamiltoniano, si el grafo contiene
+alguno, `false` en caso contrario.
 
 Encontrar cualquier trayecto hamiltoniano en un grafo es un problema
 NP-completo y, por lo tanto, sus soluciones no son muy eficientes. La
 implementación, en este caso, se realiza generando una permutación de la
-lista de nodos por iteración, y retornando la primera permutación que sea
-un trayecto hamiltoniano válido. En el peor de los casos, la complejidad
-temporal de ésta implementación es O(n * n!).  
+lista de nodos por iteración, y retornando la primera que sea un trayecto
+hamiltoniano válido. En el peor de los casos, la complejidad temporal de
+ésta implementación es O(n * n!).  
 
-| Param | Type | Description |
-| --- | --- | --- |
-| tipo | [<code>Trayecto</code>](#Trayecto) | Tipo de trayecto hamiltoniano. |
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [tipo] | [<code>Trayecto</code>](#Trayecto) | <code>Trayecto.camino</code> | Tipo de trayecto hamiltoniano. |
 
 <a name="Grafo+flujoMaximo"></a>
 
@@ -472,19 +484,6 @@ Implementación del algoritmo de caminos mínimos de Dijkstra.
 | origen | <code>number</code> | Nodo origen. |
 | destino | <code>number</code> | Nodo destino. |
 
-<a name="caminoMasCorto.noVisitadoConMenorDistancia"></a>
-
-### caminoMasCorto.noVisitadoConMenorDistancia(distancias, noVisitados) ⇒ <code>number</code>
-Obtiene el nodo no visitado más cercano al nodo original.
-
-**Kind**: static method of [<code>caminoMasCorto</code>](#caminoMasCorto)  
-**Returns**: <code>number</code> - Nodo no visitado más cercano al nodo original.  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| distancias | <code>Map.&lt;number, number&gt;</code> | Distancias del nodo original a cada nodo del grafo. |
-| noVisitados | <code>Map.&lt;number, number&gt;</code> | Nodos no visitados por el algoritmo. |
-
 <a name="Celda"></a>
 
 ## Celda : <code>enum</code>
@@ -518,19 +517,8 @@ Representa los tipos de trayecto en un grafo.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| camino | <code>Array.&lt;number&gt;</code> | Camino más corto entre el nodo origen y el   nodo destino. |
+| camino | <code>boolean</code> \| <code>Array.&lt;number&gt;</code> | Camino más corto entre el nodo   origen y el nodo destino, si existe; `false`, en caso contrario. |
 | distancia | <code>number</code> | Distancia total del camino más corto. |
-
-<a name="ArbolGeneradorMinimo"></a>
-
-## ArbolGeneradorMinimo : <code>Object</code>
-**Kind**: global typedef  
-**Properties**
-
-| Name | Type | Description |
-| --- | --- | --- |
-| arbol | <code>Array.&lt;Arista&gt;</code> | Lista de aristas del árbol generador mínimo. |
-| distancia | <code>number</code> | Distancia total del árbol generador   mínimo. |
 
 <a name="InfoTrayecto"></a>
 
@@ -553,4 +541,15 @@ Representa los tipos de trayecto en un grafo.
 | --- | --- | --- |
 | flujoCamino | <code>number</code> | Capacidad residual mínima del camino   de aumento. |
 | padre | <code>Array.&lt;number&gt;</code> | Lista de padres de cada nodo, siguiendo el   camino de aumento. |
+
+<a name="ArbolGeneradorMinimo"></a>
+
+## ArbolGeneradorMinimo : <code>Object</code>
+**Kind**: global typedef  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| arbol | <code>Array.&lt;Arista&gt;</code> | Lista de aristas del árbol generador mínimo. |
+| distancia | <code>number</code> | Distancia total del árbol generador   mínimo. |
 
