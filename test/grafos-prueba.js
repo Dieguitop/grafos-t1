@@ -137,6 +137,16 @@ const grafos = [
       camino: [1, 2, 0, 3],
       ciclo: false,
     },
+    matrizDeFlujosMaximos: [
+      [0, 2, 2, 1],
+      [2, 0, 2, 1],
+      [2, 2, 0, 1],
+      [1, 1, 1, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [new Arista(0, 1), new Arista(0, 2), new Arista(0, 3)],
+      distancia: 3,
+    },
   },
   {
     numero: 2,
@@ -250,6 +260,24 @@ const grafos = [
     hamiltoniano: {
       camino: [2, 1, 0, 4, 3, 5],
       ciclo: false,
+    },
+    matrizDeFlujosMaximos: [
+      [0, 2, 2, 2, 2, 1],
+      [2, 0, 2, 2, 3, 1],
+      [2, 2, 0, 2, 2, 1],
+      [2, 2, 2, 0, 2, 1],
+      [2, 3, 2, 2, 0, 1],
+      [1, 1, 1, 1, 1, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [
+        new Arista(0, 1),
+        new Arista(0, 4),
+        new Arista(1, 2),
+        new Arista(2, 3),
+        new Arista(3, 5),
+      ],
+      distancia: 5,
     },
   },
   {
@@ -375,7 +403,15 @@ const grafos = [
       camino: [2, 1, 0, 3, 4],
       ciclo: [2, 1, 0, 3, 4, 2],
     },
+    matrizDeFlujosMaximos: [
+      [0, 7, 7, 4, 7],
+      [7, 0, 8, 4, 8],
+      [7, 8, 0, 4, 8],
+      [4, 4, 4, 0, 4],
+      [7, 8, 8, 4, 0],
+    ],
     arbolGeneradorMinimo: {
+      arbol: [new Arista(0, 3, 1), new Arista(3, 4, 1), new Arista(1, 3, 2), new Arista(1, 2, 5)],
       distancia: 9,
     },
   },
@@ -539,7 +575,24 @@ const grafos = [
       camino: [1, 0, 2, 3, 4, 5, 6],
       ciclo: false,
     },
+    matrizDeFlujosMaximos: [
+      [0, 7, 8, 8, 8, 8, 8],
+      [7, 0, 7, 7, 7, 7, 7],
+      [8, 7, 0, 10, 10, 10, 8],
+      [8, 7, 10, 0, 18, 23, 8],
+      [8, 7, 10, 18, 0, 18, 8],
+      [8, 7, 10, 23, 18, 0, 8],
+      [8, 7, 8, 8, 8, 8, 0],
+    ],
     arbolGeneradorMinimo: {
+      arbol: [
+        new Arista(0, 1, 2),
+        new Arista(4, 6, 2),
+        new Arista(1, 3, 5),
+        new Arista(0, 2, 6),
+        new Arista(4, 5, 6),
+        new Arista(3, 4, 10),
+      ],
       distancia: 31,
     },
   },
@@ -578,14 +631,11 @@ const grafos = [
         [0, 1],
       ],
     },
-    euleriano: {
-      camino: [0, 1, 2, 0],
-      ciclo: [0, 1, 2, 0],
-    },
-    hamiltoniano: {
-      camino: [0, 1, 2],
-      ciclo: [0, 1, 2, 0],
-    },
+    matrizDeCaminos: [
+      [1, 1, 1],
+      [1, 1, 1],
+      [1, 1, 1],
+    ],
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -603,6 +653,23 @@ const grafos = [
         { camino: [2], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [0, 1, 2, 0],
+      ciclo: [0, 1, 2, 0],
+    },
+    hamiltoniano: {
+      camino: [0, 1, 2],
+      ciclo: [0, 1, 2, 0],
+    },
+    matrizDeFlujosMaximos: [
+      [0, 1, 1],
+      [1, 0, 1],
+      [1, 1, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [new Arista(0, 1), new Arista(1, 2)],
+      distancia: 2,
+    },
   },
   {
     numero: 6,
@@ -669,14 +736,15 @@ const grafos = [
         [0, 4],
       ],
     },
-    euleriano: {
-      camino: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
-      ciclo: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
-    },
-    hamiltoniano: {
-      camino: [1, 2, 3, 4, 5, 0, 6],
-      ciclo: false,
-    },
+    matrizDeCaminos: [
+      [7, 4, 8, 4, 6, 4, 4],
+      [6, 5, 4, 4, 4, 2, 4],
+      [6, 6, 9, 4, 8, 4, 6],
+      [6, 2, 6, 5, 4, 4, 2],
+      [10, 6, 6, 6, 7, 4, 6],
+      [4, 4, 4, 2, 4, 3, 4],
+      [6, 2, 6, 4, 4, 4, 3],
+    ],
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -742,6 +810,34 @@ const grafos = [
         { camino: [6], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
+      ciclo: [0, 1, 2, 0, 6, 4, 2, 3, 4, 5, 0],
+    },
+    hamiltoniano: {
+      camino: [1, 2, 3, 4, 5, 0, 6],
+      ciclo: false,
+    },
+    matrizDeFlujosMaximos: [
+      [0, 1, 2, 1, 2, 1, 1],
+      [1, 0, 1, 1, 1, 1, 1],
+      [2, 1, 0, 1, 2, 1, 1],
+      [1, 1, 1, 0, 1, 1, 1],
+      [2, 1, 2, 1, 0, 1, 1],
+      [1, 1, 1, 1, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [
+        new Arista(0, 1),
+        new Arista(0, 6),
+        new Arista(1, 2),
+        new Arista(2, 3),
+        new Arista(3, 4),
+        new Arista(4, 5),
+      ],
+      distancia: 6,
+    },
   },
   {
     numero: 7,
@@ -799,14 +895,14 @@ const grafos = [
         [0, 2],
       ],
     },
-    euleriano: {
-      camino: [0, 5, 2, 1, 4, 3, 1, 0],
-      ciclo: [0, 5, 2, 1, 4, 3, 1, 0],
-    },
-    hamiltoniano: {
-      camino: [4, 3, 1, 0, 5, 2],
-      ciclo: false,
-    },
+    matrizDeCaminos: [
+      [2, 1, 1, 1, 1, 2],
+      [3, 3, 1, 2, 3, 2],
+      [2, 3, 2, 1, 2, 1],
+      [2, 3, 1, 2, 2, 1],
+      [1, 2, 1, 2, 2, 1],
+      [1, 2, 2, 1, 1, 2],
+    ],
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -857,6 +953,32 @@ const grafos = [
         { camino: [5], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [0, 5, 2, 1, 4, 3, 1, 0],
+      ciclo: [0, 5, 2, 1, 4, 3, 1, 0],
+    },
+    hamiltoniano: {
+      camino: [4, 3, 1, 0, 5, 2],
+      ciclo: false,
+    },
+    matrizDeFlujosMaximos: [
+      [0, 1, 1, 1, 1, 1],
+      [1, 0, 1, 1, 1, 1],
+      [1, 1, 0, 1, 1, 1],
+      [1, 1, 1, 0, 1, 1],
+      [1, 1, 1, 1, 0, 1],
+      [1, 1, 1, 1, 1, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [
+        new Arista(0, 5),
+        new Arista(1, 0),
+        new Arista(1, 4),
+        new Arista(2, 1),
+        new Arista(3, 1),
+      ],
+      distancia: 5,
+    },
   },
   {
     numero: 8,
@@ -924,14 +1046,13 @@ const grafos = [
         [0, 1, 3],
       ],
     },
-    euleriano: {
-      camino: [4, 0, 1, 2, 3, 4, 1, 3, 0],
-      ciclo: false,
-    },
-    hamiltoniano: {
-      camino: [0, 1, 2, 3, 4],
-      ciclo: [0, 1, 2, 3, 4, 0],
-    },
+    matrizDeCaminos: [
+      [35, 38, 24, 38, 34],
+      [38, 47, 26, 46, 38],
+      [24, 26, 19, 26, 24],
+      [38, 46, 26, 47, 38],
+      [34, 38, 24, 38, 35],
+    ],
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -969,6 +1090,25 @@ const grafos = [
         { camino: [4], distancia: 0 },
       ],
     ],
+    euleriano: {
+      camino: [4, 0, 1, 2, 3, 4, 1, 3, 0],
+      ciclo: false,
+    },
+    hamiltoniano: {
+      camino: [0, 1, 2, 3, 4],
+      ciclo: [0, 1, 2, 3, 4, 0],
+    },
+    matrizDeFlujosMaximos: [
+      [0, 3, 2, 3, 3],
+      [3, 0, 2, 4, 3],
+      [2, 2, 0, 2, 2],
+      [3, 4, 2, 0, 3],
+      [3, 3, 2, 3, 0],
+    ],
+    arbolGeneradorMinimo: {
+      arbol: [new Arista(0, 1), new Arista(0, 3), new Arista(0, 4), new Arista(1, 2)],
+      distancia: 4,
+    },
   },
   {
     numero: 9,
@@ -1015,6 +1155,12 @@ const grafos = [
         [1, 2],
       ],
     },
+    matrizDeCaminos: [
+      [1, 9, 12, 111],
+      [0, 1, 1, 11],
+      [0, 0, 1, 4],
+      [0, 0, 0, 1],
+    ],
     matrizDeCaminosMasCortos: [
       [
         { camino: [0], distancia: 0 },
@@ -1055,6 +1201,10 @@ const grafos = [
       [0, 0, 0, 4],
       [0, 0, 0, 0],
     ],
+    arbolGeneradorMinimo: {
+      arbol: [new Arista(1, 2, 1), new Arista(0, 2, 3), new Arista(2, 3, 4)],
+      distancia: 8,
+    },
   },
   {
     numero: 10,

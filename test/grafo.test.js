@@ -218,9 +218,7 @@ for (const prueba of grafos) {
   describe("Árbol generador mínimo", () => {
     if (prueba.arbolGeneradorMinimo != null) {
       it(prueba.descripcion, () => {
-        return expect(grafo.arbolGeneradorMinimo.distancia).toBe(
-          prueba.arbolGeneradorMinimo.distancia
-        );
+        return expect(grafo.arbolGeneradorMinimo).toEqual(prueba.arbolGeneradorMinimo);
       });
     }
   });
