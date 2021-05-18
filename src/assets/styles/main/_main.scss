@@ -21,6 +21,13 @@
     display: none;
 }
 
+
+p.main_p{
+    color: black;
+    font-weight: bold;
+    text-align: center;
+}
+
 .main_links{
     margin-top: 100px;
 }
@@ -39,7 +46,52 @@
     }
 }
 
+.main_contentInside{
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-end;
+}
 
+.main_contentInside{
+
+    .content{
+
+        .diagram-component{
+            margin: 7px;
+            height: 200px;
+            width: 450px !important;
+            canvas{
+                color: white !important;
+            }
+        }
+    }
+}
+
+.main_boxMiniItem{
+    color: black !important;
+}
+
+.main_boxItem {
+    display: flex ;
+    justify-content: center;
+    align-items: center;
+    margin: 0px auto;
+    width: 100%;
+    text-align: center;
+    background: rgb(204, 204, 204);
+    justify-content: space-evenly;
+
+}
+
+.main_buttonMargin{
+    margin: 10px;
+}
+
+.item{
+    margin: 10px;
+    border: 10px solid rgb(204, 204, 204);
+    border-radius: 10px;
+}
 
 hr{
     height: 80px;

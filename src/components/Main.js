@@ -91,7 +91,7 @@ const Main = () => {
         to: '',
         text: '',
     };
-
+    const [aaa, setAaa] = useState();
     const [rows, setRows] = useState([defaultState]); //nodos
     const [links, setLinks] = useState([defaultStateLinks]);
     const [doneFetch, setDoneFetch] = useState(false);
@@ -104,14 +104,23 @@ const Main = () => {
         desde: '',
         hasta: '',
     })
+    const [peakData, setPeakData] = useState({
+        from: '',
+        to: '',
+    });
     // Creando aristas usando la clase Arista
     const [edgesClass, setEdgesClass] = useState([]);
     const [grafo, setGrafo] = useState([]);
     const [arbolGenerador, setArbolGenerador] = useState([])
     const [matrizDeCamino, setMatrizDeCamino] = useState();
     const [saveAllData, setSaveAllData] = useState(false)
-
-
+    const [isHamiltoniano, setIsHamiltoniano] = useState(false);
+    const [isEuleriano, setIsEuleriano] = useState(false);
+    const [isConexo, setIsConexo] = useState(false);
+    const [distance, setDistance] = useState();
+    const [distanceFrom, setDistanceFrom] = useState(0);
+    const [distanceTo, setDistanceTo] = useState(0);
+    const [peakFlow, setPeakFlow] = useState();
     const saveArista = (from, to, peso) => {
 
         const edge = new Arista(from, to, peso);
@@ -146,12 +155,24 @@ const Main = () => {
         setSaveAllData(true);
 
         const gra = new Grafo(new Map(grafo), true);
-        const { arbol } = gra.arbolGeneradorMinimo;
 
-        console.log(gra.flujoMaximo(0, 1));
-        console.log(gra)
+
+        
+        const {esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos} = gra;
+        const { arbol } = gra.arbolGeneradorMinimo;
+        console.log(distanceFrom, distanceTo);
+        const distanceShortes = gra.caminoMasCorto(distanceFrom, distanceTo).distancia;
+        console.log(distanceShortes);
+        const peak = gra.flujoMaximo(Number(peakData.from), Number(peakData.to));
+        console.log(peak, Number(peakData.from), Number(peakData.to))
         setArbolGenerador(arbol);
-        setMatrizDeCamino(gra.matrizDeCaminos);
+        setMatrizDeCamino(matrizDeCaminos);
+        setIsHamiltoniano(esHamiltoniano);
+        setIsEuleriano(esEuleriano);
+        setIsConexo(esConexo);
+        setDistance(distanceShortes);
+        setPeakFlow(peak);
+
     }
 
     const handleArbol = () => {
@@ -165,25 +186,15 @@ const Main = () => {
     const handleDistance = () => {
 
         !doneFetchDistance ? (setDoneFetchDistance(true)) : setDoneFetchDistance(false);
+
+        //setDistance(gra.caminoMasCorto(distanceFrom, distanceTo).distancia);
+
     }
 
     const handleHamEul = () => {
 
         !doneFetchHamEul ? (setDoneFetchHamEul(true)) : setDoneFetchHamEul(false);
-        for (const element in links) {
-            //console.log(links[element].from, initialElmement);
-            let saveElement = [...links[element].from]
 
-            //console.log(...links[element].from)
-            if (links[element].from !== saveElement[0]) {
-                //console.log('Hola mundo')
-            } else {
-                //console.log(links[element].from, saveElement[0])
-            }
-
-        }
-
-        console.log(links)
     }
 
 
@@ -244,10 +255,17 @@ const Main = () => {
     //-------------DIJKSTRA---------------------------------------------------------
     // Función Dijkstra que se activa con un botón
     const dijkstra = () => {
+
+        setDistanceFrom(datos.desde);
+        setDistanceTo(datos.hasta);
+
         let initialNode = datos.desde;
         const finalNode = datos.hasta;
+
+
         let peso = 100;
         let j = 0;
+        let contador = 0;
         let auxNode = [];
         let saveData = [];
         for (let i = 0; i < links.length; i++) {
@@ -257,6 +275,7 @@ const Main = () => {
                         if (links[j].text < peso) {
                             peso = links[j].text;
                             auxNode = links[j];
+                            contador += peso;
                         };
                     }
                     j++;
@@ -274,6 +293,7 @@ const Main = () => {
         const filterData = new Set(saveData);
         let finalResult = [...filterData];
         setCont(finalResult);
+        setAaa(contador);
 
     };
 
@@ -284,11 +304,36 @@ const Main = () => {
             ...datos,
             [e.target.name]: e.target.value,
         })
+        
+        getFromTo(datos);
+        
+    }
+
+    const getFromTo = (datos) => {
+        datos.desde && datos.hasta
+            setDistanceFrom(Number(datos.desde));
+            setDistanceTo(Number(datos.hasta));
     }
     // Enviar datos para actualizar formulario
     const handleSubmitFromTo = (e) => {
         e.preventDefault();
     }
+
+    const handleInputPeakFlow = (e) => {
+        e.preventDefault();
+        setPeakData({
+            ...peakData,
+            [e.target.name]: e.target.value,
+        })
+
+        console.log(peakData)
+                
+    }
+
+    const handleSubmitPeak = (e) => {
+        e.preventDefault();
+    }
+
 
     return (
         <Box display='flex' className='main_view'>
@@ -366,7 +411,7 @@ const Main = () => {
                             color='primary'
                             onClick={handleMatriz}
                         >
-                            MATRIZ DE CAMINO
+                            MATRIZ DE CAMINO {aaa}
                         </Button>
                     )
                 }
@@ -401,6 +446,11 @@ const Main = () => {
                                 </div>
                             ))
                     }
+                    <p className='main_isConexo'>
+                        {
+                            (isConexo===false) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                        }
+                    </p>
                     </div>
                 </div >
 {/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
@@ -474,6 +524,9 @@ const Main = () => {
                             </div>
                         ) : console.log()
                     }
+                    <p>
+                        Distancia : {distance}
+                    </p>
                 </div >
 {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
@@ -505,13 +558,23 @@ const Main = () => {
                 <div className={
                     doneFetchHamEul === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    HAMILTONIANO Y/O EULERIANO
+                    <div className='distanceFromTo'>
+                    <p>
+                        {
+                            !isHamiltoniano ? ('No es hamiltoniano') : ('Es hamiltoninao')
+                        }
+                    </p>
+                    <p>
+                        {
+                            !isEuleriano ? ('No es euleriano') : ('Es euleriano')
+                        }
+                    </p>
+                    </div>
                 </div >
 {/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
 
 {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
-
                 {
                     !saveAllData ? (
                         <Button m={10}
@@ -538,7 +601,46 @@ const Main = () => {
                 <div className={
                     doneFetchFlujoMaximo === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    FLUJO MÁXIMO
+                    <form className='main_formDistance' onSubmit={handleSubmitPeak}>
+                        <TextField
+                            className='main_textFieldDistance'
+                            id='filled-number-peak'
+                            label='Desde'
+                            type='number'
+                            name='from'
+                            onChange={handleInputPeakFlow}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                        />
+                        <TextField
+                            className='main_textFieldDistance'
+                            id='filled-number-peak'
+                            label='Hasta'
+                            type='number'
+                            name='to'
+                            onChange={handleInputPeakFlow}
+                            InputLabelProps={{ shrink: true, }}
+                        />
+                        <Button
+                            variant='contained'
+                            color='gray'
+                            type='submit'
+                            onClick={console.log("ok")}
+                        ><RefreshIcon />
+                        </Button>
+                    </form>
+                    {
+                        peakData.from && peakData.to ? (
+                            <div className='distanceFromTo'>
+                                <p>Flujo máximo es: {peakFlow}</p>
+                            </div>
+                        ) : (
+                            <div className='distanceFromTo'>
+                                <p>Flujo máximo es: {peakFlow}</p>
+                            </div>
+                        )
+                    }
                 </div >
 
 {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
