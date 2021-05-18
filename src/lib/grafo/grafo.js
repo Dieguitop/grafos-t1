@@ -63,7 +63,11 @@ class Grafo {
    * const grafo = new Grafo(listaDeAdyacencia, esDirigido);
    */
   constructor(listaDeAdyacencia, esDirigido = false) {
-    this.listaDeAdyacencia = listaDeAdyacencia;
+    // Ordena la lista de adyacencia ascendentemente, según los nodos de origen.
+    this.listaDeAdyacencia = new Map(
+      [...listaDeAdyacencia.entries()].sort((a, b) => first(a) - first(b))
+    );
+
     this.esDirigido = esDirigido;
   }
 

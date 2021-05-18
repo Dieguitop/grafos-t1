@@ -388,13 +388,6 @@ const grafos = [
         { camino: [4], distancia: 0 },
       ],
     ],
-    matrizDeFlujosMaximos: [
-      [0, 7, 7, 4, 7],
-      [7, 0, 8, 4, 8],
-      [7, 8, 0, 4, 8],
-      [4, 4, 4, 0, 4],
-      [7, 8, 8, 4, 0],
-    ],
     euleriano: {
       camino: [4, 1, 2, 4, 3, 0, 1, 3],
       ciclo: false,

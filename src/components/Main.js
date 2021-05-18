@@ -156,8 +156,8 @@ const Main = () => {
 
         const gra = new Grafo(new Map(grafo), true);
 
+        window.grafo = gra;
 
-        
         const {esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos} = gra;
         const { arbol } = gra.arbolGeneradorMinimo;
         console.log(distanceFrom, distanceTo);
@@ -304,9 +304,9 @@ const Main = () => {
             ...datos,
             [e.target.name]: e.target.value,
         })
-        
+
         getFromTo(datos);
-        
+
     }
 
     const getFromTo = (datos) => {
@@ -327,7 +327,7 @@ const Main = () => {
         })
 
         console.log(peakData)
-                
+
     }
 
     const handleSubmitPeak = (e) => {
