@@ -91,7 +91,7 @@ const Main = () => {
         to: '',
         text: '',
     };
-    const [aaa, setAaa] = useState();
+
     const [rows, setRows] = useState([defaultState]); //nodos
     const [links, setLinks] = useState([defaultStateLinks]);
     const [doneFetch, setDoneFetch] = useState(false);
@@ -99,7 +99,9 @@ const Main = () => {
     const [doneFetchHamEul, setDoneFetchHamEul] = useState(false);
     const [doneFetchFlujoMaximo, setDoneFetchFlujoMaximo] = useState(false);
     const [doneFetchArbol, setDoneFetchArbol] = useState(false);
-    const [cont, setCont] = useState([])
+    const [aux1, setAux1] = useState([]);
+    const [aux2, setAux2] = useState();
+    const [cont, setCont] = useState([]);
     const [datos, setDatos] = useState({
         desde: '',
         hasta: '',
@@ -109,6 +111,7 @@ const Main = () => {
         to: '',
     });
     // Creando aristas usando la clase Arista
+    const [grafoClase, setGrafoClase] = useState(new Grafo);
     const [edgesClass, setEdgesClass] = useState([]);
     const [grafo, setGrafo] = useState([]);
     const [arbolGenerador, setArbolGenerador] = useState([])
@@ -117,7 +120,6 @@ const Main = () => {
     const [isHamiltoniano, setIsHamiltoniano] = useState(false);
     const [isEuleriano, setIsEuleriano] = useState(false);
     const [isConexo, setIsConexo] = useState(false);
-    const [distance, setDistance] = useState();
     const [distanceFrom, setDistanceFrom] = useState(0);
     const [distanceTo, setDistanceTo] = useState(0);
     const [peakFlow, setPeakFlow] = useState();
@@ -134,44 +136,38 @@ const Main = () => {
         const numberTo = Number(to);
         const numberPeso = Number(peso);
 
-
         const listaDeAdyacencia = [
             [numberFrom, [new Adyacente(numberTo, numberPeso)]],
         ];
         setGrafo(grafo.concat(listaDeAdyacencia));
     };
 
-    const getMatriz = () => {
-        // inicializamos variables para crear la tabla dinámica
-        console.log('get matriz ok');
-        console.log(rows)
-
-    };
-
-
 
     const saveData = () => {
 
         setSaveAllData(true);
 
+        // Implementanción de la clase Grafo
         const gra = new Grafo(new Map(grafo), true);
+        setGrafoClase(gra);
 
-        window.grafo = gra;
-
+        // Destructuring
         const {esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos} = gra;
         const { arbol } = gra.arbolGeneradorMinimo;
-        console.log(distanceFrom, distanceTo);
         const distanceShortes = gra.caminoMasCorto(distanceFrom, distanceTo).distancia;
-        console.log(distanceShortes);
         const peak = gra.flujoMaximo(Number(peakData.from), Number(peakData.to));
-        console.log(peak, Number(peakData.from), Number(peakData.to))
+
+        console.log(`Datos recibidos: Desde ${Number(peakData.from)} -  Hasta ${Number(peakData.to)}`);
+        console.log(distanceShortes);
+
+        // Guardado de valores 
         setArbolGenerador(arbol);
         setMatrizDeCamino(matrizDeCaminos);
         setIsHamiltoniano(esHamiltoniano);
         setIsEuleriano(esEuleriano);
         setIsConexo(esConexo);
-        setDistance(distanceShortes);
         setPeakFlow(peak);
+        console.log(gra);
 
     }
 
@@ -254,13 +250,75 @@ const Main = () => {
 
     //-------------DIJKSTRA---------------------------------------------------------
     // Función Dijkstra que se activa con un botón
+    
+
+    // Obtener valores desde y hasta para implementar Dijkstra
+    const handleInputChangeFromTo = (e) => {
+        e.preventDefault();
+        setDatos({
+            ...datos,
+            [e.target.name]: e.target.value,
+        })
+        
+        getFromTo(datos);
+        
+    }
+
+    const getFromTo = (datos) => {
+        datos.desde && datos.hasta
+            setDistanceFrom(Number(datos.desde));
+            setDistanceTo(Number(datos.hasta));
+    }
+    // Enviar datos para actualizar formulario
+    const handleSubmitFromTo = (e) => {
+        e.preventDefault();
+
+        const shortestPath = grafoClase.caminoMasCorto(distanceFrom, distanceTo).camino;
+        const shortesPathDistance = grafoClase.caminoMasCorto(distanceFrom, distanceTo).distancia;
+
+        //console.log(shortestPath)
+        const filterShortestPath = new Set(shortestPath);
+
+        let resultShortestPath = [...filterShortestPath];
+
+        console.log(resultShortestPath);
+
+        let eliminado = shortestPath.shift();
+        console.log(`Dato eliminado: ${eliminado}`);
+
+        setAux1(shortestPath);
+        setAux2(shortesPathDistance);
+        console.log(shortesPathDistance);
+        console.log(shortestPath);
+    
+    }
+
+    const handleInputPeakFlow = (e) => {
+        e.preventDefault();
+        setPeakData({
+            ...peakData,
+            [e.target.name]: e.target.value,
+        })
+
+                
+    }
+
+    const handleSubmitPeak = (e) => {
+        e.preventDefault();
+
+        const peakFlowNumber = grafoClase.flujoMaximo(Number(peakData.from), Number(peakData.to));     
+        
+        setPeakFlow(peakFlowNumber);
+    };
+
+
     const dijkstra = () => {
 
         setDistanceFrom(datos.desde);
         setDistanceTo(datos.hasta);
 
         let initialNode = datos.desde;
-        const finalNode = datos.hasta;
+        //const finalNode = datos.hasta;
 
 
         let peso = 100;
@@ -289,50 +347,13 @@ const Main = () => {
 
         }
         // filtramos valores que se hayan repetido
-        saveData.push(finalNode);
+        console.log(saveData)
         const filterData = new Set(saveData);
         let finalResult = [...filterData];
         setCont(finalResult);
-        setAaa(contador);
-
+        console.log(finalResult);
+        console.log(contador)
     };
-
-    // Obtener valores desde y hasta para implementar Dijkstra
-    const handleInputChangeFromTo = (e) => {
-        e.preventDefault();
-        setDatos({
-            ...datos,
-            [e.target.name]: e.target.value,
-        })
-
-        getFromTo(datos);
-
-    }
-
-    const getFromTo = (datos) => {
-        datos.desde && datos.hasta
-            setDistanceFrom(Number(datos.desde));
-            setDistanceTo(Number(datos.hasta));
-    }
-    // Enviar datos para actualizar formulario
-    const handleSubmitFromTo = (e) => {
-        e.preventDefault();
-    }
-
-    const handleInputPeakFlow = (e) => {
-        e.preventDefault();
-        setPeakData({
-            ...peakData,
-            [e.target.name]: e.target.value,
-        })
-
-        console.log(peakData)
-
-    }
-
-    const handleSubmitPeak = (e) => {
-        e.preventDefault();
-    }
 
 
     return (
@@ -411,7 +432,7 @@ const Main = () => {
                             color='primary'
                             onClick={handleMatriz}
                         >
-                            MATRIZ DE CAMINO {aaa}
+                            MATRIZ DE CAMINO 
                         </Button>
                     )
                 }
@@ -423,7 +444,6 @@ const Main = () => {
                         variant='contained'
                         color='gray'
                         type='submit'
-                        onClick={getMatriz}
                         className="main_buttonMargin"
                     ><RefreshIcon />
                     </Button>
@@ -448,7 +468,7 @@ const Main = () => {
                     }
                     <p className='main_isConexo'>
                         {
-                            (isConexo===false) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            (isConexo===true) ? ('El grafo es conexo') : ('El grafo no es conexo')
                         }
                     </p>
                     </div>
@@ -518,14 +538,14 @@ const Main = () => {
                     {
                         datos.desde && datos.hasta ? (
                             <div className='distanceFromTo'>
-                                {cont.map(item => (
+                                {aux1.map(item => (
                                     <p>Nodo: {item}</p>
                                 ))}
                             </div>
-                        ) : console.log()
+                        ) : console.log(cont, aux1)
                     }
                     <p>
-                        Distancia : {distance}
+                        Distancia : {aux2}
                     </p>
                 </div >
 {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
@@ -626,7 +646,6 @@ const Main = () => {
                             variant='contained'
                             color='gray'
                             type='submit'
-                            onClick={console.log("ok")}
                         ><RefreshIcon />
                         </Button>
                     </form>
