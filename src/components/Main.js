@@ -5,7 +5,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Arista } from '../lib/grafo/arista.js';
 import { Grafo } from '../lib/grafo/grafo.js';
-import { Adyacente } from '../lib/grafo/nodo.js';
 import { SaveAlt } from '@material-ui/icons';
 import swal from 'sweetalert'
 
@@ -141,10 +140,11 @@ const Main = () => {
         const numberTo = Number(to);
         const numberPeso = Number(peso);
 
-        const listaDeAdyacencia = [
-            [numberFrom, [new Adyacente(numberTo, numberPeso)]],
+        const listaDeAristas = [
+            new Arista(numberFrom, numberTo, numberPeso)
         ];
-        setGrafo(grafo.concat(listaDeAdyacencia));
+
+        setGrafo(grafo.concat(listaDeAristas));
     };
 
     const previewValidation = () => {
@@ -167,7 +167,7 @@ const Main = () => {
 
             setSaveAllData(true);
             // Implementanción del grafo
-            const gra = new Grafo(new Map(grafo), true);
+            const gra = Grafo.desdeListaDeAristas(grafo, true);
 
             window.grafo = gra;
 
