@@ -180,7 +180,8 @@ const Main = () => {
             // Flujo máximo
             const peak = gra.flujoMaximo(peakFlowFrom, peakFlowTo);
 
-            setArbolGenerador(arbol);
+            setArbolGenerador(arbol.map(arista => arista.link));
+
             setMatrizDeCamino(matrizDeCaminos);
             setIsHamiltoniano(esHamiltoniano);
             setIsEuleriano(esEuleriano);
