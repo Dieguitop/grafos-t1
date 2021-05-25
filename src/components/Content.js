@@ -20,7 +20,7 @@ function initDiagram() {
     $(go.Node, 'Auto',  // the Shape will go around the TextBlock
       new go.Binding(),
       $(go.Shape, 'Circle',
-        { name: 'SHAPE', fill: 'white', strokeWidth: 1, portId: "", fromLinkable: true, toLinkable: true },
+        { name: 'SHAPE', fill: 'white', strokeWidth: 1, portId: ""},
         // Shape.fill is bound to Node.data.color
         new go.Binding('fill', 'color')),
       $(go.TextBlock,

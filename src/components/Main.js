@@ -7,7 +7,7 @@ import { Arista } from '../lib/grafo/arista.js';
 import { Grafo } from '../lib/grafo/grafo.js';
 import { Adyacente } from '../lib/grafo/nodo.js';
 import { SaveAlt } from '@material-ui/icons';
-
+import swal from 'sweetalert'
 
 function Row({ onChange, onRemove, text }) {
 
@@ -42,6 +42,7 @@ function RowLink({ onChange, onRemove, from, to, text }) {
                     label='Desde'
                     type='number'
                     value={from}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -52,6 +53,7 @@ function RowLink({ onChange, onRemove, from, to, text }) {
                     label='Hasta'
                     type='number'
                     value={to}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -64,9 +66,10 @@ function RowLink({ onChange, onRemove, from, to, text }) {
                     type='number'
                     value={text}
                     InputLabelProps={{
-                        shrink: true,
+                        shrink: true
                     }}
-                    onChange={e => onChange('text', e.target.value)}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
+                    onChange={e => onChange( 'text', e.target.value )}
                 />
                 <Button
                     size='small'
@@ -91,7 +94,6 @@ const Main = () => {
         to: '',
         text: '',
     };
-
     const [rows, setRows] = useState([defaultState]); //nodos
     const [links, setLinks] = useState([defaultStateLinks]);
     const [doneFetch, setDoneFetch] = useState(false);
@@ -99,9 +101,6 @@ const Main = () => {
     const [doneFetchHamEul, setDoneFetchHamEul] = useState(false);
     const [doneFetchFlujoMaximo, setDoneFetchFlujoMaximo] = useState(false);
     const [doneFetchArbol, setDoneFetchArbol] = useState(false);
-    const [aux1, setAux1] = useState([]);
-    const [aux2, setAux2] = useState();
-    const [cont, setCont] = useState([]);
     const [datos, setDatos] = useState({
         desde: '',
         hasta: '',
@@ -111,7 +110,6 @@ const Main = () => {
         to: '',
     });
     // Creando aristas usando la clase Arista
-    const [grafoClase, setGrafoClase] = useState(new Grafo);
     const [edgesClass, setEdgesClass] = useState([]);
     const [grafo, setGrafo] = useState([]);
     const [arbolGenerador, setArbolGenerador] = useState([])
@@ -120,9 +118,15 @@ const Main = () => {
     const [isHamiltoniano, setIsHamiltoniano] = useState(false);
     const [isEuleriano, setIsEuleriano] = useState(false);
     const [isConexo, setIsConexo] = useState(false);
+    //camino más corto
+    const [distance, setDistance] = useState();
+    const [shortPath, setShortPath] = useState([]);
     const [distanceFrom, setDistanceFrom] = useState(0);
     const [distanceTo, setDistanceTo] = useState(0);
+    const [peakFlowFrom, setPeakFlowFrom] = useState(0);
+    const [peakFlowTo, setPeakFlowTo] = useState(0);
     const [peakFlow, setPeakFlow] = useState();
+    const [validation, setValidation] = useState(false);
     const saveArista = (from, to, peso) => {
 
         const edge = new Arista(from, to, peso);
@@ -131,6 +135,7 @@ const Main = () => {
 
     };
 
+    // grafoClass => función para poder crear
     const grafoClass = (from, to, peso) => {
         const numberFrom = Number(from);
         const numberTo = Number(to);
@@ -142,64 +147,74 @@ const Main = () => {
         setGrafo(grafo.concat(listaDeAdyacencia));
     };
 
+    const previewValidation = () => {
+
+        if(rows[0].length === 0 || links[0].from.length === 0){
+            swal('Campos vacíos','Para continuar con la aplicación, debes completar los campos vacíos', 'error')
+        }
+        else {
+            setValidation(true);
+        }
+    }
+
 
     const saveData = () => {
 
-        setSaveAllData(true);
+        previewValidation();
 
-        // Implementanción de la clase Grafo
-        const gra = new Grafo(new Map(grafo), true);
-        setGrafoClase(gra);
 
-        // Destructuring
-        const {esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos} = gra;
-        const { arbol } = gra.arbolGeneradorMinimo;
-        const distanceShortes = gra.caminoMasCorto(distanceFrom, distanceTo).distancia;
-        const peak = gra.flujoMaximo(Number(peakData.from), Number(peakData.to));
+        if(validation === true){
 
-        console.log(`Datos recibidos: Desde ${Number(peakData.from)} -  Hasta ${Number(peakData.to)}`);
-        console.log(distanceShortes);
+            setSaveAllData(true);
+            // Implementanción del grafo
+            const gra = new Grafo(new Map(grafo), true);
 
-        // Guardado de valores 
-        setArbolGenerador(arbol);
-        setMatrizDeCamino(matrizDeCaminos);
-        setIsHamiltoniano(esHamiltoniano);
-        setIsEuleriano(esEuleriano);
-        setIsConexo(esConexo);
-        setPeakFlow(peak);
-        console.log(gra);
+            window.grafo = gra;
 
-    }
+            const {esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos} = gra;
+            const { arbol } = gra.arbolGeneradorMinimo;
+
+            // Distancia entre dos nodos y camino más corto
+            const distanceShortes = gra.caminoMasCorto(distanceFrom , distanceTo).distancia;
+            const shortPath = gra.caminoMasCorto(distanceFrom, distanceTo).camino;
+            // Flujo máximo
+            const peak = gra.flujoMaximo(peakFlowFrom, peakFlowTo);
+
+            setArbolGenerador(arbol);
+            setMatrizDeCamino(matrizDeCaminos);
+            setIsHamiltoniano(esHamiltoniano);
+            setIsEuleriano(esEuleriano);
+            setIsConexo(esConexo);
+            setDistance(distanceShortes);
+            setShortPath(shortPath);
+            setPeakFlow(peak);
+        }
+
+
+
+    };
 
     const handleArbol = () => {
         !doneFetchArbol ? (setDoneFetchArbol(true)) : setDoneFetchArbol(false);
-    }
+    };
 
     const handleFlujoMaximo = () => {
         !doneFetchFlujoMaximo ? (setDoneFetchFlujoMaximo(true)) : setDoneFetchFlujoMaximo(false);
-    }
+    };
 
     const handleDistance = () => {
-
         !doneFetchDistance ? (setDoneFetchDistance(true)) : setDoneFetchDistance(false);
 
-        //setDistance(gra.caminoMasCorto(distanceFrom, distanceTo).distancia);
-
-    }
+    };
 
     const handleHamEul = () => {
-
         !doneFetchHamEul ? (setDoneFetchHamEul(true)) : setDoneFetchHamEul(false);
-
-    }
-
-
+    };
 
     const handleMatriz = () => {
-
         !doneFetch ? (setDoneFetch(true)) : setDoneFetch(false);
+    };
 
-    }
     const handleOnChange = (index, text, value) => {
         const copyRows = [...rows];
         const key = index;
@@ -209,25 +224,33 @@ const Main = () => {
             [text]: value
         };
         setRows(copyRows);
-
     };
 
 
     const handleOnAdd = () => {
-        setRows(rows.concat(defaultState));
+        let len = rows.length - 1;
+        rows[len].text.length > 0 ? (setRows(rows.concat(defaultState))) : swal('Error en los nodos', 'Campos vacíos, por favor asigne nombre a los nodos creados', 'error');
     };
 
     const handleOnAddLink = () => {
-        setLinks(links.concat(defaultStateLinks));
+        let len = links.length - 1;
+        (links[len].from.length > 0 || links[len].to.length > 0 || links[len].text.length > 0 ) ? (
+            setLinks(links.concat(defaultState))
+        ) : swal('Error en los links', 'Campos vacíos en los links, por favor complete los datos antes de continuar', 'error');
     };
 
     const handleOnRemove = index => {
-        const copyRows = [...rows];
-        copyRows.splice(index, 1);
-        setRows(copyRows);
+        if(rows.length === 1){
+            swal('Error en los nodos','No se puede eliminar el único campo de nodos', 'error')
+        } else {
+            const copyRows = [...rows];
+            copyRows.splice(index, 1);
+            setRows(copyRows);
+        }
     };
 
     const handleOnChangeLinks = (index, from, value, text, to) => {
+        // links cambios agregar
         const copyLinks = [...links];
         copyLinks[index] = {
             ...copyLinks[index],
@@ -242,26 +265,30 @@ const Main = () => {
     };
 
     const handleOnRemoveLink = index => {
-        const copyLinks = [...links];
-        copyLinks.splice(index, 1);
-        setLinks(copyLinks);
+        if(links.length === 1){
+            swal("Error en los links", 'No se puede eliminar el único elemento de los links', 'error')
+        } else {
+            const copyLinks = [...links];
+            copyLinks.splice(index, 1);
+            setLinks(copyLinks);
+        }
     };
 
 
-    //-------------DIJKSTRA---------------------------------------------------------
-    // Función Dijkstra que se activa con un botón
-    
-
     // Obtener valores desde y hasta para implementar Dijkstra
+
+    const handleSubmitFromTo = (e) => {
+        e.preventDefault();
+        getFromTo(datos)
+    };
+
     const handleInputChangeFromTo = (e) => {
         e.preventDefault();
         setDatos({
             ...datos,
             [e.target.name]: e.target.value,
         })
-        
-        getFromTo(datos);
-        
+
     }
 
     const getFromTo = (datos) => {
@@ -269,29 +296,14 @@ const Main = () => {
             setDistanceFrom(Number(datos.desde));
             setDistanceTo(Number(datos.hasta));
     }
+
     // Enviar datos para actualizar formulario
-    const handleSubmitFromTo = (e) => {
-        e.preventDefault();
-
-        const shortestPath = grafoClase.caminoMasCorto(distanceFrom, distanceTo).camino;
-        const shortesPathDistance = grafoClase.caminoMasCorto(distanceFrom, distanceTo).distancia;
-
-        //console.log(shortestPath)
-        const filterShortestPath = new Set(shortestPath);
-
-        let resultShortestPath = [...filterShortestPath];
-
-        console.log(resultShortestPath);
-
-        let eliminado = shortestPath.shift();
-        console.log(`Dato eliminado: ${eliminado}`);
-
-        setAux1(shortestPath);
-        setAux2(shortesPathDistance);
-        console.log(shortesPathDistance);
-        console.log(shortestPath);
-    
+    const peakFlowFromTo = (peakData) => {
+        peakData.from && peakData.to
+            setPeakFlowFrom(Number(peakData.from));
+            setPeakFlowTo(Number(peakData.to));
     }
+
 
     const handleInputPeakFlow = (e) => {
         e.preventDefault();
@@ -300,60 +312,14 @@ const Main = () => {
             [e.target.name]: e.target.value,
         })
 
-                
     }
 
     const handleSubmitPeak = (e) => {
         e.preventDefault();
-
-        const peakFlowNumber = grafoClase.flujoMaximo(Number(peakData.from), Number(peakData.to));     
-        
-        setPeakFlow(peakFlowNumber);
+        peakFlowFromTo(peakData);
     };
 
 
-    const dijkstra = () => {
-
-        setDistanceFrom(datos.desde);
-        setDistanceTo(datos.hasta);
-
-        let initialNode = datos.desde;
-        //const finalNode = datos.hasta;
-
-
-        let peso = 100;
-        let j = 0;
-        let contador = 0;
-        let auxNode = [];
-        let saveData = [];
-        for (let i = 0; i < links.length; i++) {
-            if (links[i].from === initialNode) {
-                while (j < links.length) {
-                    if (links[j].from === initialNode) {
-                        if (links[j].text < peso) {
-                            peso = links[j].text;
-                            auxNode = links[j];
-                            contador += peso;
-                        };
-                    }
-                    j++;
-                }
-                saveData.push(initialNode);
-                initialNode = auxNode.to;
-            }
-            // reinicializamos los valores para volver a iterar
-            peso = 100;
-            j = 0;
-
-        }
-        // filtramos valores que se hayan repetido
-        console.log(saveData)
-        const filterData = new Set(saveData);
-        let finalResult = [...filterData];
-        setCont(finalResult);
-        console.log(finalResult);
-        console.log(contador)
-    };
 
 
     return (
@@ -387,12 +353,11 @@ const Main = () => {
                 <div>
 
                     {
-                        (links.length === 1 || rows.length === 1) ? (
+                        (links.length < 1 || rows.length < 1 ) ? (
                             <Button m={10}
                                 className='main_row'
                                 variant='contained'
                                 color='primary'
-                                onClick={saveData}
                                 disabled
                             >
                                 GUARDAR DATOS
@@ -432,7 +397,7 @@ const Main = () => {
                             color='primary'
                             onClick={handleMatriz}
                         >
-                            MATRIZ DE CAMINO 
+                            MATRIZ DE CAMINO
                         </Button>
                     )
                 }
@@ -468,7 +433,7 @@ const Main = () => {
                     }
                     <p className='main_isConexo'>
                         {
-                            (isConexo===true) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            (isConexo===false) ? ('El grafo es conexo') : ('El grafo no es conexo')
                         }
                     </p>
                     </div>
@@ -513,6 +478,7 @@ const Main = () => {
                             label='Desde'
                             type='number'
                             name='desde'
+                            InputProps={{ inputProps: { min: 0, max: 99 } }}
                             onChange={handleInputChangeFromTo}
                             InputLabelProps={{
                                 shrink: true,
@@ -524,28 +490,30 @@ const Main = () => {
                             label='Hasta'
                             type='number'
                             name='hasta'
+                            InputProps={{ inputProps: { min: 0, max: 99 } }}
                             onChange={handleInputChangeFromTo}
                             InputLabelProps={{ shrink: true, }}
                         />
+
                         <Button
                             variant='contained'
-                            color='gray'
+                            color='primary'
                             type='submit'
-                            onClick={dijkstra}
+                            onClick={saveData}
                         ><RefreshIcon />
                         </Button>
                     </form>
                     {
                         datos.desde && datos.hasta ? (
                             <div className='distanceFromTo'>
-                                {aux1.map(item => (
+                                {shortPath.map(item => (
                                     <p>Nodo: {item}</p>
                                 ))}
                             </div>
-                        ) : console.log(cont, aux1)
+                        ) : console.log('')
                     }
                     <p>
-                        Distancia : {aux2}
+                        Distancia : {distance}
                     </p>
                 </div >
 {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
@@ -628,6 +596,7 @@ const Main = () => {
                             label='Desde'
                             type='number'
                             name='from'
+                            InputProps={{ inputProps: { min: 0, max: 99 } }}
                             onChange={handleInputPeakFlow}
                             InputLabelProps={{
                                 shrink: true,
@@ -639,6 +608,7 @@ const Main = () => {
                             label='Hasta'
                             type='number'
                             name='to'
+                            InputProps={{ inputProps: { min: 0, max: 99 } }}
                             onChange={handleInputPeakFlow}
                             InputLabelProps={{ shrink: true, }}
                         />
@@ -646,6 +616,7 @@ const Main = () => {
                             variant='contained'
                             color='gray'
                             type='submit'
+                            onClick={saveData}
                         ><RefreshIcon />
                         </Button>
                     </form>
