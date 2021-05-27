@@ -248,17 +248,17 @@ class Grafo {
       .map(() => Array(n).fill(Celda.desconectada));
 
     for (const [i, adyacentes] of this.listaDeAdyacencia) {
-      for (const { nodo: j, peso: celda = Celda.conectada } of adyacentes) {
+      for (const { nodo: j, peso: celda } of adyacentes) {
         // Si el adyacente es ponderado, el valor de la celda {i, j} corresponde
         // al peso de la arista que une al nodo i con el nodo j. En caso
         // contrario, a la celda {i, j} se la asigna `true`.
-        matrizDeAdyacencia[i][j] = celda;
+        matrizDeAdyacencia[i][j] = celda ?? Celda.conectada;
 
         // La matriz de adyacencia de un grafo no dirigido es simétrica, por
         // lo que la arista entre el nodo i y el nodo j existe en dicha matriz
         // tanto en {i, j} y como en {j, i}.
         if (!this.esDirigido) {
-          matrizDeAdyacencia[j][i] = celda;
+          matrizDeAdyacencia[j][i] = celda ?? Celda.conectada;
         }
       }
     }
@@ -651,9 +651,9 @@ class Grafo {
 
       // Se itera sobre todos los nodos adyacentes al nodo actual. Si el nodo no
       // es ponderado, asignarle peso 1.
-      for (const { nodo: siguiente, peso = 1 } of this.adyacentes(actual)) {
+      for (const { nodo: siguiente, peso } of this.adyacentes(actual)) {
         // Calcula la distancia total desde el nodo origen hasta el actual.
-        const distanciaDesdeOrigen = distancia[actual] + peso;
+        const distanciaDesdeOrigen = distancia[actual] + (peso ?? 1);
 
         // Si ésta distancia es menor a la registrada actualmente, se actualizan
         // las distancias y los padres.
