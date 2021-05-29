@@ -8,6 +8,10 @@ const estructuras = ["lista de aristas", "matriz de adyacencia", "lista de links
 const propiedades = ["conexo", "ponderado"];
 const trayectos = ["camino", "ciclo"];
 
+function invertirSiEsEntrada(direccion, i, j) {
+  return direccion === "entrada" ? [j, i] : [i, j];
+}
+
 function aristasEliminadas(origen, destino, original, modificado) {
   function diferenciasMatricesDeAdyacencia(a, b) {
     let diferencias = [];
@@ -96,7 +100,7 @@ for (const prueba of grafos) {
       for (const i of nodos) {
         for (const j of nodos) {
           it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            const [origen, destino] = direccion === "entrada" ? [j, i] : [i, j];
+            const [origen, destino] = invertirSiEsEntrada(direccion, i, j);
             return expect(grafo.existeArista(i, j, Direccion[direccion])).toEqual(
               Boolean(prueba.matrizDeAdyacencia[origen][destino])
             );
@@ -112,7 +116,7 @@ for (const prueba of grafos) {
         for (const j of nodos) {
           let clon = cloneDeep(grafo);
           it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            const [origen, destino] = direccion === "entrada" ? [j, i] : [i, j];
+            const [origen, destino] = invertirSiEsEntrada(direccion, i, j);
             clon.eliminarArista(i, j, Direccion[direccion]);
             return expect(aristasEliminadas(origen, destino, grafo, clon)).toBe(
               grafo.existeArista(i, j, Direccion[direccion])
@@ -124,14 +128,24 @@ for (const prueba of grafos) {
   });
 
   describe.each(direcciones)("Obtener arista (dirección: %s)", (direccion) => {
+    const esperado = (origen, destino, peso) => {
+      if (peso === false) {
+        return false;
+      } else if (peso === true) {
+        peso = undefined;
+      }
+
+      return new Arista(origen, destino, peso);
+    };
+
     if (prueba.matrizDeAdyacencia != null) {
       for (const i of nodos) {
         for (const j of nodos) {
           it(`${prueba.descripcion}: nodo ${i} y nodo ${j}`, () => {
-            const [origen, destino] = direccion === "entrada" ? [j, i] : [i, j];
+            const [origen, destino] = invertirSiEsEntrada(direccion, i, j);
             const peso = prueba.matrizDeAdyacencia[origen][destino];
             return expect(grafo.arista(i, j, Direccion[direccion])).toEqual(
-              peso === false ? false : new Arista(origen, destino, peso === true ? undefined : peso)
+              esperado(origen, destino, peso)
             );
           });
         }

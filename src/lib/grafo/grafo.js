@@ -1,6 +1,7 @@
 const { Arista, Direccion } = require("./arista.js");
 const { Adyacente } = require("./nodo.js");
 const { ConjuntoDisjunto } = require("../conjunto-disjunto.js");
+const { permutar, caminoDeAumento } = require("./algoritmos.js");
 const { identity, add, multiply } = require("mathjs");
 const {
   cloneDeep,
@@ -157,6 +158,26 @@ class Grafo {
    * );
    */
   static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
+    const registrar = (adyacentes, aristas, i, j, celda) => {
+      // Una arista existe entre i y j si el valor de `celda` es distinto de
+      // `false`. Además, sólo se considera dicha arista si ésta no ha sido
+      // encontrada anteriormente.
+      if (celda !== Celda.desconectada && !has(aristas, [i, j])) {
+        set(aristas, [i, j]);
+
+        // La matriz de adyacencia de un grafo no dirigido es simétrica, por
+        // lo que la arista entre el nodo i y el nodo j existe en dicha matriz
+        // tanto en {i, j} y como en {j, i}.
+        if (!esDirigido) {
+          set(aristas, [j, i]);
+        }
+
+        // Si el valor de la celda es `true`, el adyacente se asume como no
+        // ponderado.
+        adyacentes.push(new Adyacente(j, celda === Celda.conectada ? undefined : celda));
+      }
+    };
+
     let listaDeAdyacencia = new Map();
 
     // Se utiliza una tabla hasheada para evitar la duplicidad de aristas.
@@ -166,23 +187,7 @@ class Grafo {
       let adyacentes = [];
 
       for (const [j, celda] of fila.entries()) {
-        // Una arista existe entre i y j si el valor de `celda` es distinto de
-        // `false`. Además, sólo se considera dicha arista si ésta no ha sido
-        // encontrada anteriormente.
-        if (celda !== Celda.desconectada && !has(aristas, [i, j])) {
-          set(aristas, [i, j]);
-
-          // La matriz de adyacencia de un grafo no dirigido es simétrica, por
-          // lo que la arista entre el nodo i y el nodo j existe en dicha matriz
-          // tanto en {i, j} y como en {j, i}.
-          if (!esDirigido) {
-            set(aristas, [j, i]);
-          }
-
-          // Si el valor de la celda es `true`, el adyacente se asume como no
-          // ponderado.
-          adyacentes.push(new Adyacente(j, celda === Celda.conectada ? undefined : celda));
-        }
+        registrar(adyacentes, aristas, i, j, celda);
       }
 
       // Excluye los nodos sin adyacentes explícitos de la lista de adyacencia.
@@ -438,7 +443,7 @@ class Grafo {
     // Si el grafo no es dirigido, asegurarse que el origen sea siempre menor
     // que el destino.
     else if (!this.esDirigido) {
-      [origen, destino] = [origen, destino].sort();
+      [origen, destino] = [origen, destino].sort((a, b) => a - b);
     }
 
     return remove(this.listaDeAdyacencia.get(origen), ["nodo", destino]);
@@ -497,16 +502,9 @@ class Grafo {
       let entrantes = [];
 
       for (const [origen, adyacentes] of this.listaDeAdyacencia) {
-        // Ignorar los adyacentes del nodo origen. De esta forma, se evitan
-        // las aristas bucles.
-        if (origen === nodo) {
-          continue;
-        }
-
-        for (const { nodo: destino, peso } of adyacentes) {
-          if (nodo === destino) {
-            entrantes.push(new Adyacente(origen, peso));
-          }
+        let destino = find(adyacentes, ["nodo", nodo]);
+        if (destino != null) {
+          entrantes.push(new Adyacente(origen, destino.peso));
         }
       }
 
@@ -731,14 +729,11 @@ class Grafo {
       return this.grado(nodo, Direccion.salida) - this.grado(nodo, Direccion.entrada);
     };
 
-    /**
-     * Requisitos que debe cumplir un grafo dirigido para contener un trayecto
-     * euleriano.
-     *
-     * @returns {InfoTrayecto|boolean} Tipo de trayecto (camino o ciclo) y
-     * nodo que origina el trayecto, si existe; `false`, en caso contrario.
-     */
-    const dirigido = () => {
+    const nodos = this.nodos;
+
+    // Condiciones que debe cumplir un grafo dirigido para contener un trayecto
+    // euleriano.
+    if (this.esDirigido) {
       // Cualquier nodo que cumpla: GE - GS = 1.
       let origen;
 
@@ -747,24 +742,28 @@ class Grafo {
 
       // Cantidad de nodos que cumplen: GE - GS = 1.
       let candidatosDestino = 0;
-      const nodos = this.nodos;
 
       for (const nodo of nodos) {
-        // Comprueba si el nodo cumple: GS - GE = 1.
-        if (diferenciaGrado(nodo) === 1) {
+        switch (diferenciaGrado(nodo)) {
+        // El nodo cumple: GS - GE = 1.
+        case 1:
           candidatosOrigen++;
           origen = nodo;
-        }
+          break;
 
-        // Comprueba si el nodo cumple: GS - GE = -1.
-        else if (diferenciaGrado(nodo) === -1) {
+        // El nodo cumple: GS - GE = -1.
+        case -1:
           candidatosDestino++;
-        }
+          break;
 
         // Si el nodo no cumple ninguna de las dos condiciones anteriores,
-        // necesariamente tiene que cumplir: GE = GS.
-        else if (diferenciaGrado(nodo) !== 0) {
-          return false;
+        // necesariamente tiene que cumplir: GS - GE = 0.
+        case 0:
+          break;
+
+        // El grafo no es euleriano.
+        default:
+          return false
         }
       }
 
@@ -778,55 +777,44 @@ class Grafo {
       // En todos los nodos del grafo se cumple GE = GS. Por lo tanto, se
       // cumple que el grafo contiene un ciclo euleriano. Además, cualquier
       // nodo del grafo puede ser origen del ciclo euleriano.
-      else {
-        return { tipo: Trayecto.ciclo, origen: first(nodos) };
+      return { tipo: Trayecto.ciclo, origen: first(nodos) };
+    }
+
+    // Condiciones que debe cumplir un grafo no dirigido para contener un
+    // trayecto euleriano:
+
+    // Cantidad de nodos de grado impar.
+    let impares = 0;
+
+    // Nodo impar, origen del camino euleriano.
+    let impar = 0;
+
+    // Cuenta la cantidad de nodos de grado impar del grafo. Asigna al
+    // último nodo impar como candidato a origen del camino euleriano.
+    for (const nodo of nodos) {
+      if (this.adyacentes(nodo).length % 2 === 1) {
+        impares++;
+        impar = nodo;
       }
-    };
+    }
 
-    /**
-     * Requisitos que debe cumplir un grafo no dirigido para contener un
-     * trayecto euleriano.
-     *
-     * @returns {InfoTrayecto|boolean} Tipo de trayecto y nodo que origina el
-     * trayecto, si existe; `false`, en caso contrario.
-     */
-    const noDirigido = () => {
-      const nodos = this.nodos;
+    switch (impares) {
+    // Si todos los nodos del grafo son de grado par, entonces el grafo
+    // contiene un ciclo euleriano. En este caso, cualquier nodo puede ser
+    // el nodo origen del ciclo euleriano.
+    case 0:
+      return { tipo: Trayecto.ciclo, origen: first(nodos) };
 
-      // Cantidad de nodos de grado impar.
-      let impares = 0;
+    // Si solo 2 nodos del grafo son de grado impar, entonces el grafo
+    // contiene un camino euleriano. Cualquiera de los dos nodos de grado
+    // impar puede ser el nodo origen del camino o ciclo euleriano.
+    case 2:
+      return { tipo: Trayecto.camino, origen: impar };
 
-      // Nodo impar, origen del camino euleriano.
-      let impar = 0;
-
-      // Cuenta la cantidad de nodos de grado impar del grafo. Asigna al
-      // último nodo impar como candidato a origen del camino euleriano.
-      for (const nodo of nodos) {
-        if (this.adyacentes(nodo).length % 2 === 1) {
-          impares++;
-          impar = nodo;
-        }
-      }
-
-      // Si solo 2 nodos del grafo son de grado impar, entonces el grafo
-      // contiene un camino euleriano. Cualquiera de los dos nodos de grado
-      // impar puede ser el nodo origen del camino o ciclo euleriano.
-      if (impares === 2) {
-        return { tipo: Trayecto.camino, origen: impar };
-      }
-
-      // Si todos los nodos del grafo son de grado par, entonces el grafo
-      // contiene un ciclo euleriano. En este caso, cualquier nodo puede ser
-      // el nodo origen del ciclo euleriano.
-      else if (impares === 0) {
-        return { tipo: Trayecto.ciclo, origen: first(nodos) };
-      }
-
-      // No existe ningún trayecto euleriano que cubra la totalidad del grafo.
+    // No existe ningún trayecto euleriano que cubra la totalidad del grafo.
+    default:
       return false;
-    };
-
-    return this.esDirigido ? dirigido() : noDirigido();
+    }
   }
 
   /**
@@ -949,33 +937,6 @@ class Grafo {
    * ésta implementación es O(n * n!).
    */
   hamiltoniano(tipo = Trayecto.camino) {
-    /**
-     * Produce una permutación de una lista de números.
-     *
-     * @param {number[]} lista - Lista a calcular permutaciones.
-     * @yields {number[]} La siguiente permutación de la lista de números.
-     */
-    const permutar = function* (lista) {
-      // Caso base.
-      if (lista.length === 1) {
-        yield lista;
-      } else {
-        // Obtiene el primer elemento de la lista, y el resto de la lista.
-        let [cabeza, ...resto] = lista;
-
-        // Generación recursiva de permutaciones, una por cada iteración.
-        for (const permutacion of permutar(resto)) {
-          for (const i of lista.keys()) {
-            // Divide en 2 la permutación, en el índice j.
-            const [izquierda, derecha] = [permutacion.slice(0, i), permutacion.slice(i)];
-
-            // Produce la siguiente permutación.
-            yield [...izquierda, cabeza, ...derecha];
-          }
-        }
-      }
-    };
-
     // Se genera una permutación de la lista de nodos por iteración.
     for (let permutacion of permutar(this.nodos)) {
       // Comprueba si el tipo de trayecto esperado es un camino y si la
@@ -1016,73 +977,6 @@ class Grafo {
    * anchura (breadth-first search, BFS).
    */
   flujoMaximo(entrada, salida) {
-    /**
-     * @typedef {Object} CaminoDeAumento
-     *   @property {number} flujoCamino - Capacidad residual mínima del camino
-     *   de aumento.
-     *   @property {number[]} padre - Lista de padres de cada nodo, siguiendo el
-     *   camino de aumento.
-     */
-    /**
-     * Recorre el grafo para encontrar un camino de aumento (CA).
-     *
-     * @param {number} entrada - Nodo donde comienza el camino de aumento.
-     * @param {number} salida - Nodo donde termina el camino de aumento.
-     * @param {number[][]} capacidad - Matriz de capacidades residuales de las
-     * aristas del grafo.
-     * @returns {CaminoDeAumento} Flujo del camino de aumento, y lista de padres
-     * de cada nodo, siguiendo el mismo camino de aumento.
-     *
-     * Algoritmo de búsqueda en anchura (breadth-first search, BFS).
-     */
-    const caminoDeAumento = (entrada, salida, capacidad) => {
-      // Arreglo utilizado para recordar los nodos padres de cada nodo i-ésimo
-      // (si es que fue visitado).
-      let padre = Array(n);
-
-      // El nodo entrada no tiene padre.
-      padre[entrada] = null;
-
-      // Se utiliza una cola para almacenar los nodos que están en el mismo
-      // nivel del nodo actual (nodo entrada, inicialmente), más el flujo del
-      // CA asociado al nodo ingresado.
-      for (let cola = [{ nodo: entrada, flujo: Infinity }]; !isEmpty(cola); ) {
-        // Extrae el primer elemento de la cola.
-        const { nodo: actual, flujo } = cola.shift();
-
-        // Se exploran los adyacentes (de salida y de entrada) del nodo actual.
-        for (const { nodo: siguiente } of this.adyacentes(actual, Direccion.ambas)) {
-          // Capacidad residual de la arista {actual, siguiente}.
-          const capacidadArista = capacidad[actual][siguiente];
-
-          // Comprueba si el nodo siguiente no ha sido visitado (porque su padre
-          // no está definido) y si la capacidad residual de la arista {actual,
-          // siguiente} es positiva.
-          if (padre[siguiente] === undefined && capacidadArista > 0) {
-            // Recordar el nodo padre (nodo actual) del nodo siguiente.
-            padre[siguiente] = actual;
-
-            // Calcula la capacidad residual menor del CA.
-            let flujoCamino = Math.min(flujo, capacidadArista);
-
-            // Comprueba si se ha llegado al final del CA.
-            if (siguiente === salida) {
-              return { flujoCamino, padre };
-            }
-
-            // Ingresa a la cola el nodo siguiente (un nivel más abajo del nodo
-            // de entrada).
-            cola.push({ nodo: siguiente, flujo: flujoCamino });
-          }
-        }
-      }
-
-      // Si el flujo del camino es 0, entonces no se encontró ningún CA.
-      return { flujoCamino: 0, padre };
-    };
-
-    const n = this.cantidad;
-
     // Flujo máximo inicial.
     let flujo = 0;
 
@@ -1096,7 +990,7 @@ class Grafo {
     while (true) {
       // Busca un CA en el grafo y retorna la capacidad residual mínima del CA
       // encontrado, más la lista de padres de cada nodo que compone el CA.
-      let { flujoCamino, padre } = caminoDeAumento(entrada, salida, capacidad);
+      let { flujoCamino, padre } = caminoDeAumento(this, entrada, salida, capacidad);
 
       // Si ya no existen más CA, se termina la iteración.
       if (flujoCamino === 0) {
