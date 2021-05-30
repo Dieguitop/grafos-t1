@@ -1,15 +1,87 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField } from '@material-ui/core';
-import Content from './Content';
+import { Box, Button, FormControl, TextField } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Grafo, Trayecto, Arista } from '../lib/grafo/grafo.js';
 import { SaveAlt } from '@material-ui/icons';
 import swal from 'sweetalert';
 import CachedIcon from '@material-ui/icons/Cached';
-import RowLink from './RowLink';
-import Row from './Row';
+import NotDirected from './NotDirected.js';
 
-const Main = () => {
+function Row({ onChange, onRemove, text }) {
+
+    return (
+        <FormControl className='main_formControl'>
+            <Box display='flex' width='100%' justifyContent='space-between' p={1}>
+                <TextField
+                    fullWidth='true'
+                    className='main_textField'
+                    label='Nombre del nodo'
+                    value={text}
+                    onChange={e => onChange('text', e.target.value)}
+                />
+                <Button
+                    size='small'
+                    startIcon={<DeleteIcon className='main_deleteIcon' style={{ fontSize: 25 }} />}
+                    onClick={onRemove}
+                >
+                </Button>
+            </Box>
+        </FormControl>
+    );
+}
+
+function RowLink({ onChange, onRemove, from, to, text }) {
+
+    return (
+        <FormControl m={10}>
+            <Box display='flex' width='100%' justifyContent='space-between' p={1}>
+                <TextField
+                    id='filled-number'
+                    label='Desde'
+                    type='number'
+                    value={from}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={e => onChange('from', e.target.value)}
+                />
+                <TextField
+                    id='filled-number'
+                    label='Hasta'
+                    type='number'
+                    value={to}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    onChange={e => onChange('to', e.target.value)}
+                />
+
+                <TextField
+                    id='filled-number'
+                    label='Peso'
+                    type='number'
+                    value={text}
+                    InputLabelProps={{
+                        shrink: true
+                    }}
+                    InputProps={{ inputProps: { min: 0, max: 99 } }}
+                    onChange={e => onChange( 'text', e.target.value )}
+                />
+                <Button
+                    size='small'
+                    startIcon={<DeleteIcon className='main_deleteIcon' style={{ fontSize: 25 }} />}
+                    onClick={onRemove}
+                >
+                </Button>
+            </Box>
+        </FormControl>
+    );
+}
+
+const MainNotDirected = () => {
 
     const defaultState = {
         text: '',
@@ -36,6 +108,7 @@ const Main = () => {
         from: '',
         to: '',
     });
+    // Creando aristas usando la clase Arista
     const [edgesClass, setEdgesClass] = useState([]);
     const [grafo, setGrafo] = useState([]);
     const [arbolGenerador, setArbolGenerador] = useState([])
@@ -44,6 +117,7 @@ const Main = () => {
     const [isHamiltoniano, setIsHamiltoniano] = useState(false);
     const [isEuleriano, setIsEuleriano] = useState(false);
     const [isConexo, setIsConexo] = useState(false);
+    //camino más corto
     const [distance, setDistance] = useState();
     const [shortPath, setShortPath] = useState([]);
     const [distanceFrom, setDistanceFrom] = useState(0);
@@ -65,10 +139,12 @@ const Main = () => {
 
     };
 
+    // grafoClass => función para poder crear
     const grafoClass = (from, to, peso) => {
         const numberFrom = Number(from);
         const numberTo = Number(to);
         const numberPeso = Number(peso);
+
         const listaDeAristas = [
             new Arista(numberFrom, numberTo, numberPeso),
         ];
@@ -76,40 +152,26 @@ const Main = () => {
     };
 
     const previewValidation = () => {
-        (rows[0].length === 0 || links[0].from.length === 0) ? (
+
+        if(rows[0].length === 0 || links[0].from.length === 0){
             swal('Campos vacíos','Para continuar con la aplicación, debes completar los campos vacíos', 'error')
-        ) : setValidation(true);
-    };
-
-    const handleArbol = () => {
-        !doneFetchArbol ? (setDoneFetchArbol(true)) : setDoneFetchArbol(false);
-    }
-
-    const handleFlujoMaximo = () => {
-        !doneFetchFlujoMaximo ? (setDoneFetchFlujoMaximo(true)) : setDoneFetchFlujoMaximo(false);
-    }
-
-    const handleDistance = () => {
-        !doneFetchDistance ? (setDoneFetchDistance(true)) : setDoneFetchDistance(false);
-
-    }
-
-    const handleHamEul = () => {
-        !doneFetchHamEul ? (setDoneFetchHamEul(true)) : setDoneFetchHamEul(false);
-    }
-
-
-
-    const handleMatriz = () => {
-        !doneFetch ? (setDoneFetch(true)) : setDoneFetch(false);
+        }
+        else {
+            setValidation(true);
+        }
     }
 
 
     const saveData = () => {
+
         previewValidation();
+
+
         if(validation === true){
+
             setSaveAllData(true);
-            const gra = Grafo.desdeListaDeAristas(grafo, true);
+            // Implementanción del grafo
+            const gra = Grafo.desdeListaDeAristas(grafo, false);
             const { esEuleriano , esHamiltoniano, esConexo, matrizDeCaminos, arbolGeneradorMinimo: agm } = gra;
             const { camino: shortPathGraph, distancia: distanceShortes } = gra.caminoMasCorto(distanceFrom , distanceTo);
             const peak = gra.flujoMaximo(peakFlowFrom, peakFlowTo);
@@ -126,7 +188,7 @@ const Main = () => {
             setEulerianCycle(gra.euleriano(Trayecto.ciclo))
             setHamiltonianPath(gra.hamiltoniano(Trayecto.camino))
             setHamiltonianCycle(gra.hamiltoniano(Trayecto.ciclo))
-        } else console.log('error')
+        }
 
     };
 
@@ -135,6 +197,26 @@ const Main = () => {
         window.location.reload();
     }
 
+    const handleArbol = () => {
+        !doneFetchArbol ? (setDoneFetchArbol(true)) : setDoneFetchArbol(false);
+    };
+
+    const handleFlujoMaximo = () => {
+        !doneFetchFlujoMaximo ? (setDoneFetchFlujoMaximo(true)) : setDoneFetchFlujoMaximo(false);
+    };
+
+    const handleDistance = () => {
+        !doneFetchDistance ? (setDoneFetchDistance(true)) : setDoneFetchDistance(false);
+
+    };
+
+    const handleHamEul = () => {
+        !doneFetchHamEul ? (setDoneFetchHamEul(true)) : setDoneFetchHamEul(false);
+    };
+
+    const handleMatriz = () => {
+        !doneFetch ? (setDoneFetch(true)) : setDoneFetch(false);
+    };
 
     const handleOnChange = (index, text, value) => {
         const copyRows = [...rows];
@@ -150,7 +232,7 @@ const Main = () => {
 
     const handleOnAdd = () => {
         let len = rows.length - 1;
-        rows[len].text.length > 0 ? setRows(rows.concat(defaultState)) : swal('Error en los nodos', 'Campos vacíos, por favor asigne nombre a los nodos creados', 'error');
+        rows[len].text.length > 0 ? (setRows(rows.concat(defaultState))) : swal('Error en los nodos', 'Campos vacíos, por favor asigne nombre a los nodos creados', 'error');
     };
 
     const handleOnAddLink = () => {
@@ -170,9 +252,11 @@ const Main = () => {
         }
 
         saveData();
+        console.log(saveData)
     };
 
     const handleOnChangeLinks = (index, from, value, text, to) => {
+        // links cambios agregar
         const copyLinks = [...links];
         copyLinks[index] = {
             ...copyLinks[index],
@@ -181,6 +265,7 @@ const Main = () => {
             [text]: value,
         };
         setLinks(copyLinks);
+        //Guardar en clase
         if (copyLinks[index].from && copyLinks[index].to && copyLinks[index].text)
             saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text)
     };
@@ -194,7 +279,11 @@ const Main = () => {
             setLinks(copyLinks);
         }
         saveData();
+        console.log('2')
     };
+
+
+    // Obtener valores desde y hasta para implementar Dijkstra
 
     const handleSubmitFromTo = (e) => {
         e.preventDefault();
@@ -207,27 +296,25 @@ const Main = () => {
             ...changeData,
             [e.target.name]: e.target.value,
         })
-    };
 
-    const handleSubmitPeak = (e) => {
-        e.preventDefault();
-        peakFlowFromTo(changePeakData);
-    };
-
-    const peakFlowFromTo = ({from, to}) => {
-        if( from && to ){
-            setPeakFlowFrom(Number(from));
-            setPeakFlowTo(Number(to));
-        }
-
-    };
+    }
 
     const getFromTo = ({desde, hasta}) => {
         if(desde && hasta){
             setDistanceFrom(Number(desde));
             setDistanceTo(Number(hasta));
         }
-    };
+    }
+
+    // Enviar changeData para actualizar formulario
+    const peakFlowFromTo = ({from, to}) => {
+        if(from && to ){
+            setPeakFlowFrom(Number(from));
+            setPeakFlowTo(Number(to));
+        }
+
+    }
+
 
     const handleInputPeakFlow = (e) => {
         e.preventDefault();
@@ -235,7 +322,16 @@ const Main = () => {
             ...changePeakData,
             [e.target.name]: e.target.value,
         })
+
+    }
+
+    const handleSubmitPeak = (e) => {
+        e.preventDefault();
+        peakFlowFromTo(changePeakData);
     };
+
+
+
 
     return (
         <Box display='flex' className='main_view'>
@@ -244,11 +340,11 @@ const Main = () => {
                 {rows.map((row, index) => (
 
                     <Row
-                        {...row}
-                        className='main_row'
-                        onChange={(text, value) => handleOnChange(index, text, value)}
-                        onRemove={() => handleOnRemove(index)}
-                        key={index}
+                    {...row}
+                    className='main_row'
+                    onChange={(text, value) => handleOnChange(index, text, value)}
+                    onRemove={() => handleOnRemove(index)}
+                    key={index}
                     />
                 ))}
 
@@ -265,6 +361,7 @@ const Main = () => {
                 ))}
 
                 <div>
+
                     {
                         (links.length < 1 || rows.length < 1 ) ? (
                             <Button m={10}
@@ -645,7 +742,7 @@ const Main = () => {
                     <div className='main_contentInside'>
                         {
                             arbolGenerador &&
-                            <Content className="hola" data={rows} linksData={arbolGenerador} />
+                            <NotDirected className="hola" data={rows} linksData={arbolGenerador} />
                         }
                     </div>
                 </div >
@@ -659,10 +756,10 @@ const Main = () => {
 
 
 
-            <Content data={rows} linksData={links} />
+            <NotDirected data={rows} linksData={links} />
         </Box >
     )
 }
 
 
-export default Main;
+export default MainNotDirected;

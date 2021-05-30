@@ -1,0 +1,39 @@
+img {
+    width: 400px;
+    border: 1px solid rgb(199, 199, 199);
+    border-radius: 10px;
+}
+
+.documentation_container{
+    width: 80%;
+    background: rgba(228, 228, 228, 0.212);
+    margin: 0px auto;
+    text-align: start;
+    padding: 30px;
+    height: 800px;
+    overflow-y: scroll;
+}
+
+.documentation_ex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0px;
+    border: 1px solid rgb(214, 214, 214);
+    padding: 20px;
+}
+
+.documentation_info{
+    width: 30%;
+    margin: 0 100px;
+    text-align: center;
+}
+
+.spanBlack{
+    color: black;
+    font-weight: bold;
+}
+.spanBlue{
+    color: rgb(49, 49, 201);
+    font-weight: bold;
+}
