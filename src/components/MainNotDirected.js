@@ -112,7 +112,7 @@ const MainNotDirected = () => {
     const [edgesClass, setEdgesClass] = useState([]);
     const [grafo, setGrafo] = useState([]);
     const [arbolGenerador, setArbolGenerador] = useState([])
-    const [matrizDeCamino, setMatrizDeCamino] = useState();
+    const [matrizDeCamino, setMatrizDeCamino] = useState([]);
     const [saveAllData, setSaveAllData] = useState(false)
     const [isHamiltoniano, setIsHamiltoniano] = useState(false);
     const [isEuleriano, setIsEuleriano] = useState(false);
