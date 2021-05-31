@@ -1218,7 +1218,7 @@ const grafos = [
   {
     numero: 11,
     descripcion: "Grafo 11, tipo C (no dirigido, no ponderado, conexo), 6 nodos",
-    link: "http://graphonline.ru/en/?graph=fhZiPYyPDICMHZHk",
+    link: "http://graphonline.ru/en/?graph=zbCYxpCuBvhMUrCN",
     cantidad: 6,
     esDirigido: false,
     esPonderado: false,
