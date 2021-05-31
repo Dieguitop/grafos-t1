@@ -8,15 +8,14 @@ const {
   find,
   first,
   flattenDeep,
-  has,
   isEmpty,
   last,
   remove,
-  set,
   some,
   sumBy,
   unionBy,
   uniq,
+  sortedIndexBy,
 } = require("lodash");
 
 /**
@@ -47,29 +46,114 @@ const Trayecto = Object.freeze({
 class Grafo {
   /**
    * @constructor
+   * @param {boolean} [esDirigido=false] - `true` si el grafo de la matriz de
+   * adyacencia es dirigido, `false` en caso contrario.
+   */
+  constructor(esDirigido = false) {
+    this.listaDeAdyacencia = new Map();
+    this.esDirigido = esDirigido;
+  }
+
+  /**
+   * Construye un grafo a partir de una lista de adyacencia.
+   *
    * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
    * @param {boolean} [esDirigido=false] - `true` si el grafo de la matriz de
    * adyacencia es dirigido, `false` en caso contrario.
+   * @returns {Grafo} Grafo.
+   *
+   * La implementación interna de `Grafo` es una lista de adyacencia, por lo que
+   * éste constructor redirige al constructor principal.
    *
    * @example
    * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
-   * const listaDeAdyacencia = new Map([
+   * const listaDeAdyacencia = [
    *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
    *   [1, [new Adyacente(2, 3)]],
    *   [2, [new Adyacente(0, 4)]]
-   * ]);
+   * ];
    *
    * // La lista de adyacencia contiene aristas dirigidas.
    * const esDirigido = true;
-   * const grafo = new Grafo(listaDeAdyacencia, esDirigido);
+   * const grafo = Grafo.desdeListaDeAdyacencia(matrizDeAdyacencia, esDirigido);
    */
-  constructor(listaDeAdyacencia, esDirigido = false) {
-    // Ordena la lista de adyacencia ascendentemente, según los nodos de origen.
-    this.listaDeAdyacencia = new Map(
-      [...listaDeAdyacencia.entries()].sort((a, b) => first(a) - first(b))
-    );
+  static desdeListaDeAdyacencia(listaDeAdyacencia, esDirigido = false) {
+    let grafo = new Grafo(esDirigido);
 
-    this.esDirigido = esDirigido;
+    for (const [i, adyacentes] of listaDeAdyacencia) {
+      for (const { nodo: j, peso } of adyacentes) {
+        grafo.agregarArista(i, j, peso);
+      }
+    }
+
+    return grafo;
+  }
+
+  /**
+   * Construye un grafo a partir de una matriz de adyacencia.
+   *
+   * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
+   * @param {boolean} esDirigido - `true` si el grafo de la matriz de adyacencia
+   * es dirigido, `false` en caso contrario.
+   * @returns {Grafo} Grafo.
+   *
+   * @example
+   * // Grafo: 0 -> 1, 0 <-> 2, 1 -> 2.
+   * const matrizDeAdyacencia = [
+   *   [false, true, true],
+   *   [false, false, true],
+   *   [true, false, false]
+   * ];
+   *
+   * // La matriz contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = Grafo.desdeMatrizDeAdyacencia(
+   *   matrizDeAdyacencia, esDirigido
+   * );
+   */
+  static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
+    let grafo = new Grafo(esDirigido);
+
+    for (const [i, fila] of matrizDeAdyacencia.entries()) {
+      for (const [j, celda] of fila.entries()) {
+        if (celda !== Celda.desconectada) {
+          grafo.agregarArista(i, j, celda === Celda.conectada ? undefined : celda);
+        }
+      }
+    }
+
+    return grafo;
+  }
+
+  /**
+   * Construye un grafo a partir de una lista de aristas.
+   *
+   * @param {number[][]} listaDeAristas - Lista de aristas.
+   * @param {boolean} [esDirigido=false] - `true` si el grafo de la matriz de
+   * adyacencia es dirigido, `false` en caso contrario.
+   * @returns {Grafo} Grafo.
+   *
+   * @example
+   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
+   * const listaDeAristas = [
+   *   new Arista(0, 1, 2),
+   *   new Arista(0, 2, 6),
+   *   new Arista(1, 2, 3),
+   *   new Arista(2, 0, 4)
+   * ];
+   *
+   * // La lista contiene aristas dirigidas.
+   * const esDirigido = true;
+   * const grafo = Grafo.desdeListaDeAristas(listaDeAristas, esDirigido);
+   */
+  static desdeListaDeAristas(listaDeAristas, esDirigido = false) {
+    let grafo = new Grafo(esDirigido);
+
+    for (const { origen, destino, peso } of listaDeAristas) {
+      grafo.agregarArista(origen, destino, peso);
+    }
+
+    return grafo;
   }
 
   /**
@@ -99,144 +183,14 @@ class Grafo {
    * const grafo = Grafo.desdeListaDeLinks(listaDeLinks, esDirigido);
    */
   static desdeListaDeLinks(listaDeLinks, esDirigido = false) {
-    let listaDeAristas = [];
+    let grafo = new Grafo(esDirigido);
 
     for (const link of listaDeLinks) {
-      listaDeAristas.push(Arista.desdeLink(link));
+      const { origen, destino, peso } = Arista.desdeLink(link);
+      grafo.agregarArista(origen, destino, peso);
     }
 
-    return Grafo.desdeListaDeAristas(listaDeAristas, esDirigido);
-  }
-
-  /**
-   * Construye un grafo a partir de una lista de adyacencia.
-   *
-   * @param {Map<number, number[]>} listaDeAdyacencia - Lista de adyacencia.
-   * @param {boolean} [esDirigido=false] - `true` si el grafo de la matriz de
-   * adyacencia es dirigido, `false` en caso contrario.
-   * @returns {Grafo} Grafo.
-   *
-   * La implementación interna de `Grafo` es una lista de adyacencia, por lo que
-   * éste constructor redirige al constructor principal.
-   *
-   * @example
-   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
-   * const listaDeAdyacencia = [
-   *   [0, [new Adyacente(1, 2), new Adyacente(2, 6)]],
-   *   [1, [new Adyacente(2, 3)]],
-   *   [2, [new Adyacente(0, 4)]]
-   * ];
-   *
-   * // La lista de adyacencia contiene aristas dirigidas.
-   * const esDirigido = true;
-   * const grafo = Grafo.desdeListaDeAdyacencia(matrizDeAdyacencia, esDirigido);
-   */
-  static desdeListaDeAdyacencia(listaDeAdyacencia, esDirigido = false) {
-    return new Grafo(listaDeAdyacencia, esDirigido);
-  }
-
-  /**
-   * Construye un grafo a partir de una matriz de adyacencia.
-   *
-   * @param {number[][]} matrizDeAdyacencia - Matriz de adyacencia.
-   * @param {boolean} esDirigido - `true` si el grafo de la matriz de adyacencia
-   * es dirigido, `false` en caso contrario.
-   * @returns {Grafo} Grafo.
-   *
-   * @example
-   * // Grafo: 0 -> 1, 0 <-> 2, 1 -> 2.
-   * const matrizDeAdyacencia = [
-   *   [false, true, true],
-   *   [false, false, true],
-   *   [true, false, false]
-   * ];
-   *
-   * // La matriz contiene aristas dirigidas.
-   * const esDirigido = true;
-   * const grafo = Grafo.desdeMatrizDeAdyacencia(
-   *   matrizDeAdyacencia, esDirigido
-   * );
-   */
-  static desdeMatrizDeAdyacencia(matrizDeAdyacencia, esDirigido = false) {
-    const registrar = (adyacentes, aristas, i, j, celda) => {
-      // Una arista existe entre i y j si el valor de `celda` es distinto de
-      // `false`. Además, sólo se considera dicha arista si ésta no ha sido
-      // encontrada anteriormente.
-      if (celda !== Celda.desconectada && !has(aristas, [i, j])) {
-        set(aristas, [i, j]);
-
-        // La matriz de adyacencia de un grafo no dirigido es simétrica, por
-        // lo que la arista entre el nodo i y el nodo j existe en dicha matriz
-        // tanto en {i, j} y como en {j, i}.
-        if (!esDirigido) {
-          set(aristas, [j, i]);
-        }
-
-        // Si el valor de la celda es `true`, el adyacente se asume como no
-        // ponderado.
-        adyacentes.push(new Adyacente(j, celda === Celda.conectada ? undefined : celda));
-      }
-    };
-
-    let listaDeAdyacencia = new Map();
-
-    // Se utiliza una tabla hasheada para evitar la duplicidad de aristas.
-    let aristas = {};
-
-    for (const [i, fila] of matrizDeAdyacencia.entries()) {
-      let adyacentes = [];
-
-      for (const [j, celda] of fila.entries()) {
-        registrar(adyacentes, aristas, i, j, celda);
-      }
-
-      // Excluye los nodos sin adyacentes explícitos de la lista de adyacencia.
-      if (!isEmpty(adyacentes)) {
-        listaDeAdyacencia.set(i, adyacentes);
-      }
-    }
-
-    return new Grafo(listaDeAdyacencia, esDirigido);
-  }
-
-  /**
-   * Construye un grafo a partir de una lista de aristas.
-   *
-   * @param {number[][]} listaDeAristas - Lista de aristas.
-   * @param {boolean} [esDirigido=false] - `true` si el grafo de la matriz de
-   * adyacencia es dirigido, `false` en caso contrario.
-   * @returns {Grafo} Grafo.
-   *
-   * @example
-   * // Grafo: 0 --(2)--> 1, 0 <--(4)--.--(6)--> 2, 1 --(3)--> 2.
-   * const listaDeAristas = [
-   *   new Arista(0, 1, 2),
-   *   new Arista(0, 2, 6),
-   *   new Arista(1, 2, 3),
-   *   new Arista(2, 0, 4)
-   * ];
-   *
-   * // La lista contiene aristas dirigidas.
-   * const esDirigido = true;
-   * const grafo = Grafo.desdeListaDeAristas(listaDeAristas, esDirigido);
-   */
-  static desdeListaDeAristas(listaDeAristas, esDirigido = false) {
-    // Mapa (o diccionario) donde las llaves son los nodos y sus valores
-    // asociados son las listas (inicialmente vacías) de sus nodos adyacentes.
-    let listaDeAdyacencia = new Map();
-
-    for (const { origen, destino, peso } of listaDeAristas) {
-      // Si la lista de adyacencia no contiene al nodo origen, asignarle una
-      // lista vacía de adyacentes.
-      if (!listaDeAdyacencia.has(origen)) {
-        listaDeAdyacencia.set(origen, []);
-      }
-
-      // Agrega el nodo destino a las adyacencias del nodo origen.
-      listaDeAdyacencia.get(origen).push(new Adyacente(destino, peso));
-    }
-
-    return new Grafo(listaDeAdyacencia, esDirigido);
+    return grafo;
   }
 
   /**
@@ -418,6 +372,47 @@ class Grafo {
     }
 
     return new Arista(origen, destino, peso);
+  }
+
+  /**
+   * Conecta dos nodos dentro de un grafo.
+   *
+   * @param {number} origen - Nodo origen.
+   * @param {number} destino - Nodo destino.
+   * @param {?number} peso - Peso de la arista que une los nodos.
+   * @returns {boolean} `true` si los nodos fueron conectados, `false` en caso
+   * contrario (los nodos ya estaban conectados).
+   */
+  agregarArista(origen, destino, peso) {
+    if (this.existeArista(origen, destino, Direccion.salida)) {
+      return false;
+    }
+
+    // Garantizar que el nodo origen es siempre menor al nodo destino.
+    else if (!this.esDirigido) {
+      [origen, destino] = [origen, destino].sort((a, b) => a - b);
+    }
+
+    let adyacentes = this.listaDeAdyacencia.get(origen);
+    const existe = this.listaDeAdyacencia.has(origen);
+    const adyacente = new Adyacente(destino, peso);
+
+    if (existe) {
+      // Determina el índice mínimo en el que el adyacente debe ser insertado
+      // para mantener la lista de adyacentes ordenada.
+      adyacentes.splice(sortedIndexBy(adyacentes, adyacente, "nodo"), 0, adyacente);
+    }
+
+    // Si el nodo origen no existe, ingresarlo junto con su adyacente, y ordenar
+    // la lista de adyacencia. Así se garantiza que las llaves de la lista de
+    // adyacencia siempre estén ordenadas.
+    else {
+      this.listaDeAdyacencia = new Map(
+        [...this.listaDeAdyacencia, [origen, [adyacente]]].sort((a, b) => first(a) - first(b))
+      );
+    }
+
+    return true;
   }
 
   /**
@@ -745,25 +740,25 @@ class Grafo {
 
       for (const nodo of nodos) {
         switch (diferenciaGrado(nodo)) {
-        // El nodo cumple: GS - GE = 1.
-        case 1:
-          candidatosOrigen++;
-          origen = nodo;
-          break;
+          // El nodo cumple: GS - GE = 1.
+          case 1:
+            candidatosOrigen++;
+            origen = nodo;
+            break;
 
-        // El nodo cumple: GS - GE = -1.
-        case -1:
-          candidatosDestino++;
-          break;
+          // El nodo cumple: GS - GE = -1.
+          case -1:
+            candidatosDestino++;
+            break;
 
-        // Si el nodo no cumple ninguna de las dos condiciones anteriores,
-        // necesariamente tiene que cumplir: GS - GE = 0.
-        case 0:
-          break;
+          // Si el nodo no cumple ninguna de las dos condiciones anteriores,
+          // necesariamente tiene que cumplir: GS - GE = 0.
+          case 0:
+            break;
 
-        // El grafo no es euleriano.
-        default:
-          return false
+          // El grafo no es euleriano.
+          default:
+            return false;
         }
       }
 
@@ -799,21 +794,21 @@ class Grafo {
     }
 
     switch (impares) {
-    // Si todos los nodos del grafo son de grado par, entonces el grafo
-    // contiene un ciclo euleriano. En este caso, cualquier nodo puede ser
-    // el nodo origen del ciclo euleriano.
-    case 0:
-      return { tipo: Trayecto.ciclo, origen: first(nodos) };
+      // Si todos los nodos del grafo son de grado par, entonces el grafo
+      // contiene un ciclo euleriano. En este caso, cualquier nodo puede ser
+      // el nodo origen del ciclo euleriano.
+      case 0:
+        return { tipo: Trayecto.ciclo, origen: first(nodos) };
 
-    // Si solo 2 nodos del grafo son de grado impar, entonces el grafo
-    // contiene un camino euleriano. Cualquiera de los dos nodos de grado
-    // impar puede ser el nodo origen del camino o ciclo euleriano.
-    case 2:
-      return { tipo: Trayecto.camino, origen: impar };
+      // Si solo 2 nodos del grafo son de grado impar, entonces el grafo
+      // contiene un camino euleriano. Cualquiera de los dos nodos de grado
+      // impar puede ser el nodo origen del camino o ciclo euleriano.
+      case 2:
+        return { tipo: Trayecto.camino, origen: impar };
 
-    // No existe ningún trayecto euleriano que cubra la totalidad del grafo.
-    default:
-      return false;
+      // No existe ningún trayecto euleriano que cubra la totalidad del grafo.
+      default:
+        return false;
     }
   }
 
@@ -937,27 +932,16 @@ class Grafo {
    * ésta implementación es O(n * n!).
    */
   hamiltoniano(tipo = Trayecto.camino) {
-    // Se genera una permutación de la lista de nodos por iteración.
     for (let permutacion of permutar(this.nodos)) {
-      // Comprueba si el tipo de trayecto esperado es un camino y si la
-      // permutación es un trayecto válido en el grafo. En caso verdadero,
-      // retornar la permutación.
-      if (tipo === Trayecto.camino && this.esTrayecto(permutacion)) {
-        return permutacion;
+      // Si el trayecto es un ciclo, se agrega al final de la permutación el
+      // primer elemento de ésta. Así, se cumple la condicición de ciclo: el
+      // trayecto termina en el mismo nodo que lo originó.
+      if (tipo === Trayecto.ciclo) {
+        permutacion.push(first(permutacion));
       }
 
-      // Comprueba si el tipo de trayecto esperado es un ciclo.
-      else if (tipo === Trayecto.ciclo) {
-        // Se agrega al final de la permutación el primer elemento de ésta. Así,
-        // se cumple la condicición de ciclo: el trayecto termina en el mismo
-        // nodo que lo originó.
-        permutacion.push(first(permutacion));
-
-        // Si la permutación (modificada) es un trayecto válido en el grafo,
-        // retornarla.
-        if (this.esTrayecto(permutacion)) {
-          return permutacion;
-        }
+      if (this.esTrayecto(permutacion)) {
+        return permutacion;
       }
     }
 
@@ -1065,10 +1049,10 @@ class Grafo {
     }
 
     // Retorna el árbol y la distancia total del árbol (suma total de los pesos
-    // de las aristas del árbol). Si las aristas no son ponderadas, asignar un
-    // peso 1.
+    // de las aristas del árbol). Si las aristas no son ponderadas, considerar
+    // peso 1 por defecto.
     return {
-      arbol: arbol,
+      arbol,
       distancia: sumBy(arbol, (arista) => arista.peso ?? 1),
     };
   }

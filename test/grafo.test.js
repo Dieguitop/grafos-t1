@@ -45,7 +45,7 @@ function aristasEliminadas(origen, destino, original, modificado) {
 }
 
 for (const prueba of grafos) {
-  const grafo = new Grafo(prueba.listaDeAdyacencia, prueba.esDirigido);
+  const grafo = Grafo.desdeListaDeAdyacencia(prueba.listaDeAdyacencia, prueba.esDirigido);
   const nodos = grafo.nodos;
 
   describe.each(estructuras)("Grafo desde %s", (estructura) => {
@@ -107,6 +107,27 @@ for (const prueba of grafos) {
           });
         }
       }
+    }
+  });
+
+  describe.each("Agregar arista", () => {
+    if (prueba.matrizDeAdyacencia != null) {
+      it(`${prueba.descripcion}`, () => {
+        let recibido = new Grafo(prueba.esDirigido);
+        for (const arista of prueba.listaDeAristas) {
+          let { origen, destino, peso } = arista;
+
+          // Invierte las aristas de un grafo no dirigido, con un 80% de
+          // probabilidad.
+          if (!prueba.esDirigido && Math.random < 0.8) {
+            [origen, destino] = [destino, origen];
+          }
+
+          recibido.agregarArista(origen, destino, peso);
+        }
+
+        return expect(recibido.matrizDeAdyacencia).toEqual(prueba.matrizDeAdyacencia);
+      });
     }
   });
 

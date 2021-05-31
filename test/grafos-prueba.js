@@ -1215,6 +1215,40 @@ const grafos = [
       [4, [new Adyacente(5, 6)]],
     ]),
   },
+  {
+    numero: 11,
+    descripcion: "Grafo 11, tipo C (no dirigido, no ponderado, conexo), 6 nodos",
+    link: "http://graphonline.ru/en/?graph=fhZiPYyPDICMHZHk",
+    cantidad: 6,
+    esDirigido: false,
+    esPonderado: false,
+    esConexo: true,
+    esMultigrafo: false,
+    nodos: [0, 1, 2, 3, 4, 5],
+    listaDeAdyacencia: new Map([
+      [0, [new Adyacente(1), new Adyacente(5)]],
+      [1, [new Adyacente(2), new Adyacente(3), new Adyacente(4)]],
+      [2, [new Adyacente(5)]],
+      [3, [new Adyacente(4)]],
+    ]),
+    listaDeAristas: [
+      new Arista(0, 1),
+      new Arista(0, 5),
+      new Arista(1, 2),
+      new Arista(1, 3),
+      new Arista(1, 4),
+      new Arista(2, 5),
+      new Arista(3, 4),
+    ],
+    matrizDeAdyacencia: [
+      [false, true, false, false, false, true],
+      [true, false, true, true, true, false],
+      [false, true, false, false, false, true],
+      [false, true, false, false, true, false],
+      [false, true, false, true, false, false],
+      [true, false, true, false, false, false],
+    ],
+  },
 ];
 
 module.exports = { grafos };
