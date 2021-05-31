@@ -14,8 +14,8 @@ const {
   some,
   sumBy,
   unionBy,
-  uniq,
   sortedIndexBy,
+  sortedUniq,
 } = require("lodash");
 
 /**
@@ -251,7 +251,11 @@ class Grafo {
     // Descomprime el arreglo interno de la lista de adyacencia en un arreglo de
     // una dimensión, se omite el peso de los adyacentes ponderados, se ordenan
     // los nodos ascendentemente y se filtran los duplicados.
-    return uniq(flattenDeep([...this.listaDeAdyacencia]).map((nodo) => nodo?.nodo ?? nodo)).sort();
+    return sortedUniq(
+      flattenDeep([...this.listaDeAdyacencia])
+        .map((nodo) => nodo?.nodo ?? nodo)
+        .sort((a, b) => a - b)
+    );
   }
 
   /**
@@ -389,8 +393,8 @@ class Grafo {
     }
 
     // Garantizar que el nodo origen es siempre menor al nodo destino.
-    else if (!this.esDirigido) {
-      [origen, destino] = [origen, destino].sort((a, b) => a - b);
+    else if (!this.esDirigido && origen > destino) {
+      [origen, destino] = [destino, origen];
     }
 
     let adyacentes = this.listaDeAdyacencia.get(origen);
@@ -400,16 +404,18 @@ class Grafo {
     if (existe) {
       // Determina el índice mínimo en el que el adyacente debe ser insertado
       // para mantener la lista de adyacentes ordenada.
-      adyacentes.splice(sortedIndexBy(adyacentes, adyacente, "nodo"), 0, adyacente);
-    }
+      const indiceMenor = sortedIndexBy(adyacentes, adyacente, "nodo");
+      adyacentes.splice(indiceMenor, 0, adyacente);
+    } else {
+      const ultimo = last([...this.listaDeAdyacencia.keys()]);
+      this.listaDeAdyacencia.set(origen, [adyacente]);
 
-    // Si el nodo origen no existe, ingresarlo junto con su adyacente, y ordenar
-    // la lista de adyacencia. Así se garantiza que las llaves de la lista de
-    // adyacencia siempre estén ordenadas.
-    else {
-      this.listaDeAdyacencia = new Map(
-        [...this.listaDeAdyacencia, [origen, [adyacente]]].sort((a, b) => first(a) - first(b))
-      );
+      // Si existe un nodo mayor al nodo origen, ordenar la lista de adyacencia.
+      if (origen < ultimo) {
+        this.listaDeAdyacencia = new Map(
+          [...this.listaDeAdyacencia].sort((a, b) => first(a) - first(b))
+        );
+      }
     }
 
     return true;
@@ -437,8 +443,8 @@ class Grafo {
 
     // Si el grafo no es dirigido, asegurarse que el origen sea siempre menor
     // que el destino.
-    else if (!this.esDirigido) {
-      [origen, destino] = [origen, destino].sort((a, b) => a - b);
+    else if (!this.esDirigido && origen > destino) {
+      [origen, destino] = [destino, origen];
     }
 
     return remove(this.listaDeAdyacencia.get(origen), ["nodo", destino]);
