@@ -443,7 +443,7 @@ const MainNotDirected = () => {
                     }
                     <p className='main_isConexo'>
                         {
-                            (isConexo===false) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            (isConexo===true) ? ('El grafo es conexo') : ('El grafo no es conexo')
                         }
                     </p>
                     </div>
