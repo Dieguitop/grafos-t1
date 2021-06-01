@@ -82,7 +82,7 @@ class Grafo {
 
     for (const [i, adyacentes] of listaDeAdyacencia) {
       for (const { nodo: j, peso } of adyacentes) {
-        grafo.agregarArista(i, j, peso);
+        grafo.agregarArista(i, j, peso, Direccion.salida);
       }
     }
 
@@ -117,7 +117,12 @@ class Grafo {
     for (const [i, fila] of matrizDeAdyacencia.entries()) {
       for (const [j, celda] of fila.entries()) {
         if (celda !== Celda.desconectada) {
-          grafo.agregarArista(i, j, celda === Celda.conectada ? undefined : celda);
+          grafo.agregarArista(
+            i,
+            j,
+            celda === Celda.conectada ? undefined : celda,
+            Direccion.salida
+          );
         }
       }
     }
@@ -150,7 +155,7 @@ class Grafo {
     let grafo = new Grafo(esDirigido);
 
     for (const { origen, destino, peso } of listaDeAristas) {
-      grafo.agregarArista(origen, destino, peso);
+      grafo.agregarArista(origen, destino, peso, Direccion.salida);
     }
 
     return grafo;
@@ -187,7 +192,7 @@ class Grafo {
 
     for (const link of listaDeLinks) {
       const { origen, destino, peso } = Arista.desdeLink(link);
-      grafo.agregarArista(origen, destino, peso);
+      grafo.agregarArista(origen, destino, peso, Direccion.salida);
     }
 
     return grafo;
@@ -379,17 +384,24 @@ class Grafo {
   }
 
   /**
-   * Conecta dos nodos dentro de un grafo.
+   * Crea una arista entre dos nodos de un grafo.
    *
    * @param {number} origen - Nodo origen.
    * @param {number} destino - Nodo destino.
-   * @param {?number} peso - Peso de la arista que une los nodos.
+   * @param {number} peso - Peso de la arista que une los nodos.
+   * @param {Direccion} direccion - Dirección de la arista entre los nodos.
    * @returns {boolean} `true` si los nodos fueron conectados, `false` en caso
    * contrario (los nodos ya estaban conectados).
    */
-  agregarArista(origen, destino, peso) {
-    if (this.existeArista(origen, destino, Direccion.salida)) {
+  agregarArista(origen, destino, peso, direccion = Direccion.salida) {
+    // Si la arista ya existe, no hay nada que insertar.
+    if (this.existeArista(origen, destino, direccion)) {
       return false;
+    }
+
+    // Si el grafo es dirigido y la arista es de entrada, invertir los extremos.
+    else if (this.esDirigido && direccion === Direccion.entrada) {
+      return this.agregarArista(destino, origen, peso, Direccion.salida);
     }
 
     // Garantizar que el nodo origen es siempre menor al nodo destino.
@@ -398,10 +410,9 @@ class Grafo {
     }
 
     let adyacentes = this.listaDeAdyacencia.get(origen);
-    const existe = this.listaDeAdyacencia.has(origen);
     const adyacente = new Adyacente(destino, peso);
 
-    if (existe) {
+    if (this.listaDeAdyacencia.has(origen)) {
       // Determina el índice mínimo en el que el adyacente debe ser insertado
       // para mantener la lista de adyacentes ordenada.
       const indiceMenor = sortedIndexBy(adyacentes, adyacente, "nodo");
@@ -437,6 +448,7 @@ class Grafo {
     }
 
     // Si la arista es dirigida hacia el origen, invertir los vértices.
+    // Para los grafos no dirigidos, basta con eliminar la arista de salida.
     else if (this.esDirigido && direccion === Direccion.entrada) {
       return remove(this.listaDeAdyacencia.get(destino), ["nodo", origen]);
     }
@@ -679,6 +691,7 @@ class Grafo {
       camino.add(nodo);
     }
 
+    // HACK: hay casos en que el origen ya viene incluido en el camino.
     // Retorna el camino más corto (incluyendo el nodo origen) y la distancia
     // total de la ruta.
     return {
@@ -719,23 +732,12 @@ class Grafo {
    * euleriano.
    */
   get esEuleriano() {
-    /**
-     * Calcula la diferencia entre el grado de salida y de entrada de un nodo.
-     *
-     * @param {number} nodo - Nodo.
-     * @returns {number} Diferencia entre el grado de salida y de entrada del
-     * nodo.
-     */
-    const diferenciaGrado = (nodo) => {
-      return this.grado(nodo, Direccion.salida) - this.grado(nodo, Direccion.entrada);
-    };
-
     const nodos = this.nodos;
 
     // Condiciones que debe cumplir un grafo dirigido para contener un trayecto
     // euleriano.
     if (this.esDirigido) {
-      // Cualquier nodo que cumpla: GE - GS = 1.
+      // Cualquier nodo que cumpla: GS - GE = 1.
       let origen;
 
       // Cantidad de nodos que cumplen: GS - GE = 1.
@@ -745,14 +747,13 @@ class Grafo {
       let candidatosDestino = 0;
 
       for (const nodo of nodos) {
-        switch (diferenciaGrado(nodo)) {
-          // El nodo cumple: GS - GE = 1.
+        // GS - GE.
+        switch (this.grado(nodo, Direccion.salida) - this.grado(nodo, Direccion.entrada)) {
           case 1:
             candidatosOrigen++;
             origen = nodo;
             break;
 
-          // El nodo cumple: GS - GE = -1.
           case -1:
             candidatosDestino++;
             break;
@@ -905,14 +906,12 @@ class Grafo {
    * no muy eficientes).
    */
   get esHamiltoniano() {
-    // `true` si el grafo contiene algún camino hamiltoniano.
     const esCamino = Boolean(this.hamiltoniano(Trayecto.camino));
 
     if (esCamino) {
       return { tipo: Trayecto.camino };
     }
 
-    // `true` si el grafo contiene algún ciclo hamiltoniano.
     const esCiclo = Boolean(this.hamiltoniano(Trayecto.ciclo));
 
     if (esCiclo) {
