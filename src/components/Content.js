@@ -97,7 +97,7 @@ function initDiagram() {
     ),
     $(
       go.TextBlock,
-      { margin: 20, editable: false, font: "30px Verdana" },
+      { margin: 10, editable: false, font: "26px Verdana" },
       new go.Binding("text").makeTwoWay()
     ),
     { dragComputation: avoidNodeOverlap }
@@ -110,7 +110,7 @@ function initDiagram() {
     $(go.Shape, { toArrow: "Standard" }),
     $(
       go.TextBlock,
-      { font: "26px Verdana", segmentOffset: new go.Point(0, -20) },
+      { font: "24px Verdana", segmentOffset: new go.Point(0, -20) },
       new go.Binding("text", "text")
     )
   );
