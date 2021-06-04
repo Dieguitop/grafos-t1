@@ -1,6 +1,7 @@
 {
   "name": "grafos-t1",
   "version": "0.1.0",
+  "type": "module",
   "private": false,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
@@ -11,8 +12,8 @@
     "@testing-library/user-event": "^12.1.10",
     "gojs": "^2.1.38",
     "gojs-react": "^1.0.10",
-    "lodash": "^4.17.21",
-    "mathjs": "^9.3.2",
+    "lodash-es": "^4.17.21",
+    "mathjs": "^9.4.1",
     "prop-types": "^15.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -28,8 +29,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "jest": "jest --verbose",
-    "jest-watch": "jest --verbose --watch",
-    "jest-watch-all": "jest --verbose --watchAll",
+    "jest-watch": "node --experimental-vm-modules node_modules/.bin/jest --verbose --watch",
+    "jest-watch-all": "node --experimental-vm-modules node_modules/.bin/jest --verbose --watchAll",
     "generar-doc": "script/generar-doc.sh",
     "playground": "node test/playground.js"
   },

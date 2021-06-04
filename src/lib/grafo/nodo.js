@@ -18,4 +18,4 @@ class Adyacente {
   }
 }
 
-module.exports = { Adyacente };
+export { Adyacente };

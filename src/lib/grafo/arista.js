@@ -1,4 +1,4 @@
-const { Adyacente } = require("./nodo.js");
+import { Adyacente } from './nodo.js';
 
 /**
  * @enum {number}
@@ -77,4 +77,4 @@ class Arista {
   }
 }
 
-module.exports = { Arista, Direccion };
+export { Arista, Direccion };

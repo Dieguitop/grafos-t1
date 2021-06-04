@@ -1,5 +1,5 @@
-const { isEmpty } = require("lodash");
-const { Direccion } = require("./arista.js");
+import { isEmpty } from "lodash-es";
+import { Direccion } from "./arista.js";
 
 /**
  * Produce una permutación de una lista de números.
@@ -7,7 +7,7 @@ const { Direccion } = require("./arista.js");
  * @param {number[]} lista - Lista a calcular permutaciones.
  * @yields {number[]} La siguiente permutación de la lista de números.
  */
-function* permutar(lista) {
+export function* permutar(lista) {
   // Caso base.
   if (lista.length === 1) {
     yield lista;
@@ -47,7 +47,7 @@ function* permutar(lista) {
  *
  * Algoritmo de búsqueda en anchura (breadth-first search, BFS).
  */
-function caminoDeAumento(grafo, entrada, salida, capacidad) {
+export function caminoDeAumento(grafo, entrada, salida, capacidad) {
   // Arreglo utilizado para recordar los nodos padres de cada nodo i-ésimo
   // (si es que fue visitado).
   let padre = Array(grafo.cantidad);
@@ -91,9 +91,4 @@ function caminoDeAumento(grafo, entrada, salida, capacidad) {
 
   // Si el flujo del camino es 0, entonces no se encontró ningún CA.
   return { flujoCamino: 0, padre };
-}
-
-module.exports = {
-  permutar,
-  caminoDeAumento,
 }

@@ -80,4 +80,4 @@ class ConjuntoDisjunto {
   }
 }
 
-module.exports = { ConjuntoDisjunto };
+export { ConjuntoDisjunto };

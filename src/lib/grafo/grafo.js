@@ -1,9 +1,9 @@
-const { Arista, Direccion } = require("./arista.js");
-const { Adyacente } = require("./nodo.js");
-const { ConjuntoDisjunto } = require("../conjunto-disjunto.js");
-const { permutar, caminoDeAumento } = require("./algoritmos.js");
-const { identity, add, multiply } = require("mathjs");
-const {
+import { Arista, Direccion } from "./arista.js";
+import { Adyacente } from "./nodo.js";
+import { ConjuntoDisjunto } from "../conjunto-disjunto.js";
+import { permutar, caminoDeAumento } from "./algoritmos.js";
+import { identity, add, multiply } from "mathjs/lib/esm/index.js";
+import {
   cloneDeep,
   find,
   first,
@@ -16,7 +16,7 @@ const {
   unionBy,
   sortedIndexBy,
   sortedUniq,
-} = require("lodash");
+} from "lodash-es";
 
 /**
  * @enum {boolean}
@@ -1063,4 +1063,4 @@ class Grafo {
   }
 }
 
-module.exports = { Grafo, Celda, Trayecto, Arista, Direccion };
+export { Grafo, Celda, Trayecto };

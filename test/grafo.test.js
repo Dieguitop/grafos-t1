@@ -1,7 +1,8 @@
 /* eslint-disable jest/valid-title */
-const { Grafo, Arista, Direccion, Trayecto } = require("../src/lib/grafo/grafo.js");
-const { grafos } = require("./grafos-prueba.js");
-const { cloneDeep, map, isEqual, camelCase, upperFirst } = require("lodash");
+import { Grafo, Trayecto } from "../src/lib/grafo/grafo.js";
+import { Arista, Direccion } from "../src/lib/grafo/arista.js";
+import { grafos } from "./grafos-prueba.js";
+import { cloneDeep, map, isEqual, camelCase, upperFirst } from "lodash-es";
 
 const direcciones = ["salida", "entrada"];
 const estructuras = ["lista de aristas", "matriz de adyacencia", "lista de links"];

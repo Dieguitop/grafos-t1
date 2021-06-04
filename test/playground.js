@@ -1,6 +1,6 @@
-const _ = require("lodash");
-const { Grafo, Trayecto, Direccion, Arista } = require("../src/lib/grafo/grafo.js");
-const { grafos } = require("./grafos-prueba.js");
+import _ from 'lodash-es';
+import { Grafo, Trayecto } from '../src/lib/grafo/grafo.js';
+import { grafos } from './grafos-prueba.js';
 
 function mostrar(grafos) {
   for (const prueba of grafos) {
@@ -26,15 +26,15 @@ function mostrar(grafos) {
     console.log(grafo.arbolGeneradorMinimo);
     console.log("euleriano: {");
     console.log("camino:");
-    console.log(grafo.euleriano(trayecto.camino));
+    console.log(grafo.euleriano(Trayecto.camino));
     console.log(", ciclo:");
-    console.log(grafo.euleriano(trayecto.ciclo));
+    console.log(grafo.euleriano(Trayecto.ciclo));
     console.log("},");
     console.log("hamiltoniano: {");
     console.log("camino:");
-    console.log(grafo.hamiltoniano(trayecto.camino));
+    console.log(grafo.hamiltoniano(Trayecto.camino));
     console.log(", ciclo:");
-    console.log(grafo.hamiltoniano(trayecto.ciclo));
+    console.log(grafo.hamiltoniano(Trayecto.ciclo));
     console.log("},");
     console.log("\n============================================================");
   }
