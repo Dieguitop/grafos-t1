@@ -499,7 +499,7 @@ const Main = () => {
                     </p>
                     <p>
                         {
-                            !isEuleriano ? ('El grafo no es euleriano') : ('El grano es euleriano')
+                            !isEuleriano ? ('El grafo no es euleriano') : ('El grafo es euleriano')
                         }
 
 {

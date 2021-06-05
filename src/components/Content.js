@@ -74,15 +74,24 @@ FDLayout.prototype.makeNetwork = function (coll) {
 
 function initDiagram() {
   const $ = go.GraphObject.make;
+  
   const diagram = $(go.Diagram, {
     "undoManager.isEnabled": true,
     "clickCreatingTool.archetypeNodeData": { text: "new node", color: "lightblue", fig: "Cloud" },
     initialAutoScale: go.Diagram.Uniform, // Zoom to make everything fit in the viewport.
-    layout: new FDLayout(),
+    layout: $(go.CircularLayout),
     model: $(go.GraphLinksModel, {
       linkKeyProperty: "key",
     }),
   });
+
+  var lay = diagram.layout;
+
+  var spacing = 200;
+  spacing = parseFloat(spacing, 200);
+  lay.spacing = spacing;
+
+  lay = go.CircularLayout.ConstantSpacing;
 
   diagram.nodeTemplate = $(
     go.Node,
@@ -91,7 +100,7 @@ function initDiagram() {
     $(
       go.Shape,
       "Circle",
-      { name: "SHAPE", fill: "white", strokeWidth: 1, portId: "" },
+      { name: "SHAPE", fill: "white", strokeWidth: 1, portId: "", },
       // Shape.fill is bound to Node.data.color
       new go.Binding("fill", "color")
     ),
