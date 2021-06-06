@@ -10,6 +10,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "debugout.js": "^1.0.0",
     "gojs": "^2.1.38",
     "gojs-react": "^1.0.10",
     "lodash-es": "^4.17.21",

@@ -10,7 +10,19 @@ import CachedIcon from '@material-ui/icons/Cached';
 import RowLink from './RowLink';
 import Row from './Row';
 
+import { Debugout } from 'debugout.js';
+
+const bugout = new Debugout();
+
 const Main = () => {
+
+    const downloadLogs = (e) => {
+        e.preventDefault();
+        bugout.info('Descarga de logs', bugout.realTimeLoggingOn);
+        bugout.downloadLog();
+    }
+
+    bugout.info('Acceso a sección de grafos dirigidos');
 
     const defaultState = {
         text: '',
@@ -78,7 +90,7 @@ const Main = () => {
 
     const previewValidation = () => {
         (rows[0].length === 0 || links[0].from.length === 0) ? (
-            swal('Campos vacíos','Para continuar con la aplicación, debes completar los campos vacíos', 'error')
+            swal('Campos vacíos', 'Para continuar con la aplicación, debes completar los campos vacíos', 'error')
         ) : setValidation(true);
     };
 
@@ -108,11 +120,11 @@ const Main = () => {
 
     const saveData = () => {
         previewValidation();
-        if(validation === true){
+        if (validation === true) {
             setSaveAllData(true);
             const gra = Grafo.desdeListaDeAristas(grafo, true);
-            const { esEuleriano , esHamiltoniano, esConexo, matrizDeCaminos, arbolGeneradorMinimo: agm } = gra;
-            const { camino: shortPathGraph, distancia: distanceShortes } = gra.caminoMasCorto(distanceFrom , distanceTo);
+            const { esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos, arbolGeneradorMinimo: agm } = gra;
+            const { camino: shortPathGraph, distancia: distanceShortes } = gra.caminoMasCorto(distanceFrom, distanceTo);
             const peak = gra.flujoMaximo(peakFlowFrom, peakFlowTo);
 
             setArbolGenerador(agm.arbol.map((arista) => arista.link));
@@ -126,14 +138,20 @@ const Main = () => {
             setEulerianPath(gra.euleriano(Trayecto.camino))
             setEulerianCycle(gra.euleriano(Trayecto.ciclo))
             setHamiltonianPath(gra.hamiltoniano(Trayecto.camino))
-            setHamiltonianCycle(gra.hamiltoniano(Trayecto.ciclo))
-        } else console.log('error')
+            setHamiltonianCycle(gra.hamiltoniano(Trayecto.ciclo));
+            bugout.info('Guardado de información para la generación del grafo');
+
+
+        } else bugout.error('Ha ocurrido un error en la validación de los datos');
+
 
     };
 
-    function refreshPage(e){
+    function refreshPage(e) {
         e.preventDefault()
         window.location.reload();
+        bugout.info('Recarga de página');
+
     }
 
 
@@ -146,6 +164,8 @@ const Main = () => {
             [text]: value
         };
         setRows(copyRows);
+        bugout.info('Has cambiado algún valor de los nodos');
+
     };
 
 
@@ -156,14 +176,14 @@ const Main = () => {
 
     const handleOnAddLink = () => {
         let len = links.length - 1;
-        (links[len].from.length > 0 || links[len].to.length > 0 || links[len].text.length > 0 ) ? (
+        (links[len].from.length > 0 || links[len].to.length > 0 || links[len].text.length > 0) ? (
             setLinks(links.concat(defaultState))
         ) : swal('Error en los links', 'Campos vacíos en los links, por favor complete los datos antes de continuar', 'error');
     };
 
     const handleOnRemove = index => {
-        if(rows.length === 1){
-            swal('Error en los nodos','No se puede eliminar el único campo de nodos', 'error')
+        if (rows.length === 1) {
+            swal('Error en los nodos', 'No se puede eliminar el único campo de nodos', 'error')
         } else {
             const copyRows = [...rows];
             copyRows.splice(index, 1);
@@ -171,6 +191,8 @@ const Main = () => {
         }
 
         saveData();
+        bugout.warn('Has borrado un campo de los nodos');
+
     };
 
     const handleOnChangeLinks = (index, from, value, text, to) => {
@@ -183,18 +205,24 @@ const Main = () => {
         };
         setLinks(copyLinks);
         if (copyLinks[index].from && copyLinks[index].to && copyLinks[index].text)
-            saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text)
+            saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text);
+        bugout.info('Has cambiado algún valor de los links');
+
     };
 
     const handleOnRemoveLink = index => {
-        if(links.length === 1){
-            swal("Error en los links", 'No se puede eliminar el único elemento de los links', 'error')
+        if (links.length === 1) {
+            swal("Error en los links", 'No se puede eliminar el único elemento de los links', 'error');
+            bugout.error('No se puede eliminar el único elemento de los links');
+
         } else {
             const copyLinks = [...links];
             copyLinks.splice(index, 1);
             setLinks(copyLinks);
         }
         saveData();
+        bugout.info('Link eliminado correctamente');
+
     };
 
     const handleSubmitFromTo = (e) => {
@@ -207,7 +235,9 @@ const Main = () => {
         setChangeData({
             ...changeData,
             [e.target.name]: e.target.value,
-        })
+        });
+        bugout.info('Datos de distancia entre dos nodos actualizada');
+
     };
 
     const handleSubmitPeak = (e) => {
@@ -215,16 +245,18 @@ const Main = () => {
         peakFlowFromTo(changePeakData);
     };
 
-    const peakFlowFromTo = ({from, to}) => {
-        if( from && to ){
+    const peakFlowFromTo = ({ from, to }) => {
+        if (from && to) {
             setPeakFlowFrom(Number(from));
             setPeakFlowTo(Number(to));
         }
+        bugout.info('Datos de flujo máximo actualizados');
+
 
     };
 
-    const getFromTo = ({desde, hasta}) => {
-        if(desde && hasta){
+    const getFromTo = ({ desde, hasta }) => {
+        if (desde && hasta) {
             setDistanceFrom(Number(desde));
             setDistanceTo(Number(hasta));
         }
@@ -242,32 +274,37 @@ const Main = () => {
         <Box display='flex' className='main_view'>
             <div className='main_options'>
                 <Button m={10} variant='contained' color='secondary' onClick={handleOnAdd}>Agregar</Button>
-                {rows.map((row, index) => (
-
-                    <Row
-                        {...row}
-                        className='main_row'
-                        onChange={(text, value) => handleOnChange(index, text, value)}
-                        onRemove={() => handleOnRemove(index)}
-                        key={index}
-                    />
-                ))}
+                {rows.map((row, index) => {
+                    bugout.info('Se ha creado un nuevo nodo');
+                    return (
+                        <Row
+                            {...row}
+                            className='main_row'
+                            onChange={(text, value) => handleOnChange(index, text, value)}
+                            onRemove={() => handleOnRemove(index)}
+                            key={index}
+                        />
+                    )
+                })}
 
                 <hr />
                 <Button m={10} variant='contained' color='grey' onClick={handleOnAddLink}>Agregar link</Button>
-                {links.map((link, index) => (
-                    <RowLink
-                        {...link}
-                        className='main_row'
-                        onChange={(from, to, value, text) => handleOnChangeLinks(index, from, to, value, text)}
-                        onRemove={() => handleOnRemoveLink(index)}
-                        key={index}
-                    />
-                ))}
+                {links.map((link, index) => {
+                    bugout.info('Se ha creado un nuevo link');
+                    return (
+                        <RowLink
+                            {...link}
+                            className='main_row'
+                            onChange={(from, to, value, text) => handleOnChangeLinks(index, from, to, value, text)}
+                            onRemove={() => handleOnRemoveLink(index)}
+                            key={index}
+                        />
+                    )
+                })}
 
                 <div>
                     {
-                        (links.length < 1 || rows.length < 1 ) ? (
+                        (links.length < 1 || rows.length < 1) ? (
                             <Button m={10}
                                 className='main_row'
                                 variant='contained'
@@ -275,7 +312,7 @@ const Main = () => {
                                 disabled
                             >
                                 GUARDAR DATOS
-                                <SaveAlt/>
+                                <SaveAlt />
                             </Button>
                         ) : (
                             <Button m={10}
@@ -291,7 +328,7 @@ const Main = () => {
                     }
                 </div>
 
-{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+                {/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -319,43 +356,38 @@ const Main = () => {
                 <div className={
                     doneFetch === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    <Button
-                        variant='contained'
-                        color='gray'
-                        type='submit'
-                        className="main_buttonMargin"
-                    ><RefreshIcon />
-                    </Button>
+
                     <div className="item">
-
-                    {
-                        matrizDeCamino &&
-                            matrizDeCamino.map((item, index) => (
-                                <div className="main_boxItem">
-                                    <p>{index}</p>
-                                    {
-
-                                        item.map(miniItem => (
-                                            <div className="main_boxMiniItem">
-                                                <p className='main_p'>{miniItem} &nbsp; </p>
-                                            </div>
-                                        ))
-
-                                    }
-                                </div>
-                            ))
-                    }
-                    <p className='main_isConexo'>
                         {
-                            (isConexo===true) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            matrizDeCamino &&
+                            matrizDeCamino.map((item, index) => {
+                                return (
+                                    <div className="main_boxItem">
+                                        <p>{index}</p>
+                                        {bugout.info('Acceso a sección Matriz de camino')}
+                                        {
+                                            item.map(miniItem => (
+                                                <div className="main_boxMiniItem">
+                                                    <p className='main_p'>{miniItem} &nbsp; </p>
+                                                </div>
+                                            ))
+
+                                        }
+                                    </div>
+                                )
+                            })
                         }
-                    </p>
+                        <p className='main_isConexo'>
+                            {
+                                (isConexo === true) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            }
+                        </p>
                     </div>
                 </div >
-{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+                {/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
 
 
-{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
+                {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -381,10 +413,7 @@ const Main = () => {
                     )
                 }
 
-                <div
-                    className={
-                        doneFetchDistance === true ? ('main_isMatriz') : 'main_noMatriz'
-                    }>
+                <div className={doneFetchDistance === true ? ('main_isMatriz') : 'main_noMatriz'}>
                     <form className='main_formDistance' onSubmit={handleSubmitFromTo}>
                         <TextField
                             className='main_textFieldDistance'
@@ -421,20 +450,23 @@ const Main = () => {
                         changeData.desde && changeData.hasta ? (
                             <div className='distanceFromTo'>
                                 <p>Los nodos recorridos son los siguientes: </p>
-                                {shortPath.map(item => (
-                                    <p className='main_distanceItem'>{item}</p>
-                                ))}
-                            <p>
-                                Distancia : {distance}
-                            </p>
+                                {bugout.info('Acceso sección de Distancia entre dos nodos')}
+                                {
+                                    shortPath.map(item => (
+                                        <p className='main_distanceItem'>{item}</p>
+                                    ))}
+                                <p>
+                                    Distancia : {distance}
+                                </p>
                             </div>
-                        ) : console.log()
+                        ) : bugout.error('Ocurrió un error al momento de desplegar la información de distancia entre dos nodos')
+
                     }
 
                 </div >
-{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
+                {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
-{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
+                {/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -463,79 +495,82 @@ const Main = () => {
                     doneFetchHamEul === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     <div className='distanceFromTo'>
-                    <p>
-                        {
-                            !isHamiltoniano ? ('El grafo no es hamiltoniano') : ('El grafo es hamiltoninao')
-                        }
+                    {bugout.info('Acceso sección de Hamiltoniano/Euleriano')}
 
-                        {
-                            hamiltonianCycle ? (
-                                <>
-                                    <p>Tiene como ciclo: </p>
-                                    {
-                                        hamiltonianCycle.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                        <p>
+                            {
+                                !isHamiltoniano ? ('El grafo no es hamiltoniano') : ('El grafo es hamiltoninao')
+                            }
 
-                            ) : console.log(hamiltonianCycle)
-                        }
+                            {
+                                hamiltonianCycle ? (
+                                    <>
+                                        <p>Tiene como ciclo: </p>
+                                        {
+                                            hamiltonianCycle.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-{
-                            hamiltonianPath ? (
-                                <>
-                                    <p>Tiene como camino: </p>
-                                    {
-                                        hamiltonianPath.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                                ) : bugout.warn('No hay ciclo euleriano')
+                            }
 
-                            ) : console.log(hamiltonianPath)
-                        }
+                            {
+                                hamiltonianPath ? (
+                                    <>
+                                        <p>Tiene como camino: </p>
+                                        {
+                                            hamiltonianPath.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-                    </p>
-                    <p>
-                        {
-                            !isEuleriano ? ('El grafo no es euleriano') : ('El grafo es euleriano')
-                        }
+                                ) : bugout.warn('No hay camino hamiltoniano')
+                            }
 
-{
-                            eulerianCycle ? (
-                                <>
-                                    <p>Tiene como ciclo: </p>
-                                    {
-                                        eulerianCycle.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                        </p>
+                        <p>
+                            {
+                                !isEuleriano ? ('El grafo no es euleriano') : ('El grafo es euleriano')
+                            }
 
-                            ) : console.log(eulerianCycle)
-                        }
+                            {
+                                eulerianCycle ? (
+                                    <>
+                                        <p>Tiene como ciclo: </p>
+                                        {
+                                            eulerianCycle.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-{
-                            eulerianPath ? (
-                                <>
-                                    <p>Tiene como camino: </p>
-                                    {
-                                        eulerianPath.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                                ) : bugout.warn('No hay ciclo euleriano')
+                            }
 
-                            ) : console.log(eulerianPath)
-                        }
-                    </p>
+                            {
+                                eulerianPath ? (
+                                    <>
+                                        <p>Tiene como camino: </p>
+                                        {
+                                            eulerianPath.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
+
+                                ) : bugout.warn('No hay camino euleriano')
+
+                            }
+                        </p>
                     </div>
                 </div >
-{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
+                {/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
 
-{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+                {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
                 {
                     !saveAllData ? (
                         <Button m={10}
@@ -563,6 +598,7 @@ const Main = () => {
                     doneFetchFlujoMaximo === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     <form className='main_formDistance' onSubmit={handleSubmitPeak}>
+                        {bugout.info('Acceso sección de Flujo máximo')}
                         <TextField
                             className='main_textFieldDistance'
                             id='filled-number-peak'
@@ -597,6 +633,7 @@ const Main = () => {
                         changePeakData.from && changePeakData.to ? (
                             <div className='distanceFromTo'>
                                 <p>Flujo máximo es: {peakFlow}</p>
+                                {bugout.info('Acceso sección de Flujo máximo')}
                             </div>
                         ) : (
                             <div className='distanceFromTo'>
@@ -606,9 +643,9 @@ const Main = () => {
                     }
                 </div >
 
-{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+                {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
 
-{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+                {/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
                 {
                     !saveAllData ? (
                         <Button
@@ -637,28 +674,21 @@ const Main = () => {
                 <div className={
                     doneFetchArbol === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    <Button
-                        variant='contained'
-                        color='gray'
-                        type='submit'
-                    ><RefreshIcon />
-                    </Button>
                     <div className='main_contentInside'>
                         {
                             arbolGenerador &&
-                            <Content className="hola" data={rows} linksData={arbolGenerador} />
+                            <Content data={rows} linksData={arbolGenerador} />
                         }
+                        {bugout.info('Acceso sección de Árbol generador')}
+
                     </div>
                 </div >
 
-{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+                {/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
 
-            <Button type="button" onClick={ refreshPage }> Recargar la página <span><CachedIcon className='main_reloadIcon' /></span> </Button>
-
+                <Button type="button" onClick={refreshPage}> Recargar la página <span><CachedIcon className='main_reloadIcon' /></span> </Button>
+                <Button type='button' onClick={downloadLogs}>Obtener registro de actividad</Button>
             </div >
-
-
-
 
             <Content data={rows} linksData={links} />
         </Box >

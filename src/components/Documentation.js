@@ -51,7 +51,10 @@ const Documentation = () => {
             <ul>
                 <li>
                     Si deseas agrandar o disminuir el tamaño de los nodos, solo debes usar la tecla <span className='spanBlack'>CTRL</span> y usar la rueda del mouse o el botón 
-                    <span className='spanBlack'> +</span> o <span className='spanBlack'>-</span>
+                    <span className='spanBlack'> +</span> o <span className='spanBlack'>-</span>.
+                </li>
+                <li>
+                    Si tienes problemas de visualización de la aplicación, como tamaños desproporcionados, te recomendamos hacer redimensionar la ventana.
                 </li>
             </ul>
             <h3>Páginas</h3>
@@ -61,20 +64,20 @@ const Documentation = () => {
                     <Link to='/'>
                         Página inicial
                     </Link >
-                    <p>Página inicial de la aplicación, aquí podrás escoger entre trabajar con grafos dirigidos o no dirigidos</p>
+                    <p>Página inicial de la aplicación, aquí podrás escoger entre trabajar con grafos dirigidos o no dirigidos.</p>
                 </li>
                 <li>
-                    <Link to='/dirigidos'>
+                    <Link to='/dirigido'>
                         Página para grafos dirigidos
                     </Link >
-                    <p>Página para trabajar con grafos dirigidos</p>
+                    <p>Página para trabajar con grafos dirigidos.</p>
 
                 </li>
                 <li>
-                    <Link to='/no-dirigidos'>
+                    <Link to='/no-dirigido'>
                         Página para grafos no dirigidos
                 </Link >
-                <p>Página para trabajar con grafos no dirigidos</p>
+                <p>Página para trabajar con grafos no dirigidos.</p>
 
                 </li>
             </ul>
@@ -83,6 +86,14 @@ const Documentation = () => {
                 <li>
                     En caso de realizar alguna acción que no se encuentre permitida, nuestra aplicación está diseñada para <span className='spanBlack'>indicarte el error
                     además de la ubicación del mismo junto a su respectiva solución.</span>
+                </li>
+
+            </ul>
+            <h3>Registro de actividad</h3>
+            <ul>
+                <li>
+                    Dentro de las secciones de grafos dirigidos y no dirigidos, encontrarás un botón llamado <span className='spanBlack'>OBTENER REGISTRO DE ACTIVDAD</span>, 
+                    con el cual podrás descargar un archivo .txt el que tendrá todas las acciones que has realizado en la aplicación, tanto la <span className='spanBlack'>información, alertas y errores.</span>
                 </li>
 
             </ul>
@@ -125,6 +136,11 @@ const Documentation = () => {
                 <li>
                     <a href='https://jestjs.io/'>
                         Jest
+                    </a>
+                </li>
+                <li>
+                    <a href='https://github.com/inorganik/debugout.js'>
+                        Debugout.js
                     </a>
                 </li>
             </ul>

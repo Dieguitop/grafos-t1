@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, TextField } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
+import { Box, Button, TextField } from '@material-ui/core';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import { Grafo, Trayecto } from '../lib/grafo/grafo.js';
 import { Arista } from '../lib/grafo/arista.js';
@@ -8,81 +7,22 @@ import { SaveAlt } from '@material-ui/icons';
 import swal from 'sweetalert';
 import CachedIcon from '@material-ui/icons/Cached';
 import NotDirected from './NotDirected.js';
+import RowLink from './RowLink';
+import Row from './Row';
 
-function Row({ onChange, onRemove, text }) {
+import { Debugout } from 'debugout.js';
+const bugout = new Debugout();
 
-    return (
-        <FormControl className='main_formControl'>
-            <Box display='flex' width='100%' justifyContent='space-between' p={1}>
-                <TextField
-                    fullWidth='true'
-                    className='main_textField'
-                    label='Nombre del nodo'
-                    value={text}
-                    onChange={e => onChange('text', e.target.value)}
-                />
-                <Button
-                    size='small'
-                    startIcon={<DeleteIcon className='main_deleteIcon' style={{ fontSize: 25 }} />}
-                    onClick={onRemove}
-                >
-                </Button>
-            </Box>
-        </FormControl>
-    );
-}
-
-function RowLink({ onChange, onRemove, from, to, text }) {
-
-    return (
-        <FormControl m={10}>
-            <Box display='flex' width='100%' justifyContent='space-between' p={1}>
-                <TextField
-                    id='filled-number'
-                    label='Desde'
-                    type='number'
-                    value={from}
-                    InputProps={{ inputProps: { min: 0, max: 99 } }}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={e => onChange('from', e.target.value)}
-                />
-                <TextField
-                    id='filled-number'
-                    label='Hasta'
-                    type='number'
-                    value={to}
-                    InputProps={{ inputProps: { min: 0, max: 99 } }}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                    onChange={e => onChange('to', e.target.value)}
-                />
-
-                <TextField
-                    id='filled-number'
-                    label='Peso'
-                    type='number'
-                    value={text}
-                    InputLabelProps={{
-                        shrink: true
-                    }}
-                    InputProps={{ inputProps: { min: 0, max: 99 } }}
-                    onChange={e => onChange( 'text', e.target.value )}
-                />
-                <Button
-                    size='small'
-                    startIcon={<DeleteIcon className='main_deleteIcon' style={{ fontSize: 25 }} />}
-                    onClick={onRemove}
-                >
-                </Button>
-            </Box>
-        </FormControl>
-    );
-}
 
 const MainNotDirected = () => {
+
+    const downloadLogs = (e) => {
+        e.preventDefault();
+        bugout.info('Descarga de logs', bugout.realTimeLoggingOn);
+        bugout.downloadLog();
+    };
+
+    bugout.info('Acceso a sección de grafos no dirigidos');
 
     const defaultState = {
         text: '',
@@ -154,8 +94,8 @@ const MainNotDirected = () => {
 
     const previewValidation = () => {
 
-        if(rows[0].length === 0 || links[0].from.length === 0){
-            swal('Campos vacíos','Para continuar con la aplicación, debes completar los campos vacíos', 'error')
+        if (rows[0].length === 0 || links[0].from.length === 0) {
+            swal('Campos vacíos', 'Para continuar con la aplicación, debes completar los campos vacíos', 'error')
         }
         else {
             setValidation(true);
@@ -167,14 +107,14 @@ const MainNotDirected = () => {
 
         previewValidation();
 
-
-        if(validation === true){
+        if (validation === true) {
 
             setSaveAllData(true);
             // Implementanción del grafo
+            bugout.info('Creando nodo');
             const gra = Grafo.desdeListaDeAristas(grafo, false);
-            const { esEuleriano , esHamiltoniano, esConexo, matrizDeCaminos, arbolGeneradorMinimo: agm } = gra;
-            const { camino: shortPathGraph, distancia: distanceShortes } = gra.caminoMasCorto(distanceFrom , distanceTo);
+            const { esEuleriano, esHamiltoniano, esConexo, matrizDeCaminos, arbolGeneradorMinimo: agm } = gra;
+            const { camino: shortPathGraph, distancia: distanceShortes } = gra.caminoMasCorto(distanceFrom, distanceTo);
             const peak = gra.flujoMaximo(peakFlowFrom, peakFlowTo);
 
             setArbolGenerador(agm.arbol.map((arista) => arista.link));
@@ -185,17 +125,20 @@ const MainNotDirected = () => {
             setDistance(distanceShortes);
             setShortPath(shortPathGraph);
             setPeakFlow(peak);
-            setEulerianPath(gra.euleriano(Trayecto.camino))
-            setEulerianCycle(gra.euleriano(Trayecto.ciclo))
-            setHamiltonianPath(gra.hamiltoniano(Trayecto.camino))
-            setHamiltonianCycle(gra.hamiltoniano(Trayecto.ciclo))
-        }
+            setEulerianPath(gra.euleriano(Trayecto.camino));
+            setEulerianCycle(gra.euleriano(Trayecto.ciclo));
+            setHamiltonianPath(gra.hamiltoniano(Trayecto.camino));
+            setHamiltonianCycle(gra.hamiltoniano(Trayecto.ciclo));
+            bugout.info('Guardado de información para la generación del grafo');
+
+        } else bugout.error('Ha ocurrido un error en la validación de los datos');
 
     };
 
-    function refreshPage(e){
+    function refreshPage(e) {
         e.preventDefault()
         window.location.reload();
+        bugout.info('Recarga de página');
     }
 
     const handleArbol = () => {
@@ -228,6 +171,8 @@ const MainNotDirected = () => {
             [text]: value
         };
         setRows(copyRows);
+        bugout.info('Has cambiado algún valor de los nodos');
+
     };
 
 
@@ -238,22 +183,24 @@ const MainNotDirected = () => {
 
     const handleOnAddLink = () => {
         let len = links.length - 1;
-        (links[len].from.length > 0 || links[len].to.length > 0 || links[len].text.length > 0 ) ? (
+        (links[len].from.length > 0 || links[len].to.length > 0 || links[len].text.length > 0) ? (
             setLinks(links.concat(defaultState))
         ) : swal('Error en los links', 'Campos vacíos en los links, por favor complete los datos antes de continuar', 'error');
     };
 
     const handleOnRemove = index => {
-        if(rows.length === 1){
-            swal('Error en los nodos','No se puede eliminar el único campo de nodos', 'error')
+        if (rows.length === 1) {
+            swal('Error en los nodos', 'No se puede eliminar el único campo de nodos', 'error')
         } else {
             const copyRows = [...rows];
             copyRows.splice(index, 1);
             setRows(copyRows);
+            saveData();
         }
 
         saveData();
-        console.log(saveData)
+        bugout.warn('Has borrado un campo de los nodos');
+
     };
 
     const handleOnChangeLinks = (index, from, value, text, to) => {
@@ -269,18 +216,22 @@ const MainNotDirected = () => {
         //Guardar en clase
         if (copyLinks[index].from && copyLinks[index].to && copyLinks[index].text)
             saveArista(copyLinks[index].from, copyLinks[index].to, copyLinks[index].text)
+        bugout.info('Has cambiado algún valor de los links');
+
     };
 
     const handleOnRemoveLink = index => {
-        if(links.length === 1){
+        if (links.length === 1) {
             swal("Error en los links", 'No se puede eliminar el único elemento de los links', 'error')
+            bugout.error('No se puede eliminar el único elemento de los links');
         } else {
             const copyLinks = [...links];
             copyLinks.splice(index, 1);
             setLinks(copyLinks);
         }
         saveData();
-        console.log('2')
+        bugout.info('Link eliminado correctamente');
+
     };
 
 
@@ -296,24 +247,24 @@ const MainNotDirected = () => {
         setChangeData({
             ...changeData,
             [e.target.name]: e.target.value,
-        })
-
+        });
+        bugout.info('Datos de distancia entre dos nodos actualizada');
     }
 
-    const getFromTo = ({desde, hasta}) => {
-        if(desde && hasta){
+    const getFromTo = ({ desde, hasta }) => {
+        if (desde && hasta) {
             setDistanceFrom(Number(desde));
             setDistanceTo(Number(hasta));
         }
     }
 
     // Enviar changeData para actualizar formulario
-    const peakFlowFromTo = ({from, to}) => {
-        if(from && to ){
+    const peakFlowFromTo = ({ from, to }) => {
+        if (from && to) {
             setPeakFlowFrom(Number(from));
             setPeakFlowTo(Number(to));
         }
-
+        bugout.info('Datos de flujo máximo actualizados');
     }
 
 
@@ -338,33 +289,38 @@ const MainNotDirected = () => {
         <Box display='flex' className='main_view'>
             <div className='main_options'>
                 <Button m={10} variant='contained' color='secondary' onClick={handleOnAdd}>Agregar</Button>
-                {rows.map((row, index) => (
-
-                    <Row
-                    {...row}
-                    className='main_row'
-                    onChange={(text, value) => handleOnChange(index, text, value)}
-                    onRemove={() => handleOnRemove(index)}
-                    key={index}
-                    />
-                ))}
+                {rows.map((row, index) => {
+                    bugout.info('Se ha creado un nuevo nodo');
+                    return (
+                        <Row
+                            {...row}
+                            className='main_row'
+                            onChange={(text, value) => handleOnChange(index, text, value)}
+                            onRemove={() => handleOnRemove(index)}
+                            key={index}
+                        />
+                    )
+                })}
 
                 <hr />
                 <Button m={10} variant='contained' color='grey' onClick={handleOnAddLink}>Agregar link</Button>
-                {links.map((link, index) => (
-                    <RowLink
-                        {...link}
-                        className='main_row'
-                        onChange={(from, to, value, text) => handleOnChangeLinks(index, from, to, value, text)}
-                        onRemove={() => handleOnRemoveLink(index)}
-                        key={index}
-                    />
-                ))}
+                {links.map((link, index) => {
+                    bugout.info('Se ha creado un nuevo link');
+                    return (
+                        <RowLink
+                            {...link}
+                            className='main_row'
+                            onChange={(from, to, value, text) => handleOnChangeLinks(index, from, to, value, text)}
+                            onRemove={() => handleOnRemoveLink(index)}
+                            key={index}
+                        />
+                    )
+                })}
 
                 <div>
 
                     {
-                        (links.length < 1 || rows.length < 1 ) ? (
+                        (links.length < 1 || rows.length < 1) ? (
                             <Button m={10}
                                 className='main_row'
                                 variant='contained'
@@ -372,7 +328,7 @@ const MainNotDirected = () => {
                                 disabled
                             >
                                 GUARDAR DATOS
-                                <SaveAlt/>
+                                <SaveAlt />
                             </Button>
                         ) : (
                             <Button m={10}
@@ -388,7 +344,7 @@ const MainNotDirected = () => {
                     }
                 </div>
 
-{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+                {/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -416,20 +372,14 @@ const MainNotDirected = () => {
                 <div className={
                     doneFetch === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    <Button
-                        variant='contained'
-                        color='gray'
-                        type='submit'
-                        className="main_buttonMargin"
-                    ><RefreshIcon />
-                    </Button>
                     <div className="item">
 
-                    {
-                        matrizDeCamino &&
+                        {
+                            matrizDeCamino &&
                             matrizDeCamino.map((item, index) => (
                                 <div className="main_boxItem">
                                     <p>{index}</p>
+                                    {bugout.info('Acceso a sección Matriz de camino')}
                                     {
 
                                         item.map(miniItem => (
@@ -441,18 +391,18 @@ const MainNotDirected = () => {
                                     }
                                 </div>
                             ))
-                    }
-                    <p className='main_isConexo'>
-                        {
-                            (isConexo===true) ? ('El grafo es conexo') : ('El grafo no es conexo')
                         }
-                    </p>
+                        <p className='main_isConexo'>
+                            {
+                                (isConexo === true) ? ('El grafo es conexo') : ('El grafo no es conexo')
+                            }
+                        </p>
                     </div>
                 </div >
-{/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
+                {/* ------------------------ MATRIZ DE CAMINO ------------------------ */}
 
 
-{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
+                {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -518,20 +468,21 @@ const MainNotDirected = () => {
                         changeData.desde && changeData.hasta ? (
                             <div className='distanceFromTo'>
                                 <p>Los nodos recorridos son los siguientes: </p>
+                                {bugout.info('Acceso sección de Distancia entre dos nodos')}
                                 {shortPath.map(item => (
                                     <p className='main_distanceItem'>{item}</p>
                                 ))}
-                            <p>
-                                Distancia : {distance}
-                            </p>
+                                <p>
+                                    Distancia : {distance}
+                                </p>
                             </div>
-                        ) : console.log()
+                        ) : bugout.error('Ocurrió un error al momento de desplegar la información de distancia entre dos nodos')
                     }
 
                 </div >
-{/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
+                {/* ------------------------ DISTANCIA ENTRE DOS NODOS ------------------------ */}
 
-{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
+                {/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
                 {
                     !saveAllData ? (
@@ -560,79 +511,80 @@ const MainNotDirected = () => {
                     doneFetchHamEul === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     <div className='distanceFromTo'>
-                    <p>
-                        {
-                            !isHamiltoniano ? ('El grafo no es hamiltoniano') : ('El grafo es hamiltoninao')
-                        }
+                        {bugout.info('Acceso sección de Hamiltoniano/Euleriano')}
+                        <p>
+                            {
+                                !isHamiltoniano ? ('El grafo no es hamiltoniano') : ('El grafo es hamiltoninao')
+                            }
 
-                        {
-                            hamiltonianCycle ? (
-                                <>
-                                    <p>Tiene como ciclo: </p>
-                                    {
-                                        hamiltonianCycle.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                            {
+                                hamiltonianCycle ? (
+                                    <>
+                                        <p>Tiene como ciclo: </p>
+                                        {
+                                            hamiltonianCycle.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-                            ) : console.log(hamiltonianCycle)
-                        }
+                                ) : bugout.warn('No hay ciclo euleriano')
+                            }
 
-{
-                            hamiltonianPath ? (
-                                <>
-                                    <p>Tiene como camino: </p>
-                                    {
-                                        hamiltonianPath.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                            {
+                                hamiltonianPath ? (
+                                    <>
+                                        <p>Tiene como camino: </p>
+                                        {
+                                            hamiltonianPath.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-                            ) : console.log(hamiltonianPath)
-                        }
+                                ) : bugout.warn('No hay camino hamiltoniano')
+                            }
 
-                    </p>
-                    <p>
-                        {
-                            !isEuleriano ? ('El grafo no es euleriano') : ('El grano es euleriano')
-                        }
+                        </p>
+                        <p>
+                            {
+                                !isEuleriano ? ('El grafo no es euleriano') : ('El grano es euleriano')
+                            }
 
-{
-                            eulerianCycle ? (
-                                <>
-                                    <p>Tiene como ciclo: </p>
-                                    {
-                                        eulerianCycle.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                            {
+                                eulerianCycle ? (
+                                    <>
+                                        <p>Tiene como ciclo: </p>
+                                        {
+                                            eulerianCycle.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-                            ) : console.log(eulerianCycle)
-                        }
+                                ) : bugout.warn('No hay ciclo euleriano')
+                            }
 
-{
-                            eulerianPath ? (
-                                <>
-                                    <p>Tiene como camino: </p>
-                                    {
-                                        eulerianPath.map(item => (
-                                            <p className='main_pathOrCycle'> {item} </p>
-                                        ))
-                                    }
-                                </>
+                            {
+                                eulerianPath ? (
+                                    <>
+                                        <p>Tiene como camino: </p>
+                                        {
+                                            eulerianPath.map(item => (
+                                                <p className='main_pathOrCycle'> {item} </p>
+                                            ))
+                                        }
+                                    </>
 
-                            ) : console.log(eulerianPath)
-                        }
-                    </p>
+                                ) : bugout.warn('No hay camino euleriano')
+                            }
+                        </p>
                     </div>
                 </div >
-{/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
+                {/* ------------------------ HAMILTONIANO/EULERIANO ------------------------ */}
 
 
-{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+                {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
                 {
                     !saveAllData ? (
                         <Button m={10}
@@ -660,6 +612,7 @@ const MainNotDirected = () => {
                     doneFetchFlujoMaximo === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
                     <form className='main_formDistance' onSubmit={handleSubmitPeak}>
+                        {bugout.info('Acceso sección de Flujo máximo')}
                         <TextField
                             className='main_textFieldDistance'
                             id='filled-number-peak'
@@ -694,6 +647,7 @@ const MainNotDirected = () => {
                         changePeakData.from && changePeakData.to ? (
                             <div className='distanceFromTo'>
                                 <p>Flujo máximo es: {peakFlow}</p>
+                                {bugout.info('Acceso sección de Flujo máximo')}
                             </div>
                         ) : (
                             <div className='distanceFromTo'>
@@ -703,9 +657,9 @@ const MainNotDirected = () => {
                     }
                 </div >
 
-{/* ------------------------ FLUJO MÁXIMO ------------------------ */}
+                {/* ------------------------ FLUJO MÁXIMO ------------------------ */}
 
-{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+                {/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
                 {
                     !saveAllData ? (
                         <Button
@@ -734,28 +688,21 @@ const MainNotDirected = () => {
                 <div className={
                     doneFetchArbol === true ? ('main_isMatriz') : 'main_noMatriz'
                 }>
-                    <Button
-                        variant='contained'
-                        color='gray'
-                        type='submit'
-                    ><RefreshIcon />
-                    </Button>
                     <div className='main_contentInside'>
                         {
                             arbolGenerador &&
                             <NotDirected className="hola" data={rows} linksData={arbolGenerador} />
                         }
+                        {bugout.info('Acceso sección de Árbol generador')}
                     </div>
                 </div >
 
-{/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
+                {/* ------------------------ ÁRBOL GENERADOR ------------------------ */}
 
-            <Button type="button" onClick={ refreshPage }> Recargar la página <span><CachedIcon className='main_reloadIcon' /></span> </Button>
+                <Button type="button" onClick={refreshPage}> Recargar la página <span><CachedIcon className='main_reloadIcon' /></span> </Button>
+                <Button type='button' onClick={downloadLogs}>Obtener registro de actividad</Button>
 
             </div >
-
-
-
 
             <NotDirected data={rows} linksData={links} />
         </Box >
