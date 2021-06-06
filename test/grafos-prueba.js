@@ -1,5 +1,5 @@
-import { Arista } from '../src/lib/grafo/arista.js';
-import { Adyacente } from '../src/lib/grafo/nodo.js';
+import { Arista } from "../src/lib/grafo/arista.js";
+import { Adyacente } from "../src/lib/grafo/nodo.js";
 
 // Tipos de grafos para testear:
 // A: no dirigido, no ponderado, no conexo (ND-NP-NC)
@@ -1162,21 +1162,21 @@ const grafos = [
         { camino: [0, 2, 3], distancia: 7 },
       ],
       [
-        { camino: false, distancia: 0 },
+        { camino: [], distancia: 0 },
         { camino: [1], distancia: 0 },
         { camino: [1, 2], distancia: 1 },
         { camino: [1, 2, 3], distancia: 5 },
       ],
       [
-        { camino: false, distancia: 0 },
-        { camino: false, distancia: 0 },
+        { camino: [], distancia: 0 },
+        { camino: [], distancia: 0 },
         { camino: [2], distancia: 0 },
         { camino: [2, 3], distancia: 4 },
       ],
       [
-        { camino: false, distancia: 0 },
-        { camino: false, distancia: 0 },
-        { camino: false, distancia: 0 },
+        { camino: [], distancia: 0 },
+        { camino: [], distancia: 0 },
+        { camino: [], distancia: 0 },
         { camino: [3], distancia: 0 },
       ],
     ],

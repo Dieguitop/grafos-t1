@@ -81,6 +81,12 @@ class Grafo {
     let grafo = new Grafo(esDirigido);
 
     for (const [i, adyacentes] of listaDeAdyacencia) {
+      // Si el nodo no tiene adyacentes, agregarlo de todas formas al grafo.
+      if (isEmpty(adyacentes)) {
+        grafo.agregarNodo(i);
+        continue;
+      }
+
       for (const { nodo: j, peso } of adyacentes) {
         grafo.agregarArista(i, j, peso, Direccion.salida);
       }
@@ -196,6 +202,52 @@ class Grafo {
     }
 
     return grafo;
+  }
+
+  /**
+   * Agrega un nodo sin adyacencias al grafo.
+   *
+   * @param {number} nodo - Nodo a agregar.
+   * @returns {boolean} `true` si el nodo no existía y fue agregado, `false` en
+   * caso contrario.
+   */
+  agregarNodo(nodo) {
+    // Si el grafo ya tiene el nodo, no hay nada que agregar.
+    if (this.listaDeAdyacencia.has(nodo)) {
+      return false;
+    }
+
+    const ultimo = last([...this.listaDeAdyacencia.keys()]);
+    this.listaDeAdyacencia.set(nodo, []);
+
+    // Si el último nodo del grafo es mayor al nodo recién ingresado, ordenar la
+    // lista de adyacencia. Notar que el grafo siempre tiene su lista de
+    // adyacencia ordenada, por lo que el último nodo de las llaves de dicha
+    // lista es siempre el mayor.
+    if (nodo < ultimo) {
+      this.listaDeAdyacencia = new Map(
+        [...this.listaDeAdyacencia].sort((a, b) => first(a) - first(b))
+      );
+    }
+
+    return true;
+  }
+
+  /**
+   * Elimina un nodo sin adyacencias al grafo.
+   *
+   * @param {number} nodo - Nodo a eliminar.
+   * @returns {boolean} `true` si el nodo existía y fue eliminado, `false` en
+   * caso contrario.
+   */
+  eliminarNodo(nodo) {
+    // Si el grafo no contiene el nodo, no hay nada que eliminar.
+    if (!this.listaDeAdyacencia.has(nodo)) {
+      return false;
+    }
+
+    this.listaDeAdyacencia.delete(nodo);
+    return true;
   }
 
   /**
@@ -332,7 +384,9 @@ class Grafo {
   get esPonderado() {
     // Comprueba si alguno de los adyacentes de la lista de adyacencia es
     // ponderado.
-    return [...this.listaDeAdyacencia.values()].some((adyacente) => some(adyacente, "esPonderado"));
+    return [...this.listaDeAdyacencia.values()].some((adyacente) =>
+      some(adyacente, "esPonderado")
+    );
   }
 
   /**
@@ -372,7 +426,10 @@ class Grafo {
     // Encuentra el nodo destino en los adyacentes de entrada (si la arista
     // encontrada es sólo de entrada) o en los adyacentes de salida (si la
     // arista encontrada es sólo de salida, o de salida y además de entrada).
-    const { peso } = find(this.adyacentes(origen, direccion), ["nodo", destino]);
+    const { peso } = find(this.adyacentes(origen, direccion), [
+      "nodo",
+      destino,
+    ]);
 
     // Si se desea obtener una arista de entrada (es decir, dirigida desde el
     // destino hacia el origen), se debe intercambiar el destino con el origen.
@@ -399,13 +456,12 @@ class Grafo {
       return false;
     }
 
-    // Si el grafo es dirigido y la arista es de entrada, invertir los extremos.
-    else if (this.esDirigido && direccion === Direccion.entrada) {
-      return this.agregarArista(destino, origen, peso, Direccion.salida);
-    }
-
     // Garantizar que el nodo origen es siempre menor al nodo destino.
-    else if (!this.esDirigido && origen > destino) {
+    // Si el grafo es dirigido y la arista es de entrada, invertir los extremos.
+    else if (
+      (this.esDirigido && direccion === Direccion.entrada) ||
+      (!this.esDirigido && origen > destino)
+    ) {
       [origen, destino] = [destino, origen];
     }
 
@@ -421,7 +477,10 @@ class Grafo {
       const ultimo = last([...this.listaDeAdyacencia.keys()]);
       this.listaDeAdyacencia.set(origen, [adyacente]);
 
-      // Si existe un nodo mayor al nodo origen, ordenar la lista de adyacencia.
+      // Si el último nodo del grafo es mayor al nodo recién ingresado, ordenar la
+      // lista de adyacencia. Notar que el grafo siempre tiene su lista de
+      // adyacencia ordenada, por lo que el último nodo de las llaves de dicha
+      // lista es siempre el mayor.
       if (origen < ultimo) {
         this.listaDeAdyacencia = new Map(
           [...this.listaDeAdyacencia].sort((a, b) => first(a) - first(b))
@@ -555,7 +614,9 @@ class Grafo {
     // la suma del grado de salida más el grado de entrada del nodo. En los
     // grafos no dirigidos no hay distinción de dirección.
     if (this.esDirigido && direccion === Direccion.ambas) {
-      return this.grado(nodo, Direccion.salida) + this.grado(nodo, Direccion.entrada);
+      return (
+        this.grado(nodo, Direccion.salida) + this.grado(nodo, Direccion.entrada)
+      );
     }
 
     // Se obtienen los adyacentes con la dirección específicada y se retorna la
@@ -680,7 +741,7 @@ class Grafo {
     // Si la distancia del nodo origen al nodo destino es infinita, entonces
     // no existe un camino que los una.
     if (distancia[destino] === Infinity) {
-      return { camino: false, distancia: 0 };
+      return { camino: [], distancia: 0 };
     }
 
     // Se calcula el camino más corto a partir de los nodos padres.
@@ -748,7 +809,10 @@ class Grafo {
 
       for (const nodo of nodos) {
         // GS - GE.
-        switch (this.grado(nodo, Direccion.salida) - this.grado(nodo, Direccion.entrada)) {
+        switch (
+          this.grado(nodo, Direccion.salida) -
+          this.grado(nodo, Direccion.entrada)
+        ) {
           case 1:
             candidatosOrigen++;
             origen = nodo;
@@ -979,7 +1043,12 @@ class Grafo {
     while (true) {
       // Busca un CA en el grafo y retorna la capacidad residual mínima del CA
       // encontrado, más la lista de padres de cada nodo que compone el CA.
-      let { flujoCamino, padre } = caminoDeAumento(this, entrada, salida, capacidad);
+      let { flujoCamino, padre } = caminoDeAumento(
+        this,
+        entrada,
+        salida,
+        capacidad
+      );
 
       // Si ya no existen más CA, se termina la iteración.
       if (flujoCamino === 0) {
