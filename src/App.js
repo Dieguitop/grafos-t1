@@ -1,10 +1,9 @@
-import React from 'react';
-import { BrowserRouter, Redirect, Route, Switch} from 'react-router-dom'
-import Main from './components/Main';
-import Header from './components/Header';
-import MainNotDirected from './components/MainNotDirected';
-import InitialPage from './components/InitialPage';
-import Documentation from './components/Documentation';
+import React from "react";
+import { BrowserRouter, Redirect, Route, Switch } from "react-router-dom";
+import Editor from "./components/Editor.js";
+import Header from "./components/Header.js";
+import InitialPage from "./components/InitialPage.js";
+import Documentation from "./components/Documentation.js";
 
 const App = () => (
   <BrowserRouter>

@@ -1,4 +1,4 @@
-import _ from 'lodash-es';
+import * as _ from 'lodash';
 import { Grafo, Trayecto } from '../src/lib/grafo/grafo.js';
 import { grafos } from './grafos-prueba.js';
 
@@ -42,7 +42,11 @@ function mostrar(grafos) {
 
 function mostrarUno(prueba) {
   let grafo = Grafo.desdeListaDeAdyacencia(prueba.listaDeAdyacencia, prueba.esDirigido);
-  console.log(grafo.matrizDeAdyacencia)
+  console.log(grafo.listaDeAdyacencia);
+  grafo.eliminarNodo(0);
+  console.log(grafo.listaDeAdyacencia);
+  grafo.agregarNodo(0);
+  console.log(grafo.listaDeAdyacencia);
 }
 
 // mostrar(grafos);

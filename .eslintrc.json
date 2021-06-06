@@ -20,12 +20,16 @@
     },
     "plugins": [
         "jest",
-        "react"
+        "react",
+        "react-hooks",
     ],
     "rules": {
         "prettier/prettier": 0,
         "no-constant-condition": ["error", { "checkLoops": false }],
         "react/prop-types": "off",
-        "react/jsx-key": "off"
+        "react/jsx-key": "off",
+        "no-unused-vars": "off",
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
     }
 }
