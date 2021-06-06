@@ -72,11 +72,15 @@ FDLayout.prototype.makeNetwork = function (coll) {
   return net;
 };
 
-function initDiagram() {
+function initDiagram(isDirected) {
   const $ = go.GraphObject.make;
   const diagram = $(go.Diagram, {
     "undoManager.isEnabled": true,
-    "clickCreatingTool.archetypeNodeData": { text: "new node", color: "lightblue", fig: "Cloud" },
+    "clickCreatingTool.archetypeNodeData": {
+      text: "new node",
+      color: "lightblue",
+      fig: "Cloud",
+    },
     initialAutoScale: go.Diagram.Uniform, // Zoom to make everything fit in the viewport.
     layout: new FDLayout(),
     model: $(go.GraphLinksModel, {
@@ -107,7 +111,7 @@ function initDiagram() {
     go.Link,
     { curve: go.Link.Bezier },
     $(go.Shape),
-    $(go.Shape, { toArrow: "Standard" }),
+    $(go.Shape, { toArrow: isDirected ? "Standard" : "" }),
     $(
       go.TextBlock,
       { font: "24px Verdana", segmentOffset: new go.Point(0, -20) },
@@ -118,17 +122,15 @@ function initDiagram() {
   return diagram;
 }
 
-const Content = ({ data, linksData }) => {
+export default function Content({ data, linksData, isDirected }) {
   return (
     <div className="content">
       <ReactDiagram
-        initDiagram={initDiagram}
+        initDiagram={() => initDiagram(isDirected)}
         divClassName="diagram-component"
         nodeDataArray={data}
         linkDataArray={linksData}
       />
     </div>
   );
-};
-
-export default Content;
+}
