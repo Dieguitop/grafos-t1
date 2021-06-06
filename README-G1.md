@@ -12,6 +12,6 @@ Proyecto creado para el manejo y despliegue de grafos, tanto no dirigidos como d
 
 # Integrandes 
 
-David Uribe - [https://github.com/davideliseo]
-Matías Rojas - [https://github.com/matias-rojas-dev]
-Maximiliano Araya - [https://github.com/Max01mvp]
+David Uribe - [https://github.com/davideliseo].\
+Matías Rojas - [https://github.com/matias-rojas-dev].\
+Maximiliano Araya - [https://github.com/Max01mvp].\
