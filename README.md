@@ -1,5 +1,5 @@
 # APLICACIÓN DE DESPLIEGUE Y MANEJO DE GRAFOS
-Trabajo Unidad 1: Grafos, para la asignatura Grafos y Lenguajes Formales, UTEM..\
+Trabajo Unidad 1: Grafos, para la asignatura Grafos y Lenguajes Formales, UTEM.\
 Proyecto creado para el manejo y despliegue de grafos, tanto no dirigidos como dirigidos y ponderados.
 
 ## Manual de instalación
